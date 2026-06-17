@@ -1,9 +1,10 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Logo, LogoMark } from '@/components/common/Logo'
 import { useState } from 'react'
 import {
   LayoutDashboard, Package, Tag, ShoppingCart, Users, Star,
   Ticket, BarChart3, Settings, Image, MessageSquare, ChevronLeft,
-  Menu, Bell, Search, Gift
+  Menu, Bell, Search
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,6 @@ const NAV_ITEMS = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Categories', href: '/admin/categories', icon: Tag },
-  { label: 'Brands', href: '/admin/brands', icon: Gift },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingCart },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Reviews', href: '/admin/reviews', icon: Star },
@@ -35,10 +35,14 @@ export default function AdminLayout() {
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className={cn('flex h-16 items-center border-b px-4', collapsed ? 'justify-center' : 'justify-between')}>
-        {!collapsed && (
-          <Link to="/admin" className="font-display text-xl font-bold text-gradient">
-            Lzel Admin
+      <div className={cn('flex h-16 items-center border-b', collapsed ? 'justify-center px-1' : 'justify-between px-4')}>
+        {collapsed ? (
+          <Link to="/admin" aria-label="aslitec admin">
+            <LogoMark size={52} />
+          </Link>
+        ) : (
+          <Link to="/admin" aria-label="aslitec admin">
+            <Logo size="sm" />
           </Link>
         )}
         <Button

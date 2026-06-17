@@ -7,7 +7,7 @@ import { cn, formatPrice } from '@/lib/utils'
 import type { SearchFilters } from '@/types'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setFilters, resetFilters } from '@/features/search/store/searchSlice'
-import { useGetCategoriesQuery, useGetBrandsQuery } from '@/data/useMockData'
+import { useGetCategoriesQuery } from '@/data/useMockData'
 
 const RATINGS = [4, 3, 2, 1]
 const SORT_OPTIONS = [
@@ -57,9 +57,7 @@ export default function ProductFilters() {
   const dispatch = useAppDispatch()
   const filters = useAppSelector((s) => s.search.filters)
   const { data: categoriesData } = useGetCategoriesQuery()
-  const { data: brandsData } = useGetBrandsQuery()
   const categories = categoriesData?.data ?? []
-  const brands = brandsData?.data ?? []
 
   const [priceRange, setPriceRange] = useState<[number, number]>([
     filters.minPrice ?? 0,
@@ -68,7 +66,6 @@ export default function ProductFilters() {
 
   const activeFilterCount = [
     filters.categoryId,
-    filters.brandId,
     filters.minPrice,
     filters.maxPrice,
     filters.minRating,
@@ -140,29 +137,6 @@ export default function ProductFilters() {
               <span>{cat.name}</span>
               {cat.productCount != null && (
                 <span className="text-xs text-muted-foreground">({cat.productCount})</span>
-              )}
-            </button>
-          ))}
-        </div>
-      </AccordionSection>
-
-      {/* Brands */}
-      <AccordionSection title="Brand">
-        <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
-          {brands.map((brand) => (
-            <button
-              key={brand.id}
-              className={cn(
-                'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors',
-                filters.brandId === brand.id ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-accent'
-              )}
-              onClick={() =>
-                update({ brandId: filters.brandId === brand.id ? undefined : brand.id })
-              }
-            >
-              <span>{brand.name}</span>
-              {brand.productCount != null && (
-                <span className="text-xs text-muted-foreground">({brand.productCount})</span>
               )}
             </button>
           ))}

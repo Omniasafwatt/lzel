@@ -185,14 +185,7 @@ export default function ProductDetailPage() {
 
         {/* Info */}
         <div className="space-y-5">
-          {product.brand && (
-            <Link
-              to={`/brands/${product.brand.slug}`}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              {product.brand.name}
-            </Link>
-          )}
+          <span className="text-sm font-semibold text-primary">aslitec</span>
 
           <div>
             <h1 className="text-2xl font-bold leading-tight md:text-3xl">{product.name}</h1>

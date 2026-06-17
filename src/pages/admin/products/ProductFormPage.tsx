@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useGetProductQuery, useGetCategoriesQuery, useGetBrandsQuery } from '@/data/useMockData'
+import { useGetProductQuery, useGetCategoriesQuery } from '@/data/useMockData'
 import { useCreateProductMutation, useUpdateProductMutation } from '@/features/products/services/productsApi'
 
 const schema = z.object({
@@ -21,7 +21,6 @@ const schema = z.object({
   stock: z.coerce.number().int().min(0),
   lowStockThreshold: z.coerce.number().int().min(0).default(5),
   categoryId: z.string().min(1),
-  brandId: z.string().optional(),
   status: z.enum(['active', 'draft', 'archived']).default('draft'),
   tags: z.string().optional(),
 })
@@ -34,7 +33,6 @@ export default function ProductFormPage() {
   const { data: existingData } = useGetProductQuery(id!, { skip: !id })
   const existing = existingData?.data
   const { data: catData } = useGetCategoriesQuery()
-  const { data: brandData } = useGetBrandsQuery()
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation()
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation()
   const isLoading = isCreating || isUpdating
@@ -50,7 +48,6 @@ export default function ProductFormPage() {
       stock: existing.stock,
       lowStockThreshold: existing.lowStockThreshold,
       categoryId: existing.categoryId,
-      brandId: existing.brandId,
       status: existing.status,
       tags: existing.tags.join(', '),
     } : { status: 'draft', lowStockThreshold: 5 },
@@ -160,13 +157,6 @@ export default function ProductFormPage() {
                   <select {...register('categoryId')} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                     <option value="">Select category</option>
                     {catData?.data?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Brand (optional)</label>
-                  <select {...register('brandId')} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
-                    <option value="">No brand</option>
-                    {brandData?.data?.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                   </select>
                 </div>
               </CardContent>

@@ -25,7 +25,6 @@ export default function CategoryPage() {
   return (
     <div className="container py-8 animate-fade-in">
       <div className="mb-6">
-        {cat?.image && <div className="mb-4 h-40 overflow-hidden rounded-2xl bg-muted"><img src={cat.image} alt={cat.name} className="size-full object-cover" /></div>}
         <h1 className="text-2xl font-bold">{cat?.name ?? slug}</h1>
         {cat?.description && <p className="mt-1 text-muted-foreground">{cat.description}</p>}
         {meta && <p className="mt-1 text-sm text-muted-foreground">{meta.total} products</p>}

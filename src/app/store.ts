@@ -5,6 +5,8 @@ import storage from 'redux-persist/lib/storage'
 import authReducer from '@/features/auth/store/authSlice'
 import cartReducer from '@/features/cart/store/cartSlice'
 import wishlistReducer from '@/features/wishlist/store/wishlistSlice'
+import addressesReducer from '@/features/users/store/addressesSlice'
+import ordersReducer from '@/features/orders/store/ordersSlice'
 import uiReducer from '@/features/ui/store/uiSlice'
 import searchReducer from '@/features/search/store/searchSlice'
 import notificationsReducer from '@/features/notifications/store/notificationsSlice'
@@ -25,13 +27,15 @@ import { paymentsApi } from '@/features/payments/services/paymentsApi'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'cart', 'wishlist'],
+  whitelist: ['auth', 'cart', 'wishlist', 'addresses', 'orders'],
 }
 
 const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
   wishlist: wishlistReducer,
+  addresses: addressesReducer,
+  orders: ordersReducer,
   ui: uiReducer,
   search: searchReducer,
   notifications: notificationsReducer,

@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle, Package, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useGetOrderQuery } from '@/features/orders/services/ordersApi'
+import { useGetOrderQuery } from '@/data/useMockUserData'
 import { formatPrice } from '@/lib/utils'
 
 export default function OrderConfirmationPage() {

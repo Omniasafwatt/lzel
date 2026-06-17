@@ -8,7 +8,7 @@ import ProductFilters from '@/features/products/components/ProductFilters'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { setFilters } from '@/features/search/store/searchSlice'
+import { setFilters, resetFilters } from '@/features/search/store/searchSlice'
 import { useGetProductsQuery } from '@/data/useMockData'
 import Pagination from '@/components/common/Pagination'
 
@@ -19,13 +19,14 @@ export default function ProductsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const filters = useAppSelector((s) => s.search.filters)
 
-  // Sync URL params to filters
+  // Sync URL params to filters — always reset first so stale category/brand filters don't bleed in
   useEffect(() => {
+    dispatch(resetFilters())
     const patch: Record<string, unknown> = {}
-    if (searchParams.get('sort')) patch.sortBy = searchParams.get('sort')
+    if (searchParams.get('sort'))     patch.sortBy    = searchParams.get('sort')
     if (searchParams.get('category')) patch.categoryId = searchParams.get('category')
-    if (searchParams.get('brand')) patch.brandId = searchParams.get('brand')
-    if (searchParams.get('q')) patch.query = searchParams.get('q')
+    if (searchParams.get('brand'))    patch.brandId   = searchParams.get('brand')
+    if (searchParams.get('q'))        patch.query     = searchParams.get('q')
     if (Object.keys(patch).length > 0) dispatch(setFilters(patch))
   }, [searchParams, dispatch])
 

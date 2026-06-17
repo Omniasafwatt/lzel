@@ -73,7 +73,7 @@ export default function SearchModal() {
                   value={input}
                   onChange={(e) => { setInput(e.target.value); debouncedUpdate(e.target.value) }}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch(input)}
-                  placeholder="Search products, brands, categories…"
+                  placeholder="Search products, categories…"
                   className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
                 />
                 {input && (
@@ -97,7 +97,7 @@ export default function SearchModal() {
                     <p className="mb-1.5 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       Suggestions
                     </p>
-                    {suggestions.map((s) => (
+                    {suggestions.map((s: string) => (
                       <button
                         key={s}
                         onClick={() => handleSearch(s)}
@@ -107,7 +107,7 @@ export default function SearchModal() {
                         <span dangerouslySetInnerHTML={{
                           __html: s.replace(
                             new RegExp(debouncedInput, 'gi'),
-                            (m) => `<strong>${m}</strong>`
+                            (m: string) => `<strong>${m}</strong>`
                           )
                         }} />
                         <ArrowRight className="ml-auto size-3.5 text-muted-foreground" />
@@ -147,7 +147,7 @@ export default function SearchModal() {
                     <p className="mb-1.5 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       Trending
                     </p>
-                    {['Wireless Headphones', 'Running Shoes', 'Smart Watch', 'Coffee Maker'].map((t) => (
+                    {['Wireless Headphones', 'Smartphones', 'Smart Watch', 'Laptops'].map((t) => (
                       <button
                         key={t}
                         onClick={() => handleSearch(t)}

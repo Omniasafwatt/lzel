@@ -9,7 +9,7 @@ const FAQS = [
   { q: 'How do I track my order?', a: 'Once shipped, you\'ll receive a tracking number via email. You can also track via your account orders page.' },
   { q: 'What payment methods do you accept?', a: 'We accept Visa, Mastercard, Amex, PayPal, Apple Pay, Google Pay, and bank transfers.' },
   { q: 'Can I change or cancel my order?', a: 'Orders can be modified or cancelled within 1 hour of placing. After that, we may not be able to make changes.' },
-  { q: 'How do I contact customer support?', a: 'Email us at support@lzel.com, call +1 (800) 123-4567, or use live chat. Available 24/7.' },
+  { q: 'How do I contact customer support?', a: 'Email us at support@aslitec.com, call +1 (800) 123-4567, or use live chat. Available 24/7.' },
 ]
 
 export default function FaqPage() {

@@ -51,11 +51,11 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
       {/* Hero */}
-      <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-[#080810]">
+      <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-[#1C2838]">
         {/* Ambient orbs */}
-        <div className="pointer-events-none absolute -left-40 -top-40 size-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
-        <div className="pointer-events-none absolute right-0 top-20 size-[400px] rounded-full bg-blue-600/20 blur-[100px]" />
-        <div className="pointer-events-none absolute bottom-0 left-1/2 size-[300px] rounded-full bg-purple-500/15 blur-[80px]" />
+        <div className="pointer-events-none absolute -left-40 -top-40 size-[500px] rounded-full bg-[#D4693A]/20 blur-[120px]" />
+        <div className="pointer-events-none absolute right-0 top-20 size-[400px] rounded-full bg-[#D4693A]/15 blur-[100px]" />
+        <div className="pointer-events-none absolute bottom-0 left-1/2 size-[300px] rounded-full bg-[#D4693A]/10 blur-[80px]" />
 
         {/* Dot grid overlay */}
         <div
@@ -75,7 +75,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-sm text-violet-300"
+                className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4693A]/40 bg-[#D4693A]/10 px-4 py-1.5 text-sm text-[#f0a070]"
               >
                 <Sparkles className="size-3.5" />
                 New arrivals just dropped
@@ -88,7 +88,7 @@ export default function HomePage() {
                 className="text-5xl font-bold leading-[1.1] tracking-tight text-white lg:text-6xl xl:text-7xl"
               >
                 Next-Gen<br />
-                <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#D4693A] via-[#f09050] to-[#fbbf24] bg-clip-text text-transparent">
                   Mobile Tech
                 </span><br />
                 Awaits You
@@ -112,11 +112,11 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   asChild
-                  className="border-0 bg-violet-600 text-white shadow-lg shadow-violet-500/25 hover:bg-violet-500"
+                  className="border-0 bg-[#D4693A] text-white shadow-lg shadow-[#D4693A]/30 hover:bg-[#c0582a]"
                 >
                   <Link to="/products">Shop Now <ArrowRight className="size-4" /></Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="border-0 bg-violet-600 text-white shadow-lg shadow-violet-500/25 hover:bg-violet-500">
+                <Button size="lg" variant="outline" asChild className="border-0 bg-[#D4693A] text-white shadow-lg shadow-[#D4693A]/30 hover:bg-[#c0582a]">
                   <Link to="/products?featured=true">View Featured</Link>
                 </Button>
               </motion.div>
@@ -147,7 +147,7 @@ export default function HomePage() {
                 {[1, 2, 3].map((i) => (
                   <motion.div
                     key={i}
-                    className="absolute inset-0 rounded-[3rem] border border-violet-500/20"
+                    className="absolute inset-0 rounded-[3rem] border border-[#D4693A]/20"
                     style={{ margin: `${-i * 18}px` }}
                     animate={{ opacity: [0.6, 0, 0.6], scale: [1, 1.05, 1] }}
                     transition={{ duration: 3, repeat: Infinity, delay: i * 0.8, ease: 'easeInOut' }}
@@ -155,7 +155,7 @@ export default function HomePage() {
                 ))}
 
                 {/* Core glow */}
-                <div className="absolute inset-[-20px] rounded-[4rem] bg-violet-600/25 blur-3xl" />
+                <div className="absolute inset-[-20px] rounded-[4rem] bg-[#D4693A]/20 blur-3xl" />
 
                 {/* Phone entrance + float */}
                 <motion.div
@@ -175,7 +175,7 @@ export default function HomePage() {
                       style={{ width: 268, height: 572, borderRadius: '3.5rem' }}
                     >
                       {/* Screen bg */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#0d0d20] via-[#0a0a18] to-[#060610]" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#1a2535] via-[#151f2e] to-[#0f1821]" />
 
                       {/* Dynamic Island */}
                       <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
@@ -202,9 +202,9 @@ export default function HomePage() {
                         <div className="mb-3 flex items-center justify-between">
                           <div>
                             <div className="text-[8px] text-white/40">Good morning</div>
-                            <div className="text-[11px] font-bold text-white">Lzel Store ✦</div>
+                            <div className="text-[11px] font-bold text-white">aslitec Store ✦</div>
                           </div>
-                          <div className="flex size-6 items-center justify-center rounded-full bg-violet-600/80 text-[9px]">👤</div>
+                          <div className="flex size-6 items-center justify-center rounded-full bg-[#D4693A]/80 text-[9px]">👤</div>
                         </div>
 
                         {/* Search bar */}
@@ -214,7 +214,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Featured banner */}
-                        <div className="mb-3 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 p-3">
+                        <div className="mb-3 rounded-2xl bg-gradient-to-r from-[#D4693A] to-[#a83c16] p-3">
                           <div className="text-[8px] font-medium text-white/70">FLASH SALE</div>
                           <div className="text-[12px] font-bold text-white">iPhone 16 Pro</div>
                           <div className="text-[9px] text-white/80">Starting at $999</div>
@@ -233,13 +233,13 @@ export default function HomePage() {
                           {[
                             { name: 'Galaxy S25', price: '$799', emoji: '📱', color: 'from-blue-900' },
                             { name: 'AirPods Pro', price: '$249', emoji: '🎧', color: 'from-gray-800' },
-                            { name: 'Watch S10', price: '$399', emoji: '⌚', color: 'from-purple-900' },
+                            { name: 'Watch S10', price: '$399', emoji: '⌚', color: 'from-[#1C2838]' },
                             { name: 'Pixel 9 Pro', price: '$899', emoji: '📸', color: 'from-green-900' },
                           ].map(({ name, price, emoji, color }) => (
                             <div key={name} className={`rounded-xl border border-white/[0.08] bg-gradient-to-b ${color} to-black/50 p-2`}>
                               <div className="mb-1 text-center text-xl">{emoji}</div>
                               <div className="text-[8px] font-semibold leading-tight text-white">{name}</div>
-                              <div className="text-[8px] text-violet-400">{price}</div>
+                              <div className="text-[8px] text-[#f09060]">{price}</div>
                             </div>
                           ))}
                         </div>

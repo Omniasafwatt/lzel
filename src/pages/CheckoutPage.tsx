@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, ChevronRight, Lock } from 'lucide-react'
+import { Check, ChevronRight, Lock, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { clearCart } from '@/features/cart/store/cartSlice'
-import { useGetAddressesQuery } from '@/features/users/services/usersApi'
-import { useGetDeliveryMethodsQuery } from '@/features/payments/services/paymentsApi'
-import { useCreateOrderMutation } from '@/features/orders/services/ordersApi'
+import {
+  useGetAddressesQuery,
+  useAddAddressMutation,
+  useGetDeliveryMethodsQuery,
+  useCreateOrderMutation,
+} from '@/data/useMockUserData'
 import { formatPrice } from '@/lib/utils'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { stripePromise } from '@/lib/stripe'
@@ -43,6 +50,20 @@ function StepIndicator({ currentStep }: { currentStep: Step }) {
   )
 }
 
+const addressSchema = z.object({
+  label: z.string().min(1),
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  addressLine1: z.string().min(5),
+  addressLine2: z.string().optional(),
+  city: z.string().min(2),
+  state: z.string().min(2),
+  postalCode: z.string().min(3),
+  country: z.string().min(2),
+  phone: z.string().min(7),
+})
+type AddressFormValues = z.infer<typeof addressSchema>
+
 function ShippingStep({
   onNext,
   selected,
@@ -54,18 +75,67 @@ function ShippingStep({
 }) {
   const { data } = useGetAddressesQuery()
   const addresses = data?.data ?? []
+  const [addAddress] = useAddAddressMutation()
+  const [showForm, setShowForm] = useState(addresses.length === 0)
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: { label: 'Home', country: 'US' },
+  })
+
+  const onSave = async (values: AddressFormValues) => {
+    await addAddress({ ...values, isDefault: addresses.length === 0 }).unwrap()
+    toast.success('Address saved!')
+    reset()
+    setShowForm(false)
+  }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Shipping Address</h2>
-      {addresses.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
-          <p>No addresses saved. Please add one.</p>
-          <Button className="mt-4" asChild>
-            <a href="/account/addresses">Add Address</a>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Shipping Address</h2>
+        {addresses.length > 0 && (
+          <Button size="sm" variant="outline" onClick={() => setShowForm(!showForm)}>
+            <Plus className="mr-1 size-3.5" /> New Address
           </Button>
-        </div>
-      ) : (
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <form onSubmit={handleSubmit(onSave)} className="space-y-3 rounded-xl border p-4 bg-muted/30">
+              <p className="text-sm font-semibold">Add New Address</p>
+              <Input {...register('label')} placeholder="Label (Home, Work…)" error={errors.label?.message} />
+              <div className="grid grid-cols-2 gap-3">
+                <Input {...register('firstName')} placeholder="First name" error={errors.firstName?.message} />
+                <Input {...register('lastName')} placeholder="Last name" error={errors.lastName?.message} />
+              </div>
+              <Input {...register('addressLine1')} placeholder="Street address" error={errors.addressLine1?.message} />
+              <Input {...register('addressLine2')} placeholder="Apt, suite (optional)" />
+              <div className="grid grid-cols-3 gap-3">
+                <Input {...register('city')} placeholder="City" error={errors.city?.message} />
+                <Input {...register('state')} placeholder="State" error={errors.state?.message} />
+                <Input {...register('postalCode')} placeholder="ZIP" error={errors.postalCode?.message} />
+              </div>
+              <Input {...register('phone')} placeholder="Phone" type="tel" error={errors.phone?.message} />
+              <div className="flex gap-2">
+                <Button type="submit" size="sm">Save Address</Button>
+                {addresses.length > 0 && (
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
+                )}
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {addresses.length > 0 && (
         <div className="space-y-3">
           {addresses.map((addr) => (
             <button
@@ -78,9 +148,7 @@ function ShippingStep({
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-semibold">{addr.label}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {addr.firstName} {addr.lastName}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{addr.firstName} {addr.lastName}</p>
                   <p className="text-sm text-muted-foreground">
                     {addr.addressLine1}, {addr.city}, {addr.state} {addr.postalCode}
                   </p>
@@ -91,13 +159,12 @@ function ShippingStep({
                   {selected?.id === addr.id && <Check className="size-3 text-white m-px" />}
                 </div>
               </div>
-              {addr.isDefault && (
-                <Badge variant="secondary" className="mt-2 text-[11px]">Default</Badge>
-              )}
+              {addr.isDefault && <Badge variant="secondary" className="mt-2 text-[11px]">Default</Badge>}
             </button>
           ))}
         </div>
       )}
+
       <Button className="w-full" size="lg" onClick={onNext} disabled={!selected}>
         Continue to Delivery <ChevronRight className="size-4" />
       </Button>

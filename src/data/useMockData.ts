@@ -7,13 +7,11 @@ import type { SearchFilters } from '@/types'
 import {
   mockProducts,
   mockCategories,
-  mockBrands,
   featuredProducts,
   bestSellers,
   newArrivals,
   getProductBySlug,
   getProductsByCategorySlug,
-  getProductsByBrandSlug,
   getRelatedProducts,
   getSuggestions,
 } from './mockProducts'
@@ -41,7 +39,6 @@ function applyFilters(filters: SearchFilters) {
         p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
         p.tags.some((t) => t.toLowerCase().includes(q)) ||
-        p.brand?.name.toLowerCase().includes(q) ||
         p.category.name.toLowerCase().includes(q)
     )
   }
@@ -49,12 +46,6 @@ function applyFilters(filters: SearchFilters) {
   if (filters.categoryId) {
     items = items.filter(
       (p) => p.category.id === filters.categoryId || p.category.slug === filters.categoryId
-    )
-  }
-
-  if (filters.brandId) {
-    items = items.filter(
-      (p) => p.brand?.id === filters.brandId || p.brand?.slug === filters.brandId
     )
   }
 
@@ -91,7 +82,6 @@ function applyFilters(filters: SearchFilters) {
       items.sort((a, b) => b.salesCount - a.salesCount)
       break
     default:
-      // relevance — keep original order (bestSellers-like)
       items.sort((a, b) => b.salesCount - a.salesCount)
   }
 
@@ -141,10 +131,6 @@ export function useGetCategoryQuery(slug: string) {
   return { data: cat ? { data: cat } : undefined, isLoading: false }
 }
 
-export function useGetBrandsQuery() {
-  return useMemo(() => ({ data: { data: mockBrands }, isLoading: false }), [])
-}
-
 export function useGetProductQuery(slug: string, opts?: { skip?: boolean }) {
   const product = useMemo(
     () => (opts?.skip ? undefined : getProductBySlug(slug)),
@@ -165,18 +151,8 @@ export function useGetRelatedProductsQuery(
   return { data: { data: related } }
 }
 
-export function useGetBrandQuery(slug: string) {
-  const brand = useMemo(() => mockBrands.find((b) => b.slug === slug), [slug])
-  return { data: brand ? { data: brand } : undefined, isLoading: false }
-}
-
 export function useGetProductsByCategoryQuery(slug: string) {
   const products = useMemo(() => getProductsByCategorySlug(slug), [slug])
-  return { data: { data: products }, isLoading: false }
-}
-
-export function useGetProductsByBrandQuery(slug: string) {
-  const products = useMemo(() => getProductsByBrandSlug(slug), [slug])
   return { data: { data: products }, isLoading: false }
 }
 

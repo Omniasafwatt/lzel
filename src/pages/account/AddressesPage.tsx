@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import {
   useGetAddressesQuery, useAddAddressMutation,
   useDeleteAddressMutation, useSetDefaultAddressMutation
-} from '@/features/users/services/usersApi'
+} from '@/data/useMockUserData'
 import { Skeleton } from '@/components/common/Skeleton'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'

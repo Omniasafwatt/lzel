@@ -1,66 +1,104 @@
 import { Outlet, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { LogoWhite, Logo } from '@/components/common/Logo'
+
+const FEATURES = [
+  { icon: '🚀', text: 'Free shipping on orders over $50' },
+  { icon: '🔒', text: 'Secure & encrypted payments'      },
+  { icon: '↩️', text: '30-day hassle-free returns'       },
+  { icon: '⭐', text: 'Over 1M+ satisfied customers'     },
+]
 
 export default function AuthLayout() {
   return (
-    <div className="flex min-h-screen">
-      {/* Left — decorative */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-500 to-brand-700">
-        <div className="absolute inset-0 bg-noise opacity-20" />
-        {/* Floating shapes */}
-        <motion.div
-          className="absolute -top-20 -left-20 size-96 rounded-full bg-white/10"
-          animate={{ y: [0, 30, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 size-64 rounded-full bg-white/5"
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-        />
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
-          <Link to="/" className="font-display text-3xl font-bold">
-            Lzel
-          </Link>
-          <h1 className="mt-12 text-4xl font-bold leading-tight">
-            Shop smarter.<br />Live better.
-          </h1>
-          <p className="mt-4 text-lg text-white/80">
-            Discover thousands of premium products with fast delivery and exceptional service.
-          </p>
-          <div className="mt-10 space-y-4">
-            {[
-              { icon: '🚀', text: 'Free shipping on orders over $50' },
-              { icon: '🔒', text: 'Secure & encrypted payments' },
-              { icon: '↩️', text: '30-day hassle-free returns' },
-              { icon: '⭐', text: 'Over 1M+ satisfied customers' },
-            ].map(({ icon, text }) => (
-              <div key={text} className="flex items-center gap-3 text-sm text-white/90">
-                <span className="text-xl">{icon}</span>
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8"
+      style={{ background: 'linear-gradient(135deg, #1a2535 0%, #0f1821 100%)' }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl flex min-h-[640px]"
+        style={{ boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}
+      >
+
+        {/* ── Left — dark navy brand panel ── */}
+        <div
+          className="hidden md:flex md:w-5/12 relative overflow-hidden flex-col justify-between p-10 text-white"
+          style={{ background: 'linear-gradient(160deg, #2D3A4A 0%, #1e2d3d 60%, #182436 100%)' }}
+        >
+          {/* Decorative orange glow blobs */}
+          <div className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full blur-3xl"
+            style={{ background: 'radial-gradient(circle, rgba(212,105,58,0.25) 0%, transparent 70%)' }} />
+          <div className="pointer-events-none absolute bottom-0 right-0 size-64 rounded-full blur-3xl"
+            style={{ background: 'radial-gradient(circle, rgba(212,105,58,0.15) 0%, transparent 70%)' }} />
+
+          {/* Floating animated circles */}
+          <motion.div
+            className="absolute top-1/3 -right-10 size-40 rounded-full pointer-events-none"
+            style={{ border: '1px solid rgba(212,105,58,0.2)', background: 'rgba(212,105,58,0.04)' }}
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute bottom-24 left-6 size-20 rounded-full pointer-events-none"
+            style={{ border: '1px solid rgba(212,105,58,0.15)' }}
+            animate={{ y: [0, 14, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          />
+
+          {/* Top — logo */}
+          <div className="relative z-10">
+            <Link to="/" aria-label="aslitec home">
+              <LogoWhite size="lg" />
+            </Link>
+          </div>
+
+          {/* Middle — headline */}
+          <div className="relative z-10">
+            <h2 className="text-4xl font-bold leading-snug text-white">
+              Shop smarter.<br />
+              <span style={{ color: '#D4693A' }}>Live better.</span>
+            </h2>
+            <p className="mt-4 text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Discover thousands of premium products with fast delivery and exceptional service.
+            </p>
+          </div>
+
+          {/* Bottom — features */}
+          <div className="relative z-10 space-y-3">
+            {FEATURES.map(({ icon, text }) => (
+              <div key={text} className="flex items-center gap-3 text-sm"
+                style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <span className="flex size-7 items-center justify-center rounded-lg text-base shrink-0"
+                  style={{ background: 'rgba(212,105,58,0.15)', border: '1px solid rgba(212,105,58,0.2)' }}>
+                  {icon}
+                </span>
                 <span>{text}</span>
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Right — form */}
-      <div className="flex flex-1 flex-col items-center justify-center p-6 sm:p-12">
-        <div className="mb-6 lg:hidden">
-          <Link to="/" className="font-display text-2xl font-bold text-gradient">
-            Lzel
-          </Link>
+          {/* Bottom orange accent bar */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 pointer-events-none"
+            style={{ background: 'linear-gradient(90deg, #D4693A, #a83c16)' }} />
         </div>
-        <div className="w-full max-w-md">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Outlet />
-          </motion.div>
+
+        {/* ── Right — form panel ── */}
+        <div
+          className="flex flex-1 flex-col justify-center px-8 py-10 sm:px-14"
+          style={{ background: '#ffffff' }}
+        >
+          {/* Mobile logo */}
+          <div className="mb-6 md:hidden flex justify-center">
+            <Link to="/" aria-label="aslitec home">
+              <Logo size="md" />
+            </Link>
+          </div>
+
+          <Outlet />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

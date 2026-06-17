@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Logo } from '@/components/common/Logo'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingCart,
@@ -24,13 +25,13 @@ import { setCartDrawer, setSearchOpen, setMobileMenu } from '@/features/ui/store
 import { logout } from '@/features/auth/store/authSlice'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { getInitials } from '@/lib/utils'
-import { useGetCategoriesQuery } from '@/features/products/services/categoriesApi'
+import { useGetCategoriesQuery } from '@/data/useMockData'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Sale', href: '/products?sale=true' },
-  { label: 'Brands', href: '/brands' },
+  { label: 'Deals & Offers', href: '/products?sale=true' },
+  { label: 'Support', href: '/support' },
 ]
 
 export default function Navbar() {
@@ -74,11 +75,8 @@ export default function Navbar() {
     >
       <div className="container flex h-16 items-center gap-4">
         {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 font-display text-2xl font-bold"
-        >
-          <span className="text-gradient">Lzel</span>
+        <Link to="/" aria-label="aslitec home">
+          <Logo size="md" />
         </Link>
 
         {/* Desktop nav */}

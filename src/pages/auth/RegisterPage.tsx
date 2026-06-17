@@ -81,7 +81,7 @@ export default function RegisterPage() {
     try {
       const result = await register(values).unwrap()
       dispatch(setCredentials(result.data))
-      toast.success('Account created! Welcome to Lzel.')
+      toast.success('Account created! Welcome to aslitec!')
       navigate('/')
     } catch (err: unknown) {
       const msg = (err as { data?: { message?: string } })?.data?.message || 'Registration failed'

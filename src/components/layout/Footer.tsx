@@ -1,36 +1,37 @@
 import { Link } from 'react-router-dom'
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react'
+import { Logo } from '@/components/common/Logo'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 const FOOTER_LINKS = {
-  Shop: [
-    { label: 'New Arrivals', href: '/products?sort=newest' },
-    { label: 'Best Sellers', href: '/products?sort=bestselling' },
-    { label: 'Sale', href: '/products?sale=true' },
-    { label: 'All Products', href: '/products' },
-    { label: 'Brands', href: '/brands' },
+  Products: [
+    { label: 'Gaming Controllers', href: '/categories/gaming'      },
+    { label: 'Stylus Pens',        href: '/categories/accessories' },
+    { label: 'Electric Kettles',   href: '/categories/appliances'  },
+    { label: 'New Arrivals',       href: '/products?sort=newest'   },
+    { label: 'Deals & Offers',     href: '/products?sale=true'     },
   ],
   Account: [
-    { label: 'My Account', href: '/account' },
-    { label: 'Orders', href: '/account/orders' },
-    { label: 'Wishlist', href: '/account/wishlist' },
-    { label: 'Track Order', href: '/track' },
-    { label: 'Returns', href: '/support' },
+    { label: 'My Account',  href: '/account'         },
+    { label: 'My Orders',   href: '/account/orders'  },
+    { label: 'Wishlist',    href: '/account/wishlist' },
+    { label: 'Track Order', href: '/track'            },
+    { label: 'Returns',     href: '/support'          },
   ],
   Support: [
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Contact Us', href: '/contact' },
-    { label: 'Live Chat', href: '/support' },
-    { label: 'Shipping Info', href: '/faq#shipping' },
-    { label: 'Return Policy', href: '/faq#returns' },
+    { label: 'FAQ',              href: '/faq'           },
+    { label: 'Contact Us',       href: '/contact'       },
+    { label: 'Live Chat',        href: '/support'       },
+    { label: 'Warranty Service', href: '/faq#warranty'  },
+    { label: 'Repair Centers',   href: '/faq#repair'    },
   ],
   Company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Careers', href: '/careers' },
+    { label: 'About aslitec',  href: '/about'   },
+    { label: 'Blog',           href: '/blog'    },
+    { label: 'Careers',        href: '/careers' },
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Terms of Use',   href: '/terms'   },
   ],
 }
 
@@ -48,8 +49,8 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
-            <Link to="/" className="font-display text-2xl font-bold text-gradient">
-              Lzel
+            <Link to="/" aria-label="aslitec home">
+              <Logo size="md" />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               Premium e-commerce platform delivering exceptional products and experiences worldwide.
@@ -57,7 +58,7 @@ export default function Footer() {
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Mail className="size-4 shrink-0" />
-                <span>support@lzel.com</span>
+                <span>support@aslitec.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="size-4 shrink-0" />
@@ -128,7 +129,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Lzel. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} aslitec. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>

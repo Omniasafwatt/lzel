@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <h2>4. Data Security</h2>
         <p>We use industry-standard encryption and security measures to protect your personal information.</p>
         <h2>5. Contact Us</h2>
-        <p>If you have questions about this Privacy Policy, please contact us at privacy@lzel.com.</p>
+        <p>If you have questions about this Privacy Policy, please contact us at privacy@aslitec.com.</p>
       </div>
     </div>
   )
