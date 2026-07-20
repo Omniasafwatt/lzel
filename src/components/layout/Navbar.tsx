@@ -1,369 +1,302 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Logo } from '@/components/common/Logo'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ShoppingCart,
-  Heart,
-  Search,
-  User,
-  Menu,
-  X,
-  Bell,
-  Sun,
-  Moon,
-  ChevronDown,
-  Package,
-  LogOut,
-  Settings,
-  LayoutDashboard,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { ShoppingCart, Heart, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setCartDrawer, setSearchOpen, setMobileMenu } from '@/features/ui/store/uiSlice'
 import { logout } from '@/features/auth/store/authSlice'
-import { useTheme } from '@/components/providers/ThemeProvider'
 import { getInitials } from '@/lib/utils'
 import { useGetCategoriesQuery } from '@/data/useMockData'
-import { cn } from '@/lib/utils'
+import { Logo } from '@/components/common/Logo'
 
-const NAV_LINKS = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Deals & Offers', href: '/products?sale=true' },
-  { label: 'Support', href: '/support' },
+type Scheme = 'light' | 'dark' | 'orange'
+
+const SCHEME_COLORS = {
+  light: {
+    navText:    '#555',
+    navActive:  '#D4693A',
+    icon:       '#666',
+    logoFilter: 'none',
+    signInBg:   '#2d3444',
+    signInText: '#ffffff',
+    barColor:   '#D4693A',
+    dotColor:   '#D4693A',
+  },
+  dark: {
+    navText:    'rgba(255,255,255,0.55)',
+    navActive:  '#ffffff',
+    icon:       'rgba(255,255,255,0.65)',
+    logoFilter: 'brightness(0) invert(1)',
+    signInBg:   'rgba(255,255,255,0.15)',
+    signInText: '#ffffff',
+    barColor:   '#D4693A',
+    dotColor:   '#ffffff',
+  },
+  orange: {
+    navText:    'rgba(255,255,255,0.80)',
+    navActive:  '#ffffff',
+    icon:       'rgba(255,255,255,0.85)',
+    logoFilter: 'brightness(0) invert(1)',
+    signInBg:   '#2d3444',
+    signInText: '#ffffff',
+    barColor:   '#ffffff',
+    dotColor:   '#ffffff',
+  },
+}
+
+const NAV = [
+  { label: 'Shop', href: '/products' },
+  { label: 'Gaming', href: '/categories/gaming' },
+  { label: 'Accessories', href: '/categories/accessories' },
+  { label: 'Appliances', href: '/categories/appliances' },
+  { label: 'Smart Home', href: '/categories/smart-home' },
 ]
+
+function NavItem({
+  label, href, active, colors,
+}: {
+  label: string; href: string; active: boolean
+  colors: typeof SCHEME_COLORS['light']
+}) {
+  const [hovered, setHovered] = useState(false)
+  const letters = label.split('')
+
+  return (
+    <Link
+      to={href}
+      className="relative flex flex-col items-center px-4 py-2 group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <span className="flex overflow-hidden">
+        {letters.map((char, i) => (
+          <motion.span
+            key={i}
+            className="inline-block text-[11px] font-black uppercase tracking-[0.18em]"
+            animate={
+              hovered
+                ? { y: 0, color: colors.navActive, rotate: i % 2 === 0 ? -8 : 8, scale: 1.2 }
+                : { y: 0, color: active ? colors.navActive : colors.navText, rotate: 0, scale: 1 }
+            }
+            transition={{
+              delay: hovered ? i * 0.045 : (letters.length - 1 - i) * 0.03,
+              type: 'spring',
+              stiffness: 600,
+              damping: 14,
+            }}
+          >
+            {char === ' ' ? ' ' : char}
+          </motion.span>
+        ))}
+      </span>
+
+      <motion.span
+        className="absolute bottom-0 left-0 h-[2px] rounded-full"
+        style={{ background: colors.barColor }}
+        initial={{ width: 0, left: '50%' }}
+        animate={hovered ? { width: '100%', left: '0%' } : { width: 0, left: '50%' }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      />
+
+      {active && !hovered && (
+        <motion.span
+          layoutId="nav-dot"
+          className="absolute -bottom-0.5 size-1 rounded-full"
+          style={{ background: colors.dotColor }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
+      )}
+    </Link>
+  )
+}
 
 export default function Navbar() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { resolvedTheme, setTheme } = useTheme()
+  const location = useLocation()
   const { isAuthenticated, user } = useAppSelector((s) => s.auth)
-  const cartItemCount = useAppSelector((s) =>
+  const cartCount = useAppSelector((s) =>
     s.cart.cart?.items.filter((i) => !i.savedForLater).reduce((a, i) => a + i.quantity, 0) ?? 0
   )
   const wishlistCount = useAppSelector((s) => s.wishlist.items.length)
-  const unreadNotifications = useAppSelector((s) => s.notifications.unreadCount)
-  const mobileMenuOpen = useAppSelector((s) => s.ui.mobileMenuOpen)
-  const { data: categoriesData } = useGetCategoriesQuery()
-  const categories = categoriesData?.data?.slice(0, 6) ?? []
+  const mobileOpen = useAppSelector((s) => s.ui.mobileMenuOpen)
+  const [scheme, setScheme] = useState<Scheme>('light')
+  const [userMenu, setUserMenu] = useState(false)
 
-  const [scrolled, setScrolled] = useState(false)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [categoriesOpen, setCategoriesOpen] = useState(false)
+  useGetCategoriesQuery()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const detect = () => {
+      const el = document.elementFromPoint(window.innerWidth / 2, 34)
+      let cur: Element | null = el
+      while (cur) {
+        const s = cur.getAttribute('data-nav-scheme')
+        if (s) { setScheme(s as Scheme); return }
+        cur = cur.parentElement
+      }
+      setScheme('light')
+    }
+    detect()
+    window.addEventListener('scroll', detect, { passive: true })
+    return () => window.removeEventListener('scroll', detect)
   }, [])
 
-  const handleLogout = () => {
-    dispatch(logout())
-    setUserMenuOpen(false)
-    navigate('/')
-  }
+  const colors = SCHEME_COLORS[scheme]
+  const handleLogout = () => { dispatch(logout()); setUserMenu(false); navigate('/') }
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full border-b transition-all duration-300',
-        scrolled
-          ? 'bg-background/95 backdrop-blur-md shadow-sm'
-          : 'bg-background'
-      )}
-    >
-      <div className="container flex h-16 items-center gap-4">
-        {/* Logo */}
-        <Link to="/" aria-label="aslitec home">
-          <Logo size="md" />
-        </Link>
+    <>
+      <header className="fixed top-0 inset-x-0 z-50">
+        <div className="container">
+          <div className="flex items-center justify-between h-16 md:h-[68px]">
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {/* Categories mega */}
-          <div className="relative" onMouseLeave={() => setCategoriesOpen(false)}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1"
-              onMouseEnter={() => setCategoriesOpen(true)}
-            >
-              Shop <ChevronDown className={cn('size-3 transition-transform', categoriesOpen && 'rotate-180')} />
-            </Button>
-            <AnimatePresence>
-              {categoriesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-full mt-2 w-64 rounded-xl border bg-popover p-3 shadow-xl"
-                  onMouseEnter={() => setCategoriesOpen(true)}
-                >
-                  {categories.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      to={`/categories/${cat.slug}`}
-                      className="flex items-center gap-3 rounded-lg p-2.5 text-sm font-medium hover:bg-accent transition-colors"
-                      onClick={() => setCategoriesOpen(false)}
-                    >
-                      {cat.image && (
-                        <img src={cat.image} alt={cat.name} className="size-8 rounded-md object-cover" />
-                      )}
-                      <div>
-                        <div>{cat.name}</div>
-                        {cat.productCount != null && (
-                          <div className="text-xs text-muted-foreground">{cat.productCount} products</div>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                  <div className="mt-2 border-t pt-2">
-                    <Link
-                      to="/products"
-                      className="block rounded-lg p-2.5 text-center text-sm font-semibold text-primary hover:bg-accent transition-colors"
-                      onClick={() => setCategoriesOpen(false)}
-                    >
-                      View all products →
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          {NAV_LINKS.map((l) => (
-            <Button key={l.href} variant="ghost" size="sm" asChild>
-              <Link to={l.href}>{l.label}</Link>
-            </Button>
-          ))}
-        </nav>
-
-        <div className="flex-1" />
-
-        {/* Actions */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => dispatch(setSearchOpen(true))}
-            aria-label="Search"
-          >
-            <Search className="size-5" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="relative"
-            aria-label="Wishlist"
-          >
-            <Link to="/wishlist">
-              <Heart className="size-5" />
-              {wishlistCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                  {wishlistCount > 9 ? '9+' : wishlistCount}
-                </span>
-              )}
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+              <div style={{ filter: colors.logoFilter, transition: 'filter 0.4s ease' }}>
+                <Logo size="sm" />
+              </div>
             </Link>
-          </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            onClick={() => dispatch(setCartDrawer(true))}
-            aria-label="Cart"
-          >
-            <ShoppingCart className="size-5" />
-            {cartItemCount > 0 && (
-              <motion.span
-                key={cartItemCount}
-                initial={{ scale: 1.5 }}
-                animate={{ scale: 1 }}
-                className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
-              >
-                {cartItemCount > 9 ? '9+' : cartItemCount}
-              </motion.span>
-            )}
-          </Button>
+            {/* Center nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              {NAV.map((item) => {
+                const active = location.pathname === item.href || location.pathname.startsWith(item.href + '/')
+                return <NavItem key={item.href} label={item.label} href={item.href} active={active} colors={colors} />
+              })}
+            </nav>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            aria-label="Toggle theme"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={resolvedTheme}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
+            {/* Right actions */}
+            <div className="flex items-center gap-0.5">
+              <button
+                onClick={() => dispatch(setSearchOpen(true))}
+                style={{ color: colors.icon, transition: 'color 0.3s' }}
+                className="flex size-9 items-center justify-center rounded-lg"
               >
-                {resolvedTheme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
-              </motion.div>
-            </AnimatePresence>
-          </Button>
+                <Search className="size-4" />
+              </button>
 
-          {isAuthenticated && user ? (
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
+              <Link
+                to="/wishlist"
+                style={{ color: colors.icon, transition: 'color 0.3s' }}
+                className="relative flex size-9 items-center justify-center rounded-lg"
               >
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.firstName}
-                    className="size-8 rounded-full object-cover ring-2 ring-primary/20"
-                  />
-                ) : (
-                  <div className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {getInitials(user.firstName, user.lastName)}
-                  </div>
-                )}
-                {unreadNotifications > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
-                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                <Heart className="size-4" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#D4693A] text-[9px] font-bold text-white">
+                    {wishlistCount > 9 ? '9+' : wishlistCount}
                   </span>
                 )}
-              </Button>
+              </Link>
 
-              <AnimatePresence>
-                {userMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border bg-popover shadow-xl"
-                    onMouseLeave={() => setUserMenuOpen(false)}
+              <button
+                onClick={() => dispatch(setCartDrawer(true))}
+                style={{ color: colors.icon, transition: 'color 0.3s' }}
+                className="relative flex size-9 items-center justify-center rounded-lg"
+              >
+                <ShoppingCart className="size-4" />
+                {cartCount > 0 && (
+                  <motion.span
+                    key={cartCount}
+                    initial={{ scale: 1.5 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#D4693A] text-[9px] font-bold text-white"
                   >
-                    <div className="border-b p-3">
-                      <p className="font-semibold">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                    </div>
-                    <div className="p-1.5">
-                      {['admin', 'vendor'].includes(user.role) && (
-                        <Link
-                          to="/admin"
-                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <LayoutDashboard className="size-4" />
-                          Admin Dashboard
-                        </Link>
-                      )}
-                      <Link
-                        to="/account"
-                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <User className="size-4" /> My Account
-                      </Link>
-                      <Link
-                        to="/account/orders"
-                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <Package className="size-4" /> Orders
-                      </Link>
-                      <Link
-                        to="/account/notifications"
-                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <Bell className="size-4" /> Notifications
-                        {unreadNotifications > 0 && (
-                          <Badge variant="destructive" className="ml-auto text-[10px] px-1.5 py-0">
-                            {unreadNotifications}
-                          </Badge>
-                        )}
-                      </Link>
-                      <Link
-                        to="/account/security"
-                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <Settings className="size-4" /> Settings
-                      </Link>
-                      <div className="my-1 border-t" />
-                      <button
-                        onClick={handleLogout}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <LogOut className="size-4" /> Sign out
-                      </button>
-                    </div>
-                  </motion.div>
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </motion.span>
                 )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <Button variant="default" size="sm" asChild>
-              <Link to="/auth/login">Sign in</Link>
-            </Button>
-          )}
+              </button>
 
-          {/* Mobile menu toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => dispatch(setMobileMenu(!mobileMenuOpen))}
-          >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+              {isAuthenticated && user ? (
+                <div className="relative ml-1">
+                  <button
+                    onClick={() => setUserMenu(!userMenu)}
+                    className="flex size-9 items-center justify-center rounded-lg bg-[#D4693A]/10 text-xs font-bold text-[#D4693A] hover:bg-[#D4693A]/20 transition-all"
+                  >
+                    {getInitials(user.firstName, user.lastName)}
+                  </button>
+                  <AnimatePresence>
+                    {userMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-52 rounded-2xl bg-white border border-[#E8E4DF] overflow-hidden shadow-xl"
+                        onMouseLeave={() => setUserMenu(false)}
+                      >
+                        <div className="p-4 border-b border-[#F0EDE9]">
+                          <p className="font-semibold text-[#2d3444] text-sm">{user.firstName} {user.lastName}</p>
+                          <p className="text-xs text-[#999] truncate mt-0.5">{user.email}</p>
+                        </div>
+                        <div className="p-2">
+                          {['admin', 'vendor'].includes(user.role) && (
+                            <Link to="/admin" onClick={() => setUserMenu(false)}
+                              className="flex items-center gap-2 px-3 py-2 text-sm text-[#555] hover:text-[#2d3444] hover:bg-[#F7F3EE] rounded-lg transition-colors">
+                              <LayoutDashboard className="size-4" /> Admin
+                            </Link>
+                          )}
+                          <Link to="/account" onClick={() => setUserMenu(false)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-[#555] hover:text-[#2d3444] hover:bg-[#F7F3EE] rounded-lg transition-colors">
+                            <User className="size-4" /> My Account
+                          </Link>
+                          <button onClick={handleLogout}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                            <LogOut className="size-4" /> Sign out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link
+                  to="/auth/login"
+                  style={{
+                    background: colors.signInBg,
+                    color: colors.signInText,
+                    transition: 'background 0.4s, color 0.4s',
+                  }}
+                  className="ml-2 rounded-full px-5 py-2 text-xs font-bold"
+                >
+                  Sign In
+                </Link>
+              )}
+
+              <button
+                style={{ color: colors.icon, transition: 'color 0.3s' }}
+                className="ml-1 flex size-9 items-center justify-center rounded-lg md:hidden"
+                onClick={() => dispatch(setMobileMenu(!mobileOpen))}
+              >
+                {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Mobile menu */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden border-t md:hidden"
+            className="fixed inset-x-0 top-16 z-40 mx-3 rounded-2xl bg-white border border-[#E8E4DF] shadow-xl p-3 md:hidden"
           >
-            <nav className="container flex flex-col gap-1 py-3">
+            {NAV.map((item) => (
               <Link
-                to="/products"
-                className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-accent"
+                key={item.href}
+                to={item.href}
                 onClick={() => dispatch(setMobileMenu(false))}
+                className="block px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-[#555] hover:text-[#D4693A] hover:bg-[#F7F3EE] rounded-xl transition-colors"
               >
-                All Products
+                {item.label}
               </Link>
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  to={`/categories/${cat.slug}`}
-                  className="rounded-lg px-3 py-2.5 text-sm hover:bg-accent"
-                  onClick={() => dispatch(setMobileMenu(false))}
-                >
-                  {cat.name}
-                </Link>
-              ))}
-              {NAV_LINKS.map((l) => (
-                <Link
-                  key={l.href}
-                  to={l.href}
-                  className="rounded-lg px-3 py-2.5 text-sm hover:bg-accent"
-                  onClick={() => dispatch(setMobileMenu(false))}
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   )
 }

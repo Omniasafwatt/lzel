@@ -1,84 +1,48 @@
 import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react'
-import { Logo } from '@/components/common/Logo'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { Instagram, Twitter, Youtube } from 'lucide-react'
 
-const FOOTER_LINKS = {
+const LINKS = {
   Products: [
-    { label: 'Gaming Controllers', href: '/categories/gaming'      },
-    { label: 'Stylus Pens',        href: '/categories/accessories' },
-    { label: 'Electric Kettles',   href: '/categories/appliances'  },
-    { label: 'New Arrivals',       href: '/products?sort=newest'   },
-    { label: 'Deals & Offers',     href: '/products?sale=true'     },
-  ],
-  Account: [
-    { label: 'My Account',  href: '/account'         },
-    { label: 'My Orders',   href: '/account/orders'  },
-    { label: 'Wishlist',    href: '/account/wishlist' },
-    { label: 'Track Order', href: '/track'            },
-    { label: 'Returns',     href: '/support'          },
-  ],
-  Support: [
-    { label: 'FAQ',              href: '/faq'           },
-    { label: 'Contact Us',       href: '/contact'       },
-    { label: 'Live Chat',        href: '/support'       },
-    { label: 'Warranty Service', href: '/faq#warranty'  },
-    { label: 'Repair Centers',   href: '/faq#repair'    },
+    { label: 'All Products', href: '/products' },
+    { label: 'Gaming', href: '/categories/gaming' },
+    { label: 'Accessories', href: '/categories/accessories' },
+    { label: 'Appliances', href: '/categories/appliances' },
+    { label: 'New Arrivals', href: '/products?sort=newest' },
   ],
   Company: [
-    { label: 'About aslitec',  href: '/about'   },
-    { label: 'Blog',           href: '/blog'    },
-    { label: 'Careers',        href: '/careers' },
+    { label: 'About Us', href: '/about' },
+    { label: 'Contact', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Use',   href: '/terms'   },
+    { label: 'Terms', href: '/terms' },
+  ],
+  Support: [
+    { label: 'FAQ', href: '/faq' },
+    { label: 'Track Order', href: '/track-order' },
+    { label: 'Returns', href: '/support' },
+    { label: 'Warranty', href: '/faq#warranty' },
   ],
 }
 
-const SOCIAL = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
-]
-
 export default function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="container py-12 md:py-16">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
+    <footer className="bg-[#2d3444] text-white">
+      <div className="container pt-16 pb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 pb-12 border-b border-white/[0.07]">
+
           {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-2">
-            <Link to="/" aria-label="aslitec home">
-              <Logo size="md" />
+          <div className="col-span-2 md:col-span-1">
+            <Link to="/" className="inline-block text-xl font-black tracking-tight text-white mb-4">
+              aslitec
             </Link>
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Premium e-commerce platform delivering exceptional products and experiences worldwide.
+            <p className="text-sm text-white/35 leading-relaxed mb-6 max-w-xs">
+              Premium tech accessories for gamers, creators, and everyday explorers.
             </p>
-            <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Mail className="size-4 shrink-0" />
-                <span>support@aslitec.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="size-4 shrink-0" />
-                <span>+1 (800) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="size-4 shrink-0" />
-                <span>123 Commerce St, NY 10001</span>
-              </div>
-            </div>
-            {/* Social */}
-            <div className="mt-5 flex gap-2">
-              {SOCIAL.map(({ icon: Icon, href, label }) => (
+            <div className="flex gap-3">
+              {([Instagram, Twitter, Youtube] as const).map((Icon, i) => (
                 <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  className="flex size-9 items-center justify-center rounded-lg border bg-background text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
+                  key={i}
+                  href="#"
+                  className="flex size-9 items-center justify-center rounded-full border border-white/10 text-white/35 hover:text-white hover:border-[#D4693A]/50 hover:bg-[#D4693A]/10 transition-all duration-200"
                 >
                   <Icon className="size-4" />
                 </a>
@@ -86,17 +50,14 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([title, links]) => (
             <div key={title}>
-              <h4 className="mb-3 text-sm font-semibold">{title}</h4>
-              <ul className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/25 mb-5">{title}</p>
+              <ul className="space-y-3">
                 {links.map((l) => (
                   <li key={l.href}>
-                    <Link
-                      to={l.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                    <Link to={l.href} className="text-sm text-white/45 hover:text-white transition-colors">
                       {l.label}
                     </Link>
                   </li>
@@ -106,41 +67,12 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Newsletter */}
-        <div className="mt-10 rounded-2xl bg-primary/10 p-6 dark:bg-primary/5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="font-semibold">Subscribe to our newsletter</h3>
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                Get exclusive deals, new arrivals, and style tips.
-              </p>
-            </div>
-            <form
-              className="flex w-full max-w-sm gap-2"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <Input type="email" placeholder="Enter your email" className="bg-background" />
-              <Button type="submit" size="sm" className="shrink-0">
-                Subscribe
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} aslitec. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <Link to="/sitemap" className="hover:text-foreground transition-colors">Sitemap</Link>
-          </div>
-          {/* Payment icons */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="rounded border px-2 py-1 font-mono font-semibold">VISA</span>
-            <span className="rounded border px-2 py-1 font-mono font-semibold">MC</span>
-            <span className="rounded border px-2 py-1 font-semibold">PayPal</span>
-            <span className="rounded border px-2 py-1 font-semibold">Stripe</span>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-white/20">© {new Date().getFullYear()} Aslitec. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            {['VISA', 'MC', 'PayPal', 'Stripe'].map((p) => (
+              <span key={p} className="px-2 py-1 rounded-md border border-white/8 text-[10px] font-mono text-white/20">{p}</span>
+            ))}
           </div>
         </div>
       </div>

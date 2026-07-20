@@ -13,7 +13,11 @@
       "Bash(npx vite *)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(npx eslint *)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "WebFetch(domain:www.ciaoenergy.com)",
+      "Bash(python3 -c ' *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

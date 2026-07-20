@@ -121,7 +121,7 @@ export default function AdminLayout() {
       {/* Mobile sidebar overlay */}
       {mobileSidebar && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-[#2d3444]/50 lg:hidden"
           onClick={() => setMobileSidebar(false)}
         />
       )}

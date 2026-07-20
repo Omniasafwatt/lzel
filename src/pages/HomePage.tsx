@@ -1,454 +1,1118 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Sparkles, Shield, Truck, RotateCcw } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import ProductGrid from '@/features/products/components/ProductGrid'
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ArrowRight, Truck, Shield, Zap } from 'lucide-react'
 import {
   useGetFeaturedProductsQuery,
   useGetBestsellersQuery,
-  useGetNewArrivalsQuery,
   useGetCategoriesQuery,
+  useGetNewArrivalsQuery,
 } from '@/data/useMockData'
+import { useAppDispatch } from '@/app/hooks'
+import { addItem } from '@/features/cart/store/cartSlice'
 import { formatPrice } from '@/lib/utils'
+import { toast } from 'sonner'
+import type { Product } from '@/types'
 
-const FEATURES = [
-  { icon: Truck, label: 'Free Shipping', desc: 'On orders over $50' },
-  { icon: Shield, label: 'Secure Payments', desc: 'SSL encrypted checkout' },
-  { icon: RotateCcw, label: '30-Day Returns', desc: 'Hassle-free policy' },
-  { icon: Sparkles, label: 'Premium Quality', desc: 'Curated products' },
+// ── Waterproof cases ──────────────────────────────────────────────────────
+import caseBlack  from '@/assets/accessories/WaterProof Case/black back.png'
+import caseBlue   from '@/assets/accessories/WaterProof Case/blue back.png'
+import casePink   from '@/assets/accessories/WaterProof Case/pink back.png'
+import caseGreen  from '@/assets/accessories/WaterProof Case/green back.png'
+import caseWhite  from '@/assets/accessories/WaterProof Case/white back.png'
+import caseFront1 from '@/assets/accessories/WaterProof Case/front-01.png'
+import caseFront2 from '@/assets/accessories/WaterProof Case/front-02.png'
+import caseFront3 from '@/assets/accessories/WaterProof Case/front-03.png'
+
+// ── Powerbanks ────────────────────────────────────────────────────────────
+import pb01       from '@/assets/accessories/Powerbank/01.png'
+import pb02       from '@/assets/accessories/Powerbank/02.png'
+import pb03       from '@/assets/accessories/Powerbank/03.png'
+import pbHW_gray   from '@/assets/accessories/Powerbank/HW121-灰.png'
+import pbHW_purple from '@/assets/accessories/Powerbank/HW121-紫.png'
+import pbHW_blue   from '@/assets/accessories/Powerbank/HW121-蓝.png'
+import pbHW_silver from '@/assets/accessories/Powerbank/HW121-锖.png'
+
+// ── Wave silicone grip cases ──────────────────────────────────────────────
+import caseRed    from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/E-RED 3.png'
+import caseLBlue  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/B-LIGHT BLUE 3.png'
+import caseWine   from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/K-WINE 3.png'
+import casePinkS  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/A-PINK 1.png'
+import caseSand   from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/C-SAND 3.png'
+import caseBrown  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/G-BROWN 2.png'
+import caseFGreen from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/F-GREEN 3.png'
+import caseYellow from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/D-YELLOW 1.png'
+import caseMint   from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/J-MINT 1.png'
+import caseIBlue  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/I-BLUE 2.png'
+import caseBlack1 from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/BLACK 1.png'
+import caseRed5   from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/E-RED 5.png'
+import caseLBlue5 from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/B-LIGHT BLUE 5.png'
+import caseSand5  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/C-SAND 5.png'
+import caseBrown5 from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/G-BROWN 5.png'
+
+// ── PC Maze cases (No.10) ─────────────────────────────────────────────────
+import mazeBrown   from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/B-BROWN 3.png'
+import mazeRed     from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/C-RED 3.png'
+import mazeBlack   from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/I-BLACK 3.png'
+import mazeDesert  from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/E-DESERT 3.png'
+import mazePeach   from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/D-PEACH 3.png'
+import mazeDeepBl  from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/K-DEEP BLUE 3.png'
+import mazePurple  from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/A-PURPLE 2.png'
+import mazeDeepRed from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/F-DEEP RED 3.png'
+import mazeDeepBrn from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/G-DEEP BROWN 3.png'
+import mazeLPurple from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/H-LIGHT PURPLE 3.png'
+import mazeBlkGold from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/J-BLACK GOLD 3.png'
+
+// ── Coordinate PC case (No.11) ────────────────────────────────────────────
+import coord11Purple from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/机器紫.png'
+import coord11Blue   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/深蓝色.png'
+import coord11Gray   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/灰色.png'
+import coord11Black  from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/黑色.png'
+
+// ── Cyber Mech case (No.12) ───────────────────────────────────────────────
+import cyber12Blue   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/深蓝色 (1).png'
+import cyber12Gray   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/灰色 (1).png'
+import cyber12Purple from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/紫色 (1).png'
+import cyber12Black  from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/黑色 (1).png'
+
+// ── Leather Coordinate case (No.17) ──────────────────────────────────────
+import leather17Gray   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/灰色 拷贝.png'
+import leather17Purple from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/紫色 拷贝.png'
+import leather17Blue   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/蓝色 拷贝.png'
+import leather17Black  from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/黑色 拷贝.png'
+
+// ── Silicone Coordinate case (No.20) ─────────────────────────────────────
+import sil20Orange from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/橙色.png'
+import sil20Pink   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/粉色.png'
+import sil20Blue   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/深蓝色.png'
+import sil20Purple from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/机器紫.png'
+import sil20Gray   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/浅灰色.png'
+import sil20Black  from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/黑色.png'
+
+// ── Leather Kickstand case B (No.5) ──────────────────────────────────────
+import kick5Pink   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-粉色 (1).png'
+import kick5Blue   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-蓝色 (1) - 副本.png'
+import kick5Sand   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-杏色 (1).png'
+import kick5Yellow from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-黄色 (1).png'
+
+// ── Leather Kickstand case D (No.7) ──────────────────────────────────────
+import kick7a from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5652 拷贝.png'
+import kick7b from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5653 拷贝.png'
+import kick7c from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5656 拷贝.png'
+import kick7d from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5657 拷贝.png'
+
+// ── Leather Kickstand case E (No.8) ──────────────────────────────────────
+import kick8Gray   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-浅灰色 (1).png'
+import kick8Purple from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-紫色 (1).png'
+import kick8Blue   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-蓝色 (1).png'
+import kick8Black  from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-黑色 (1).png'
+
+// ── Lanyard (No.21) ───────────────────────────────────────────────────────
+import lanyard1 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (1).png'
+import lanyard2 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (2).png'
+import lanyard3 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (3).png'
+import lanyard4 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (4).png'
+
+// ── Pencils ───────────────────────────────────────────────────────────────
+import pencil1  from '@/assets/accessories/pencil aslitec/1.png'
+import pencil2  from '@/assets/accessories/pencil aslitec/2.png'
+import pencil3  from '@/assets/accessories/pencil aslitec/3.png'
+import pencil22 from '@/assets/accessories/pencil aslitec/22.png'
+import pencil23 from '@/assets/accessories/pencil aslitec/23.png'
+import pencil26 from '@/assets/accessories/pencil aslitec/26.png'
+import pencil28 from '@/assets/accessories/pencil aslitec/28.png'
+import pencil29 from '@/assets/accessories/pencil aslitec/29.png'
+import pencil30 from '@/assets/accessories/pencil aslitec/30.png'
+
+// ── Gaming ────────────────────────────────────────────────────────────────
+import g1a from '@/assets/gaming/1/1 (1).jpg'
+import g1b from '@/assets/gaming/1/1 (2).jpg'
+import g1c from '@/assets/gaming/1/1 (3).jpg'
+import g1d from '@/assets/gaming/1/1 (4).jpg'
+import g2a from '@/assets/gaming/2/1 (1).jpg'
+import g2b from '@/assets/gaming/2/1 (2).jpg'
+import g2c from '@/assets/gaming/2/1 (3).jpg'
+import g2d from '@/assets/gaming/2/1 (4).jpg'
+import g3a from '@/assets/gaming/3/1 (1).jpg'
+import g3b from '@/assets/gaming/3/1 (2).jpg'
+import g3c from '@/assets/gaming/3/1 (3).jpg'
+import g3d from '@/assets/gaming/3/1 (4).jpg'
+import g4a from '@/assets/gaming/4/1 (1).jpg'
+import g4b from '@/assets/gaming/4/1 (2).jpg'
+import g4c from '@/assets/gaming/4/1 (3).jpg'
+import g4d from '@/assets/gaming/4/1 (4).jpg'
+import g5a from '@/assets/gaming/5/1 (1).jpg'
+import g5b from '@/assets/gaming/5/1 (2).jpg'
+import g5c from '@/assets/gaming/5/1 (3).jpg'
+import g5d from '@/assets/gaming/5/1 (4).jpg'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// ── Hero data ─────────────────────────────────────────────────────────────
+const HERO_IMGS = [
+  caseBlue, pb02, pbHW_blue, caseMint, mazePurple,
+  coord11Blue, cyber12Black, leather17Purple, sil20Orange, kick5Pink, pencil2,
 ]
 
-function SectionTitle({ title, subtitle, href }: { title: string; subtitle?: string; href?: string }) {
+const SLOTS = [
+  { ry: -62, rz: -20, scale: 0.90, opacity: 0.44 },
+  { ry: -50, rz: -16, scale: 0.70, opacity: 1.00 },
+  { ry: -38, rz: -12, scale: 0.95, opacity: 0.44 },
+  { ry: -25, rz:  -7, scale: 1.00, opacity: 1.00 },
+  { ry: -12, rz:  -3, scale: 0.90, opacity: 0.80 },
+  { ry:   0, rz:   0, scale: 1.50, opacity: 1.00 },
+  { ry:  12, rz:   3, scale: 0.90, opacity: 0.80 },
+  { ry:  25, rz:   7, scale: 0.70, opacity: 1.00 },
+  { ry:  38, rz:  12, scale: 1.20, opacity: 0.44 },
+  { ry:  50, rz:  16, scale: 0.80, opacity: 1.00 },
+  { ry:  62, rz:  20, scale: 0.60, opacity: 0.80 },
+]
+
+const FLOAT_PHASES = [0.0, 1.4, 2.7, 0.5, 1.9, 0.2, 1.6, 3.0, 0.8, 2.3, 1.0]
+const FLOAT_AMPS   = [12,  10,   8,  14,  10,  18,  10,  14,   8,  10,  12 ]
+
+// ── Gaming collage images ─────────────────────────────────────────────────
+const GAMING_IMGS = [g1a, g1b, g1c, g1d, g2a, g2b, g2c, g2d, g3a, g3b, g3c, g3d, g4a, g4b, g4c, g4d, g5a, g5b, g5c, g5d]
+
+// ── Showcase images (floating gallery) ───────────────────────────────────
+const SHOWCASE = [
+  { src: pb02,         label: 'Powerbank Pro',      sub: '20,000mAh · Fast Charge' },
+  { src: caseBlue,     label: 'WaterProof Case',     sub: 'IP68 Military Grade' },
+  { src: pbHW_blue,    label: 'HW121 Series',        sub: 'Triple Output 65W' },
+  { src: caseMint,     label: 'Wave Grip Case',      sub: 'Silicone Premium' },
+  { src: mazePurple,   label: 'PC Maze Case',        sub: 'Hard Shell Protection' },
+  { src: pencil2,      label: 'Smart Pencil',        sub: 'Palm Rejection Active' },
+  { src: kick5Pink,    label: 'Kickstand Case B',    sub: 'Leather · Stand Ready' },
+  { src: coord11Blue,  label: 'Coordinate Case',     sub: 'PC Precision Fit' },
+  { src: cyber12Black, label: 'Cyber Mech Case',     sub: 'Tactical Edition' },
+]
+
+// ── 3D Hero ───────────────────────────────────────────────────────────────
+function Hero3DScene() {
+  const heroRef   = useRef<HTMLDivElement>(null)
+  const innerRef  = useRef<HTMLDivElement>(null)
+  const textRef   = useRef<HTMLDivElement>(null)
+  const floatRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      floatRefs.current.forEach((el, i) => {
+        if (!el) return
+        const idx = i % SLOTS.length
+        gsap.fromTo(el,
+          { opacity: 0 },
+          { opacity: 1, duration: 1.2, ease: 'power2.out', delay: 0.3 + idx * 0.07 }
+        )
+        gsap.to(el, {
+          y: FLOAT_AMPS[idx],
+          duration: 4.5 + idx * 0.28,
+          ease: 'sine.inOut',
+          repeat: -1, yoyo: true,
+          delay: 1.8 + FLOAT_PHASES[idx],
+        })
+      })
+
+      gsap.to([innerRef.current, textRef.current], {
+        y: -90, opacity: 0, ease: 'power1.in',
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top', end: '+=560',
+          scrub: true, pin: true, pinSpacing: true,
+        },
+      })
+    }, heroRef)
+
+    const handleMouse = (e: MouseEvent) => {
+      if (!heroRef.current || !innerRef.current) return
+      const r = heroRef.current.getBoundingClientRect()
+      const px = ((e.clientX - r.left) / r.width  - 0.5) * 2
+      const py = ((e.clientY - r.top)  / r.height - 0.5) * 2
+      gsap.to(innerRef.current, {
+        rotateX: py * -4, rotateY: px * 6,
+        duration: 1.8, ease: 'power2.out', overwrite: 'auto',
+      })
+    }
+
+    const heroEl = heroRef.current
+    heroEl?.addEventListener('mousemove', handleMouse)
+    return () => { ctx.revert(); heroEl?.removeEventListener('mousemove', handleMouse) }
+  }, [])
+
+  const ROW = [...HERO_IMGS, ...HERO_IMGS]
+
   return (
-    <div className="mb-6 flex items-end justify-between">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
-        {subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
+    <div ref={heroRef} data-nav-scheme="light" className="relative min-h-screen overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at 50% 100%, #fff5ee 0%, #ffffff 55%, #ffffff 100%)' }}>
+
+      <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px]"
+        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(212,105,58,0.38) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      <div className="pointer-events-none absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px]"
+        style={{ background: 'radial-gradient(ellipse, rgba(212,105,58,0.10) 0%, transparent 65%)' }} />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style={{ backgroundImage: 'radial-gradient(circle, #D4693A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+      <div className="pointer-events-none absolute top-8 left-8  w-8 h-8 border-l border-t border-[#D4693A]/30" />
+      <div className="pointer-events-none absolute top-8 right-8 w-8 h-8 border-r border-t border-[#D4693A]/30" />
+      <div className="pointer-events-none absolute bottom-8 left-8  w-8 h-8 border-l border-b border-[#D4693A]/30" />
+      <div className="pointer-events-none absolute bottom-8 right-8 w-8 h-8 border-r border-b border-[#D4693A]/30" />
+
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-48 z-20"
+        style={{ background: 'linear-gradient(to right, #ffffff 15%, transparent)' }} />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-48 z-20"
+        style={{ background: 'linear-gradient(to left, #ffffff 15%, transparent)' }} />
+
+      <div style={{ position: 'absolute', inset: 0, perspective: '1300px', perspectiveOrigin: '50% 38%' }}>
+        <div ref={innerRef} style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d' }}>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: '40%', transform: 'translateY(-50%)', overflow: 'visible' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '35px',
+              animation: 'marquee 45s linear infinite',
+              width: 'max-content', willChange: 'transform',
+            }}>
+              {ROW.map((src, i) => {
+                const slot = SLOTS[i % SLOTS.length]
+                return (
+                  <div key={i} style={{
+                    width: 280, flexShrink: 0,
+                    transform: `rotateY(${slot.ry}deg) rotateZ(${slot.rz}deg) scale(${slot.scale})`,
+                    opacity: slot.opacity,
+                  }}>
+                    <div ref={(el) => { floatRefs.current[i] = el }}>
+                      <img src={src} alt="" draggable={false}
+                        style={{
+                          width: '100%', userSelect: 'none', pointerEvents: 'none',
+                          filter: 'drop-shadow(0 32px 12px rgba(45,52,68,0.22)) drop-shadow(0 16px 4px rgba(45,52,68,0.14))',
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       </div>
-      {href && (
-        <Link
-          to={href}
-          className="flex items-center gap-1 text-sm font-medium text-primary hover:gap-2 transition-all"
+
+      <div ref={textRef} className="absolute inset-x-0 bottom-[8%] z-20 text-center px-6 pointer-events-none">
+        <motion.p
+          className="text-[11px] font-bold tracking-[.45em] text-[#D4693A] uppercase mb-5"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 1.6 }}
         >
-          View all <ArrowRight className="size-4" />
-        </Link>
-      )}
+          Premium Tech Accessories
+        </motion.p>
+        <motion.h1
+          className="text-[clamp(48px,7.5vw,108px)] font-black leading-[.86] tracking-tight text-[#2d3444]"
+          initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0, delay: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          GEAR UP.<br />
+          <span className="text-gradient-orange">STAND OUT.</span>
+        </motion.h1>
+        <motion.div
+          className="mt-8 flex items-center justify-center gap-5 pointer-events-auto"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 2.2 }}
+        >
+          <Link to="/products"
+            className="rounded-full bg-[#2d3444] px-9 py-3.5 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors duration-300"
+          >Shop All</Link>
+          <Link to="/categories/gaming"
+            className="flex items-center gap-2 text-sm font-semibold text-[#2d3444]/60 hover:text-[#D4693A] transition-colors duration-200"
+          >Explore Gaming <ArrowRight className="size-4" /></Link>
+        </motion.div>
+      </div>
     </div>
   )
 }
 
-export default function HomePage() {
-  const { data: featuredData, isLoading: featuredLoading } = useGetFeaturedProductsQuery()
-  const { data: bestsellersData, isLoading: bestsellersLoading } = useGetBestsellersQuery({ limit: 8 })
-  const { data: newArrivalsData, isLoading: newArrivalsLoading } = useGetNewArrivalsQuery({ limit: 8 })
-  const { data: categoriesData } = useGetCategoriesQuery()
+// ── Product card (3D tilt) ────────────────────────────────────────────────
+function Card({ product, index = 0 }: { product: Product; index?: number }) {
+  const dispatch = useAppDispatch()
+  const ref = useRef<HTMLDivElement>(null)
+  const rx = useMotionValue(0), ry = useMotionValue(0)
+  const srx = useSpring(rx, { stiffness: 130, damping: 22 })
+  const sry = useSpring(ry, { stiffness: 130, damping: 22 })
+  const [hovered, setHovered] = useState(false)
 
-  const featured = featuredData?.data ?? []
-  const bestsellers = bestsellersData?.data ?? []
-  const newArrivals = newArrivalsData?.data ?? []
-  const categories = categoriesData?.data?.slice(0, 8) ?? []
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = ref.current!.getBoundingClientRect()
+    rx.set(((e.clientY - r.top - r.height / 2) / r.height) * -5)
+    ry.set(((e.clientX - r.left - r.width / 2) / r.width) * 5)
+  }
+
+  const addToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation()
+    dispatch(addItem({ product })); toast.success('Added to cart')
+  }
+
+  const img = product.images[0]?.url
 
   return (
-    <div className="animate-fade-in">
-      {/* Hero */}
-      <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-[#1C2838]">
-        {/* Ambient orbs */}
-        <div className="pointer-events-none absolute -left-40 -top-40 size-[500px] rounded-full bg-[#D4693A]/20 blur-[120px]" />
-        <div className="pointer-events-none absolute right-0 top-20 size-[400px] rounded-full bg-[#D4693A]/15 blur-[100px]" />
-        <div className="pointer-events-none absolute bottom-0 left-1/2 size-[300px] rounded-full bg-[#D4693A]/10 blur-[80px]" />
-
-        {/* Dot grid overlay */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-          }}
-        />
-
-        <div className="container relative z-10 py-20 lg:py-28">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-
-            {/* Left: Text */}
-            <div className="order-2 lg:order-1">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4693A]/40 bg-[#D4693A]/10 px-4 py-1.5 text-sm text-[#f0a070]"
-              >
-                <Sparkles className="size-3.5" />
-                New arrivals just dropped
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-5xl font-bold leading-[1.1] tracking-tight text-white lg:text-6xl xl:text-7xl"
-              >
-                Next-Gen<br />
-                <span className="bg-gradient-to-r from-[#D4693A] via-[#f09050] to-[#fbbf24] bg-clip-text text-transparent">
-                  Mobile Tech
-                </span><br />
-                Awaits You
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-6 max-w-lg text-lg text-white/60"
-              >
-                Premium phones, accessories, and audio gear — all in one place. Free shipping on orders over $50.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-8 flex flex-wrap gap-3"
-              >
-                <Button
-                  size="lg"
-                  asChild
-                  className="border-0 bg-[#D4693A] text-white shadow-lg shadow-[#D4693A]/30 hover:bg-[#c0582a]"
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.7, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      ref={ref}
+      style={{ perspective: 800 }}
+      onMouseMove={onMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { rx.set(0); ry.set(0); setHovered(false) }}
+    >
+      <motion.div
+        style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
+        className="bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
+        animate={{
+          boxShadow: hovered
+            ? '0 16px 48px rgba(0,0,0,0.10)'
+            : '0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05)',
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        <Link to={`/products/${product.slug}`}>
+          <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
+            {img && (
+              <motion.img src={img} alt={product.name} className="size-full object-cover"
+                animate={hovered ? { scale: 1.06 } : { scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              />
+            )}
+            {product.compareAtPrice && (
+              <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
+            )}
+            <AnimatePresence>
+              {hovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+                  className="absolute inset-x-3 bottom-3"
                 >
-                  <Link to="/products">Shop Now <ArrowRight className="size-4" /></Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild className="border-0 bg-[#D4693A] text-white shadow-lg shadow-[#D4693A]/30 hover:bg-[#c0582a]">
-                  <Link to="/products?featured=true">View Featured</Link>
-                </Button>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-10 flex gap-8"
-              >
-                {[
-                  { value: '50K+', label: 'Happy Customers' },
-                  { value: '1,200+', label: 'Products' },
-                  { value: '4.9★', label: 'Avg Rating' },
-                ].map(({ value, label }) => (
-                  <div key={label}>
-                    <div className="text-2xl font-bold text-white">{value}</div>
-                    <div className="text-xs text-white/50">{label}</div>
-                  </div>
-                ))}
-              </motion.div>
+                  <button onClick={addToCart}
+                    className="w-full rounded-xl bg-[#2d3444] py-2.5 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors duration-200"
+                  >Add to Cart</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="p-4">
+            <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
+            <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="font-bold text-[#2d3444]">{formatPrice(product.price)}</span>
+              <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
             </div>
+          </div>
+        </Link>
+      </motion.div>
+    </motion.div>
+  )
+}
 
-            {/* Right: Animated phone */}
-            <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
-              <div className="relative">
-                {/* Pulsing rings */}
-                {[1, 2, 3].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute inset-0 rounded-[3rem] border border-[#D4693A]/20"
-                    style={{ margin: `${-i * 18}px` }}
-                    animate={{ opacity: [0.6, 0, 0.6], scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.8, ease: 'easeInOut' }}
+// ── Marquee strip ─────────────────────────────────────────────────────────
+function Marquee({ reverse = false }) {
+  const items = ['GAMING', 'POWERBANKS', 'CHARGERS', 'CASES', 'ACCESSORIES', 'ASLITEC', 'TECH']
+  const rep = [...items, ...items]
+  return (
+    <div data-nav-scheme="dark" className="overflow-hidden bg-[#2d3444] py-3.5">
+      <div className={`flex whitespace-nowrap gap-10 ${reverse ? 'animate-marquee-rev' : 'animate-marquee'}`}>
+        {rep.map((t, i) => (
+          <span key={i} className="flex items-center gap-10 text-xs font-bold uppercase tracking-[.25em] text-white/40">
+            {t} <span className="text-[#D4693A]">·</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Fade-up reveal ────────────────────────────────────────────────────────
+function FadeUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div className={className}
+      initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+    >{children}</motion.div>
+  )
+}
+
+// ── Horizontal rack (GSAP pinned) ─────────────────────────────────────────
+function HorizontalRack({ tag, title, products }: { tag: string; title: string; products: Product[] }) {
+  const trackRef   = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const dispatch   = useAppDispatch()
+
+  useEffect(() => {
+    if (!products.length) return
+    const ctx = gsap.context(() => {
+      const track = trackRef.current, section = sectionRef.current
+      if (!track || !section) return
+      const dist = track.scrollWidth - window.innerWidth + 96
+      if (dist <= 0) return
+      gsap.to(track, {
+        x: -dist, ease: 'none',
+        scrollTrigger: {
+          trigger: section, start: 'top top',
+          end: () => `+=${dist}`,
+          pin: true, scrub: 1, anticipatePin: 1,
+        },
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [products])
+
+  return (
+    <section ref={sectionRef} data-nav-scheme="light" className="overflow-hidden bg-[#FAFAF8]">
+      <div className="pt-20 pb-4" style={{ paddingLeft: 'max(2rem, calc((100vw - 1280px) / 2 + 2rem))' }}>
+        <p className="text-xs font-bold tracking-[.3em] text-[#D4693A] uppercase mb-2">{tag}</p>
+        <h2 className="text-4xl font-black text-[#2d3444] tracking-tight">{title}</h2>
+      </div>
+      <div ref={trackRef} className="flex gap-5 pb-16 pt-6 w-max"
+        style={{ paddingLeft: 'max(2rem, calc((100vw - 1280px) / 2 + 2rem))', paddingRight: '4rem' }}>
+        {products.map((p, i) => (
+          <motion.div key={p.id} className="w-[270px] shrink-0"
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to={`/products/${p.slug}`}
+              className="group block bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="aspect-square overflow-hidden bg-[#F7F3EE]">
+                {p.images[0]?.url && (
+                  <img src={p.images[0].url} alt={p.name}
+                    className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                ))}
-
-                {/* Core glow */}
-                <div className="absolute inset-[-20px] rounded-[4rem] bg-[#D4693A]/20 blur-3xl" />
-
-                {/* Phone entrance + float */}
-                <motion.div
-                  initial={{ opacity: 0, y: 80, scale: 0.75 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <motion.div
-                    animate={{ y: [0, -18, 0], rotate: [-0.8, 0.8, -0.8] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative"
-                    style={{ width: 268, height: 572 }}
-                  >
-                    {/* Phone frame */}
-                    <div
-                      className="relative overflow-hidden border border-white/10 bg-[#111] shadow-2xl shadow-black/80"
-                      style={{ width: 268, height: 572, borderRadius: '3.5rem' }}
-                    >
-                      {/* Screen bg */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#1a2535] via-[#151f2e] to-[#0f1821]" />
-
-                      {/* Dynamic Island */}
-                      <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
-                        <motion.div
-                          className="h-[30px] rounded-full bg-black"
-                          animate={{ width: [100, 120, 100] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                        />
-                      </div>
-
-                      {/* Screen content */}
-                      <div className="absolute inset-0 flex flex-col overflow-hidden px-3 pb-3 pt-14">
-                        {/* Status bar */}
-                        <div className="mb-3 flex justify-between px-1 text-[9px] text-white/60">
-                          <span>9:41</span>
-                          <div className="flex items-center gap-1">
-                            <span>●●●●</span>
-                            <span>WiFi</span>
-                            <span>⚡</span>
-                          </div>
-                        </div>
-
-                        {/* App header */}
-                        <div className="mb-3 flex items-center justify-between">
-                          <div>
-                            <div className="text-[8px] text-white/40">Good morning</div>
-                            <div className="text-[11px] font-bold text-white">aslitec Store ✦</div>
-                          </div>
-                          <div className="flex size-6 items-center justify-center rounded-full bg-[#D4693A]/80 text-[9px]">👤</div>
-                        </div>
-
-                        {/* Search bar */}
-                        <div className="mb-3 flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.08] px-2 py-1.5">
-                          <span className="text-[9px] text-white/30">🔍</span>
-                          <span className="text-[9px] text-white/30">Search phones & accessories...</span>
-                        </div>
-
-                        {/* Featured banner */}
-                        <div className="mb-3 rounded-2xl bg-gradient-to-r from-[#D4693A] to-[#a83c16] p-3">
-                          <div className="text-[8px] font-medium text-white/70">FLASH SALE</div>
-                          <div className="text-[12px] font-bold text-white">iPhone 16 Pro</div>
-                          <div className="text-[9px] text-white/80">Starting at $999</div>
-                          <div className="mt-1.5 inline-block rounded-full bg-white/20 px-2 py-0.5 text-[8px] text-white">Shop →</div>
-                        </div>
-
-                        {/* Category chips */}
-                        <div className="mb-3 flex gap-1.5 overflow-hidden">
-                          {['📱 Phones', '🎧 Audio', '🔌 Cables', '⌚ Watches'].map((c) => (
-                            <div key={c} className="flex-shrink-0 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[8px] text-white/70">{c}</div>
-                          ))}
-                        </div>
-
-                        {/* Product grid */}
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {[
-                            { name: 'Galaxy S25', price: '$799', emoji: '📱', color: 'from-blue-900' },
-                            { name: 'AirPods Pro', price: '$249', emoji: '🎧', color: 'from-gray-800' },
-                            { name: 'Watch S10', price: '$399', emoji: '⌚', color: 'from-[#1C2838]' },
-                            { name: 'Pixel 9 Pro', price: '$899', emoji: '📸', color: 'from-green-900' },
-                          ].map(({ name, price, emoji, color }) => (
-                            <div key={name} className={`rounded-xl border border-white/[0.08] bg-gradient-to-b ${color} to-black/50 p-2`}>
-                              <div className="mb-1 text-center text-xl">{emoji}</div>
-                              <div className="text-[8px] font-semibold leading-tight text-white">{name}</div>
-                              <div className="text-[8px] text-[#f09060]">{price}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Home indicator */}
-                      <div className="absolute bottom-2 left-1/2 h-1 w-20 -translate-x-1/2 rounded-full bg-white/30" />
-
-                      {/* Glass reflection */}
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent" />
-                    </div>
-
-                    {/* Side buttons */}
-                    <div className="absolute -right-[3px] top-28 h-8 w-[3px] rounded-r-sm bg-white/10" />
-                    <div className="absolute -left-[3px] top-24 h-6 w-[3px] rounded-l-sm bg-white/10" />
-                    <div className="absolute -left-[3px] top-32 h-10 w-[3px] rounded-l-sm bg-white/10" />
-                    <div className="absolute -left-[3px] top-44 h-10 w-[3px] rounded-l-sm bg-white/10" />
-                  </motion.div>
-                </motion.div>
-
-                {/* Floating badges */}
-                <motion.div
-                  className="absolute -left-16 top-12 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-3 py-2 shadow-xl backdrop-blur-md"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.2, duration: 0.5 }}
-                >
-                  <span className="text-base">🔥</span>
-                  <div>
-                    <div className="text-[10px] font-semibold leading-none text-white">New Arrival</div>
-                    <div className="text-[9px] text-white/50">iPhone 16 Pro Max</div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute -right-14 top-32 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-3 py-2 shadow-xl backdrop-blur-md"
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.4, duration: 0.5 }}
-                >
-                  <span className="text-base">🛒</span>
-                  <div>
-                    <div className="text-[10px] font-semibold leading-none text-white">Added to Cart</div>
-                    <div className="text-[9px] text-white/50">Galaxy S25 Ultra</div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute -left-12 top-1/2 flex items-center gap-1.5 rounded-2xl border border-amber-400/25 bg-amber-500/20 px-3 py-2 shadow-xl backdrop-blur-md"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.6, duration: 0.5 }}
-                >
-                  <span className="text-sm">⭐</span>
-                  <div>
-                    <div className="text-[10px] font-semibold leading-none text-amber-200">4.9 / 5.0</div>
-                    <div className="text-[9px] text-white/50">50K reviews</div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute -right-12 bottom-32 flex items-center gap-2 rounded-2xl border border-emerald-400/25 bg-emerald-500/15 px-3 py-2 shadow-xl backdrop-blur-md"
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.8, duration: 0.5 }}
-                >
-                  <span className="text-sm">🚚</span>
-                  <div>
-                    <div className="text-[10px] font-semibold leading-none text-emerald-200">Free Shipping</div>
-                    <div className="text-[9px] text-white/50">Orders over $50</div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute -left-10 bottom-16 flex items-center gap-2 rounded-2xl border border-rose-400/25 bg-rose-500/15 px-3 py-2 shadow-xl backdrop-blur-md"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 2.0, duration: 0.5 }}
-                >
-                  <span className="text-sm">⚡</span>
-                  <div>
-                    <div className="text-[10px] font-semibold leading-none text-rose-200">-30% Flash Sale</div>
-                    <div className="text-[9px] text-white/50">Today only</div>
-                  </div>
-                </motion.div>
+                )}
               </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="border-b bg-card">
-        <div className="container py-8">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {FEATURES.map(({ icon: Icon, label, desc }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-3 p-3"
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                  <Icon className="size-5 text-primary" />
+              <div className="p-4">
+                <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 mb-2">{p.name}</h3>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#2d3444] text-sm">{formatPrice(p.price)}</span>
+                  <button
+                    onClick={(e) => { e.preventDefault(); dispatch(addItem({ product: p })); toast.success('Added to cart') }}
+                    className="text-xs font-bold text-[#D4693A] hover:underline"
+                  >+ Cart</button>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold">{label}</p>
-                  <p className="text-xs text-muted-foreground">{desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  )
+}
 
-      {/* Categories */}
-      {categories.length > 0 && (
-        <section className="container py-12">
-          <SectionTitle title="Shop by Category" href="/products" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8">
-            {categories.map((cat, i) => (
-              <motion.div
-                key={cat.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Link
-                  to={`/categories/${cat.slug}`}
-                  className="group flex flex-col items-center gap-2 rounded-xl border bg-card p-3 text-center transition-all duration-200 hover:-translate-y-1 hover:border-primary hover:shadow-md"
-                >
-                  <div className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-muted">
-                    {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="size-full object-cover" />
-                    ) : (
-                      <span className="text-2xl">🛍️</span>
-                    )}
+// ── Count-up stat ─────────────────────────────────────────────────────────
+function CountStat({ value, suffix = '', label }: { value: number; suffix?: string; label: string }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      const dur = 1400, start = Date.now()
+      const tick = () => {
+        const p = Math.min((Date.now() - start) / dur, 1)
+        setCount(Math.round((1 - Math.pow(1 - p, 3)) * value))
+        if (p < 1) requestAnimationFrame(tick)
+      }
+      tick()
+    }, { threshold: 0.5 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [value])
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-5xl font-black text-white tabular-nums">{count.toLocaleString()}{suffix}</div>
+      <p className="mt-2 text-sm text-white/40">{label}</p>
+    </div>
+  )
+}
+
+// ── SCRAPBOOK CATEGORIES ──────────────────────────────────────────────────
+const SCRAP_ANGLES = [-16, 10, -5, 13, -9]
+const SCRAP_FROM   = [
+  { x: -700, y: -300, r: -45 },
+  { x:  700, y: -400, r:  40 },
+  { x:    0, y: -600, r:  20 },
+  { x: -600, y:  300, r: -35 },
+  { x:  650, y:  350, r:  50 },
+]
+
+function ScrapbookCategories({ categories }: { categories: any[] }) {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const cardRefs   = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      cardRefs.current.forEach((el, i) => {
+        if (!el) return
+        const from = SCRAP_FROM[i]
+        gsap.fromTo(el,
+          { x: from.x, y: from.y, rotate: from.r, opacity: 0, scale: 0.5 },
+          {
+            x: 0, y: 0, rotate: SCRAP_ANGLES[i], opacity: 1, scale: 1,
+            duration: 1.3, ease: 'back.out(1.4)',
+            delay: i * 0.12,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 65%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        )
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [categories])
+
+  return (
+    <section ref={sectionRef} data-nav-scheme="light" className="relative bg-[#FAFAF8] py-32 overflow-hidden min-h-[780px]">
+      {/* Watermark */}
+      <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center">
+        <span className="text-[22vw] font-black text-[#2d3444]/[0.03] uppercase leading-none tracking-tighter">
+          SHOP
+        </span>
+      </div>
+
+      <div className="container relative z-10">
+        <FadeUp className="mb-20 text-center">
+          <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">— Collections —</p>
+          <h2 className="text-[clamp(40px,6vw,80px)] font-black tracking-tight text-[#2d3444] leading-[.9]">
+            Shop by<br />Category
+          </h2>
+        </FadeUp>
+
+        {/* Scattered Polaroid cards */}
+        <div className="relative flex flex-wrap justify-center items-center gap-8 md:gap-0 md:min-h-[480px]">
+          {categories.slice(0, 5).map((cat, i, arr) => {
+            const count = arr.length
+            const step  = 100 / (count + 1)
+            const leftVal = `calc(${step * (i + 1)}% - 100px)`
+            return (
+            <div
+              key={cat.id}
+              ref={(el) => { cardRefs.current[i] = el }}
+              className="md:absolute w-[230px] shrink-0 group cursor-pointer"
+              style={{
+                rotate: `${SCRAP_ANGLES[i]}deg`,
+                left: leftVal,
+                top:  ['10%', '28%', '5%', '30%', '12%'][i],
+                zIndex: [2, 4, 5, 3, 1][i],
+              }}
+            >
+              <Link to={`/categories/${cat.slug}`}>
+                {/* Polaroid frame */}
+                <div className="bg-white p-3 pb-10 shadow-[0_8px_40px_rgba(45,52,68,0.18)] transition-all duration-300 group-hover:shadow-[0_20px_60px_rgba(45,52,68,0.28)] group-hover:-translate-y-2">
+                  <div className="aspect-[3/4] overflow-hidden bg-[#F0EDE9]">
+                    {cat.image
+                      ? <img src={cat.image} alt={cat.name} className="size-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      : <div className="size-full bg-gradient-to-br from-[#D4693A]/20 to-[#2d3444]/20" />
+                    }
                   </div>
-                  <span className="text-xs font-medium leading-tight group-hover:text-primary">
-                    {cat.name}
-                  </span>
-                </Link>
+                  <p className="mt-3 text-center text-[11px] font-black text-[#2d3444] uppercase tracking-[.2em]">{cat.name}</p>
+                </div>
+              </Link>
+            </div>
+            )
+          })}
+        </div>
+
+        <div className="mt-16 text-center">
+          <Link to="/products"
+            className="inline-flex items-center gap-2 text-sm font-bold text-[#2d3444] hover:text-[#D4693A] transition-colors"
+          >Browse All Categories <ArrowRight className="size-4" /></Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── THE DROP — featured on dark bg ───────────────────────────────────────
+function TheDropSection({ products }: { products: Product[] }) {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const dispatch   = useAppDispatch()
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Each card blasts in from a random edge
+      const cards = sectionRef.current?.querySelectorAll('.drop-card')
+      cards?.forEach((el, i) => {
+        const fromLeft = i % 2 === 0
+        gsap.fromTo(el,
+          { x: fromLeft ? -800 : 800, y: 150 + (i % 3) * 60, rotate: fromLeft ? -30 : 30, opacity: 0, scale: 0.6 },
+          {
+            x: 0, y: 0, rotate: 0, opacity: 1, scale: 1,
+            duration: 1.1, ease: 'power4.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 90%',
+              toggleActions: 'play none none reverse',
+            },
+            delay: (i % 4) * 0.08,
+          }
+        )
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [products])
+
+  return (
+    <section ref={sectionRef} data-nav-scheme="dark" className="bg-[#2d3444] py-28 overflow-hidden relative">
+      {/* Massive background text */}
+      <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center overflow-hidden">
+        <span className="text-[20vw] font-black text-white/[0.03] uppercase leading-none tracking-tighter whitespace-nowrap">
+          FEATURED
+        </span>
+      </div>
+
+      <div className="container relative z-10">
+        <FadeUp className="mb-16">
+          <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">Hand-picked</p>
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-[clamp(52px,8vw,110px)] font-black text-white leading-[.85] tracking-tight">
+              THE<br /><span className="text-gradient-orange">DROP.</span>
+            </h2>
+            <Link to="/products?sort=featured"
+              className="hidden sm:flex items-center gap-2 text-sm font-bold text-white/40 hover:text-[#D4693A] transition-colors shrink-0 mb-2"
+            >View All <ArrowRight className="size-4" /></Link>
+          </div>
+        </FadeUp>
+
+        {/* Two rows, offset diagonally */}
+        <div className="space-y-4">
+          {[0, 1].map(row => (
+            <div
+              key={row}
+              className="flex gap-4 overflow-visible"
+              style={{ transform: `translateX(${row % 2 === 0 ? '-2rem' : '2rem'})` }}
+            >
+              {products.slice(row * 4, row * 4 + 4).map((p, i) => (
+                <div key={p.id} className="drop-card flex-1 min-w-0">
+                  <Link to={`/products/${p.slug}`}
+                    className="group block rounded-2xl overflow-hidden border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#D4693A]/40 transition-all duration-300"
+                  >
+                    <div className="aspect-square overflow-hidden bg-white/5 relative">
+                      {p.images[0]?.url && (
+                        <img src={p.images[0].url} alt={p.name}
+                          className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      )}
+                      {p.compareAtPrice && (
+                        <div className="absolute top-2 left-2 rounded-full bg-[#D4693A] px-2 py-0.5 text-[9px] font-bold text-white">SALE</div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-[11px] font-bold text-white/70 line-clamp-1 group-hover:text-white transition-colors">{p.name}</h3>
+                      <div className="mt-1 flex items-center justify-between">
+                        <span className="text-[#D4693A] font-black text-sm">{formatPrice(p.price)}</span>
+                        <button
+                          onClick={(e) => { e.preventDefault(); dispatch(addItem({ product: p })); toast.success('Added to cart') }}
+                          className="text-[10px] font-bold text-white/30 hover:text-[#D4693A] transition-colors"
+                        >+ Cart</button>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── GAMING COLLAGE ────────────────────────────────────────────────────────
+const COLLAGE_TILTS = [-3, 2, -1.5, 3, -2, 1.5, -2.5, 2, -1, 2.5, -1.5, 2]
+
+function GamingCollage() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const imgRefs    = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      imgRefs.current.forEach((el, i) => {
+        if (!el) return
+        gsap.fromTo(el,
+          { opacity: 0, scale: 0.6, y: (i % 2 === 0 ? -60 : 60) },
+          {
+            opacity: 1, scale: 1, y: 0,
+            duration: 0.8, ease: 'back.out(1.3)',
+            delay: i * 0.07,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 65%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        )
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={sectionRef} data-nav-scheme="dark" className="relative bg-[#12171f] py-24 overflow-hidden">
+      {/* GAMING watermark */}
+      <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center">
+        <span className="text-[16vw] font-black text-white/[0.03] uppercase leading-none tracking-tighter">GAMING</span>
+      </div>
+
+      {/* Diagonal stripe */}
+      <div className="pointer-events-none absolute inset-0"
+        style={{ background: 'repeating-linear-gradient(135deg, transparent, transparent 80px, rgba(212,105,58,0.015) 80px, rgba(212,105,58,0.015) 82px)' }} />
+
+      <div className="container relative z-10">
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+
+          {/* Left sticky text */}
+          <div className="lg:w-64 lg:sticky lg:top-1/3 shrink-0">
+            <motion.div
+              initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-4">Level Up</p>
+              <h2 className="text-[clamp(48px,6vw,80px)] font-black text-white leading-[.88] tracking-tight">
+                GAME<br />ON.
+              </h2>
+              <p className="mt-5 text-sm text-white/35 leading-relaxed max-w-[200px]">
+                Next-level gaming gear. Built for champions.
+              </p>
+              <Link to="/categories/gaming"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#D4693A] hover:text-white transition-colors"
+              >Shop Gaming <ArrowRight className="size-4" /></Link>
+            </motion.div>
+          </div>
+
+          {/* Collage — 3 columns, cards exactly 150×150 */}
+          <div className="flex-1 flex gap-5 justify-center">
+            {/* Column A */}
+            <div className="flex flex-col gap-5 items-center">
+              {[0, 1, 2].map((slot) => (
+                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
+                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
+                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
+                >
+                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
+                </div>
+              ))}
+            </div>
+
+            {/* Column B */}
+            <div className="flex flex-col gap-5 items-center">
+              {[3, 4, 5].map((slot) => (
+                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
+                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
+                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
+                >
+                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
+                </div>
+              ))}
+            </div>
+
+            {/* Column C */}
+            <div className="flex flex-col gap-5 items-center">
+              {[6, 7, 8].map((slot) => (
+                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
+                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
+                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
+                >
+                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom strip — 4 controllers */}
+        <div className="mt-6 flex gap-5 justify-center flex-wrap">
+          {[9, 10, 11, 12].map((slot, i) => (
+            <motion.div
+              key={slot}
+              className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] w-fit"
+              style={{ transform: `rotate(${COLLAGE_TILTS[slot % COLLAGE_TILTS.length]}deg)` }}
+              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── FLOATING SHOWCASE ─────────────────────────────────────────────────────
+function FloatingShowcase() {
+  return (
+    <section data-nav-scheme="light" className="bg-white py-28 overflow-hidden">
+      <div className="container">
+        <FadeUp className="mb-20 text-center">
+          <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">Our Arsenal</p>
+          <h2 className="text-[clamp(44px,6.5vw,90px)] font-black tracking-tight text-[#2d3444] leading-[.88]">
+            BUILT<br />DIFFERENT.
+          </h2>
+        </FadeUp>
+
+        <div className="grid grid-cols-3 gap-x-6 gap-y-0">
+          {SHOWCASE.map(({ src, label, sub }, i) => {
+            const col = i % 3
+            const offsetY = col === 1 ? 80 : col === 2 ? 40 : 0
+            return (
+              <motion.div
+                key={i}
+                className="flex flex-col items-center"
+                style={{ marginTop: offsetY }}
+                initial={{ opacity: 0, y: 80 + offsetY * 0.5, rotate: (i % 2 === 0 ? -6 : 6) }}
+                whileInView={{ opacity: 1, y: offsetY, rotate: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 1.0, delay: col * 0.1 + Math.floor(i / 3) * 0.15, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <motion.div
+                  className="w-full aspect-square relative"
+                  whileHover={{ scale: 1.06, y: -12, rotate: (i % 2 === 0 ? 3 : -3) }}
+                  transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+                >
+                  <img src={src} alt={label} className="size-full object-contain" draggable={false}
+                    style={{ filter: 'drop-shadow(0 28px 14px rgba(45,52,68,0.18)) drop-shadow(0 10px 4px rgba(45,52,68,0.10))' }}
+                  />
+                </motion.div>
+                <motion.div
+                  className="mt-4 text-center"
+                  initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: col * 0.1 + 0.3 }}
+                >
+                  <h3 className="font-black text-[#2d3444] text-xs uppercase tracking-[.15em]">{label}</h3>
+                  <p className="text-[11px] text-[#999] mt-0.5">{sub}</p>
+                </motion.div>
               </motion.div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── ACCESSORIES CHAOS STRIP ───────────────────────────────────────────────
+const CHAOS_IMGS = [
+  caseLBlue, caseRed, caseSand, caseWine, caseFGreen, caseYellow, caseBrown, casePinkS, caseIBlue, caseBlack1,
+  lanyard1, lanyard2, lanyard3, lanyard4,
+  kick7a, kick7b, kick7c, kick7d,
+  kick8Gray, kick8Purple, kick8Blue, kick8Black,
+  sil20Orange, sil20Pink, sil20Blue, sil20Purple, sil20Gray,
+  mazeRed, mazeBrown, mazeDesert, mazePeach, mazeDeepBl, mazeDeepRed, mazeLPurple, mazeBlkGold,
+  coord11Purple, coord11Gray, coord11Black,
+  cyber12Blue, cyber12Gray, cyber12Purple,
+  leather17Gray, leather17Purple, leather17Blue, leather17Black,
+  pb01, pb03, pbHW_gray, pbHW_purple, pbHW_silver,
+  pencil1, pencil3, pencil22, pencil23, pencil26, pencil28, pencil29, pencil30,
+  caseFront1, caseFront2, caseFront3, caseBlack, casePink, caseGreen, caseWhite,
+  caseRed5, caseLBlue5, caseSand5, caseBrown5,
+  kick5Blue, kick5Sand, kick5Yellow,
+]
+
+const CHAOS_SIZES = [80, 120, 100, 90, 140, 75, 110, 95, 130, 85, 105, 115]
+const CHAOS_TOPS  = [10, 30, 5,  40, 15, 50, 8, 35, 20, 45, 12, 38]
+const CHAOS_TILTS = [-8, 12, -3, 15, -10, 6, -14, 9, -5, 13, -7, 11]
+
+function AccessoriesChaos() {
+  const trackRef   = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const ALL = [...CHAOS_IMGS, ...CHAOS_IMGS]
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const track = trackRef.current, section = sectionRef.current
+      if (!track || !section) return
+      const dist = track.scrollWidth - window.innerWidth
+      if (dist <= 0) return
+      gsap.to(track, {
+        x: -dist * 0.6, ease: 'none',
+        scrollTrigger: {
+          trigger: section, start: 'top bottom',
+          end: 'bottom top', scrub: 2,
+        },
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={sectionRef} data-nav-scheme="light" className="relative bg-[#F7F3EE] py-24 overflow-hidden">
+      <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center">
+        <span className="text-[14vw] font-black text-[#2d3444]/[0.04] uppercase leading-none tracking-tighter whitespace-nowrap">
+          ACCESSORIES
+        </span>
+      </div>
+
+      <FadeUp className="container relative z-10 mb-12">
+        <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">Everything You Need</p>
+        <h2 className="text-[clamp(40px,6vw,80px)] font-black tracking-tight text-[#2d3444] leading-[.9]">
+          THE<br />FULL RANGE.
+        </h2>
+      </FadeUp>
+
+      {/* Scrolling chaos strip */}
+      <div ref={trackRef} className="flex items-end gap-4 w-max px-8" style={{ paddingBottom: '2rem', paddingTop: '1rem' }}>
+        {ALL.map((src, i) => {
+          const size = CHAOS_SIZES[i % CHAOS_SIZES.length]
+          const top  = CHAOS_TOPS[i % CHAOS_TOPS.length]
+          const tilt = CHAOS_TILTS[i % CHAOS_TILTS.length]
+          return (
+            <div key={i} className="shrink-0 relative"
+              style={{ width: size, marginTop: `${top}px`, transform: `rotate(${tilt}deg)` }}
+            >
+              <img src={src} alt="" draggable={false}
+                className="w-full object-contain transition-transform duration-300 hover:scale-110 hover:-translate-y-2"
+                style={{ filter: 'drop-shadow(0 16px 8px rgba(45,52,68,0.12))' }}
+              />
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="container relative z-10 mt-10 text-right">
+        <Link to="/products"
+          className="inline-flex items-center gap-2 text-sm font-bold text-[#2d3444] hover:text-[#D4693A] transition-colors"
+        >Shop All Accessories <ArrowRight className="size-4" /></Link>
+      </div>
+    </section>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────
+export default function HomePage() {
+  const { data: featuredData }    = useGetFeaturedProductsQuery()
+  const { data: bestsellersData } = useGetBestsellersQuery({})
+  const { data: categoriesData }  = useGetCategoriesQuery()
+  const { data: newArrivalsData } = useGetNewArrivalsQuery({})
+
+  const featured    = featuredData?.data    ?? []
+  const bestsellers = bestsellersData?.data ?? []
+  const categories  = categoriesData?.data  ?? []
+  const newArrivals = newArrivalsData?.data  ?? []
+
+  const BENEFITS = [
+    { icon: Truck,  title: 'Free Shipping',  desc: 'On all orders over $50. Fast and reliable.' },
+    { icon: Shield, title: '1-Year Warranty', desc: 'Every product backed by our quality promise.' },
+    { icon: Zap,    title: 'Premium Quality', desc: 'Engineered for performance, built to last.' },
+  ]
+
+  return (
+    <div>
+      {/* 1 — 3D Hero */}
+      <Hero3DScene />
+
+      {/* 2 — Marquee */}
+      <Marquee />
+
+      {/* 3 — Scrapbook Categories */}
+      <ScrapbookCategories categories={categories} />
+
+      {/* 4 — Featured "THE DROP" on dark */}
+      <TheDropSection products={featured} />
+
+      {/* 5 — Gaming Collage */}
+      <GamingCollage />
+
+      {/* 6 — New Arrivals horizontal rack */}
+      {newArrivals.length > 0 && (
+        <HorizontalRack tag="Fresh Drops" title="New Arrivals" products={newArrivals} />
+      )}
+
+      {/* 7 — Floating product showcase */}
+      <FloatingShowcase />
+
+      {/* 8 — All accessories chaos scroll */}
+      <AccessoriesChaos />
+
+      {/* 9 — Benefits */}
+      <section data-nav-scheme="light" className="bg-[#F7F3EE] py-20">
+        <div className="container">
+          <div className="grid md:grid-cols-3 gap-5">
+            {BENEFITS.map(({ icon: Icon, title, desc }, i) => (
+              <FadeUp key={title} delay={i * 0.1}>
+                <div className="bg-white rounded-2xl p-8 border border-[#E8E4DF] h-full">
+                  <div className="size-12 rounded-xl bg-[#D4693A]/10 flex items-center justify-center mb-5">
+                    <Icon className="size-5 text-[#D4693A]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#2d3444] mb-2">{title}</h3>
+                  <p className="text-sm text-[#777] leading-relaxed">{desc}</p>
+                </div>
+              </FadeUp>
             ))}
           </div>
-        </section>
-      )}
-
-      {/* Featured */}
-      {(featured.length > 0 || featuredLoading) && (
-        <section className="container py-12">
-          <SectionTitle
-            title="Featured Products"
-            subtitle="Handpicked selections just for you"
-            href="/products?featured=true"
-          />
-          <ProductGrid products={featured} isLoading={featuredLoading} columns={4} />
-        </section>
-      )}
-
-      {/* Promo banner */}
-      <section className="container py-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-600 to-brand-400 p-8 text-white md:p-12"
-        >
-          <div className="absolute inset-0 bg-noise opacity-20" />
-          <div className="relative z-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="text-sm font-medium text-white/70">Limited Time Offer</div>
-              <h2 className="mt-1 text-3xl font-bold">Up to 50% off</h2>
-              <p className="mt-1 text-white/80">On selected categories. Use code SAVE50 at checkout.</p>
-            </div>
-            <Button size="lg" variant="secondary" asChild className="shrink-0 shadow-xl">
-              <Link to="/products?sale=true">Shop the Sale →</Link>
-            </Button>
-          </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* New Arrivals */}
-      {(newArrivals.length > 0 || newArrivalsLoading) && (
-        <section className="container py-12">
-          <SectionTitle
-            title="New Arrivals"
-            subtitle="Fresh products added this week"
-            href="/products?sort=newest"
-          />
-          <ProductGrid products={newArrivals} isLoading={newArrivalsLoading} columns={4} />
-        </section>
-      )}
+      {/* 10 — Stats */}
+      <section data-nav-scheme="dark" className="bg-[#2d3444] py-20">
+        <div className="container">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <CountStat value={5000} suffix="+" label="Happy Customers" />
+            <CountStat value={200}  suffix="+" label="Products Available" />
+            <CountStat value={50}   suffix="+" label="Brands Stocked" />
+            <CountStat value={99}   suffix="%" label="Satisfaction Rate" />
+          </div>
+        </div>
+      </section>
 
-      {/* Bestsellers */}
-      {(bestsellers.length > 0 || bestsellersLoading) && (
-        <section className="container py-12">
-          <SectionTitle
-            title="Best Sellers"
-            subtitle="Our most popular products"
-            href="/products?sort=bestselling"
-          />
-          <ProductGrid products={bestsellers} isLoading={bestsellersLoading} columns={4} />
-        </section>
-      )}
+      {/* 11 — CTA Banner */}
+      <section data-nav-scheme="orange" className="bg-[#D4693A] py-28">
+        <div className="container text-center">
+          <motion.h2
+            className="text-[clamp(40px,7vw,90px)] font-black text-white leading-[.9] tracking-tight"
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >BUILT FOR<br />THE BOLD.</motion.h2>
+          <motion.p
+            className="mt-5 text-base text-white/70 max-w-sm mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >Discover the full range of premium tech accessories.</motion.p>
+          <motion.div className="mt-8"
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to="/products"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-9 py-4 text-sm font-bold text-[#D4693A] hover:bg-[#2d3444] hover:text-white transition-colors duration-300"
+            >Shop All Products <ArrowRight className="size-4" /></Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 12 — Bestsellers */}
+      <section data-nav-scheme="light" className="bg-white py-24">
+        <div className="container">
+          <FadeUp className="mb-12 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold tracking-[.3em] text-[#D4693A] uppercase mb-3">Most Loved</p>
+              <h2 className="text-5xl font-black tracking-tight text-[#2d3444]">Bestsellers</h2>
+            </div>
+            <Link to="/products?sort=bestsellers"
+              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-[#2d3444] hover:text-[#D4693A] transition-colors shrink-0"
+            >View All <ArrowRight className="size-4" /></Link>
+          </FadeUp>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {bestsellers.slice(0, 8).map((p, i) => <Card key={p.id} product={p} index={i} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* 13 — Final marquee */}
+      <Marquee reverse />
     </div>
   )
 }

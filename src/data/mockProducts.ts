@@ -2,19 +2,24 @@ import type { Product } from '@/types'
 import { controllers } from './products/controllers'
 import { stylus }      from './products/stylus'
 import { kettles }     from './products/kettles'
+import { chargers }    from './products/chargers'
+import { smartHome }   from './products/smartHome'
 
 export { mockCategories, getCategoryById, getCategoryBySlug } from './mockCategories'
 
 export const mockProducts: Product[] = [
   ...controllers,
   ...stylus,
+  ...chargers,
   ...kettles,
+  ...smartHome,
 ]
 
 export const productsByCategory: Record<string, Product[]> = {
   gaming:       controllers,
-  accessories:  stylus,
+  accessories:  [...stylus, ...chargers],
   appliances:   kettles,
+  'smart-home': smartHome,
 }
 
 export const featuredProducts: Product[] = mockProducts.filter((p) => p.isFeatured)
