@@ -28,7 +28,19 @@
       "Bash(git restore *)",
       "Bash(git cat-file *)",
       "Bash(grep '\\\\.psd$')",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\home appliance' -Recurse -File | Select-Object FullName | Format-List\")",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\accessories\\\\Home Charger Adapter' -File | Select-Object Name\")",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\smart home\\\\Earphones SoundPod Elite - aslitec' -Recurse -File | Select-Object FullName\")",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\home appliance' -Recurse -File | Select-Object FullName | Sort-Object FullName\")",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\smart home\\\\Eva Security Cam- aslitec' -Recurse -File | Select-Object FullName | Sort-Object FullName\")",
+      "Bash(powershell -command ' *)",
+      "Bash(node -e ' *)",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\accessories\\\\pencil aslitec' -File | Select-Object Name | Sort-Object Name\")",
+      "Bash(powershell -command \"Get-ChildItem 'c:\\\\Users\\\\OPen\\\\OneDrive\\\\Documents\\\\lzel\\\\lzel\\\\src\\\\assets\\\\home appliance' -File | Select-Object Name | Sort-Object Name\")",
+      "Bash(node -e \"const fs=require\\('fs'\\);fs.readdirSync\\('c:/Users/OPen/OneDrive/Documents/lzel/lzel/src/assets/accessories/pencil aslitec'\\).forEach\\(f=>console.log\\(f\\)\\)\")",
+      "Bash(node -e \"require\\('vite-plugin-image-optimizer'\\); console.log\\('installed'\\)\")",
+      "Bash(node -e \"const p=require\\('./node_modules/vite-plugin-image-optimizer/package.json'\\);console.log\\(p.version\\)\")"
     ]
   }
 }

@@ -17,23 +17,25 @@ import { toast } from 'sonner'
 import type { Product } from '@/types'
 
 // ── Waterproof cases ──────────────────────────────────────────────────────
-import caseBlack  from '@/assets/accessories/WaterProof Case/black back.png'
-import caseBlue   from '@/assets/accessories/WaterProof Case/blue back.png'
-import casePink   from '@/assets/accessories/WaterProof Case/pink back.png'
-import caseGreen  from '@/assets/accessories/WaterProof Case/green back.png'
-import caseWhite  from '@/assets/accessories/WaterProof Case/white back.png'
 import caseFront1 from '@/assets/accessories/WaterProof Case/front-01.png'
 import caseFront2 from '@/assets/accessories/WaterProof Case/front-02.png'
 import caseFront3 from '@/assets/accessories/WaterProof Case/front-03.png'
+import caseFront4 from '@/assets/accessories/WaterProof Case/front-04.png'
+import caseFront5 from '@/assets/accessories/WaterProof Case/front-05.png'
+const caseBlack = caseFront1
+const caseBlue  = caseFront2
+const casePink  = caseFront3
+const caseGreen = caseFront4
+const caseWhite = caseFront5
 
 // ── Powerbanks ────────────────────────────────────────────────────────────
-import pb01       from '@/assets/accessories/Powerbank/01.png'
-import pb02       from '@/assets/accessories/Powerbank/02.png'
-import pb03       from '@/assets/accessories/Powerbank/03.png'
 import pbHW_gray   from '@/assets/accessories/Powerbank/HW121-灰.png'
 import pbHW_purple from '@/assets/accessories/Powerbank/HW121-紫.png'
 import pbHW_blue   from '@/assets/accessories/Powerbank/HW121-蓝.png'
 import pbHW_silver from '@/assets/accessories/Powerbank/HW121-锖.png'
+const pb01 = pbHW_gray
+const pb02 = pbHW_blue
+const pb03 = pbHW_purple
 
 // ── Wave silicone grip cases ──────────────────────────────────────────────
 import caseRed    from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/E-RED 3.png'
@@ -116,37 +118,27 @@ import lanyard3 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (3).png
 import lanyard4 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (4).png'
 
 // ── Pencils ───────────────────────────────────────────────────────────────
-import pencil1  from '@/assets/accessories/pencil aslitec/1.png'
-import pencil2  from '@/assets/accessories/pencil aslitec/2.png'
-import pencil3  from '@/assets/accessories/pencil aslitec/3.png'
-import pencil22 from '@/assets/accessories/pencil aslitec/22.png'
-import pencil23 from '@/assets/accessories/pencil aslitec/23.png'
-import pencil26 from '@/assets/accessories/pencil aslitec/26.png'
-import pencil28 from '@/assets/accessories/pencil aslitec/28.png'
+import pencil1  from '@/assets/accessories/pencil aslitec/1 (2).png'
+import pencil2  from '@/assets/accessories/pencil aslitec/2 (2).png'
+import pencil3  from '@/assets/accessories/pencil aslitec/3 (2).png'
+import pencil22 from '@/assets/accessories/pencil aslitec/22 (2).png'
+import pencil23 from '@/assets/accessories/pencil aslitec/23 (2).png'
+import pencil26 from '@/assets/accessories/pencil aslitec/26 (2).png'
+import pencil28 from '@/assets/accessories/pencil aslitec/28 (2).png'
 import pencil29 from '@/assets/accessories/pencil aslitec/29.png'
 import pencil30 from '@/assets/accessories/pencil aslitec/30.png'
 
 // ── Gaming ────────────────────────────────────────────────────────────────
 import g1a from '@/assets/gaming/1/1 (1).jpg'
-import g1b from '@/assets/gaming/1/1 (2).jpg'
-import g1c from '@/assets/gaming/1/1 (3).jpg'
-import g1d from '@/assets/gaming/1/1 (4).jpg'
 import g2a from '@/assets/gaming/2/1 (1).jpg'
-import g2b from '@/assets/gaming/2/1 (2).jpg'
-import g2c from '@/assets/gaming/2/1 (3).jpg'
-import g2d from '@/assets/gaming/2/1 (4).jpg'
 import g3a from '@/assets/gaming/3/1 (1).jpg'
-import g3b from '@/assets/gaming/3/1 (2).jpg'
-import g3c from '@/assets/gaming/3/1 (3).jpg'
-import g3d from '@/assets/gaming/3/1 (4).jpg'
 import g4a from '@/assets/gaming/4/1 (1).jpg'
-import g4b from '@/assets/gaming/4/1 (2).jpg'
-import g4c from '@/assets/gaming/4/1 (3).jpg'
-import g4d from '@/assets/gaming/4/1 (4).jpg'
 import g5a from '@/assets/gaming/5/1 (1).jpg'
-import g5b from '@/assets/gaming/5/1 (2).jpg'
-import g5c from '@/assets/gaming/5/1 (3).jpg'
-import g5d from '@/assets/gaming/5/1 (4).jpg'
+const g1b = g1a, g1c = g1a, g1d = g1a
+const g2b = g2a, g2c = g2a, g2d = g2a
+const g3b = g3a, g3c = g3a, g3d = g3a
+const g4b = g4a, g4c = g4a, g4d = g4a
+const g5b = g5a, g5c = g5a, g5d = g5a
 
 gsap.registerPlugin(ScrollTrigger)
 
