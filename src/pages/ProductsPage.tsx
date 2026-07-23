@@ -39,6 +39,7 @@ function LightCard({ product, index = 0 }: { product: Product; index?: number })
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
       ref={ref}
+      className="h-full"
       style={{ perspective: 800 }}
       onMouseMove={onMove}
       onMouseEnter={() => setHovered(true)}
@@ -46,7 +47,7 @@ function LightCard({ product, index = 0 }: { product: Product; index?: number })
     >
       <motion.div
         style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
-        className="bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
+        className="h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
         animate={{
           boxShadow: hovered
             ? '0 16px 48px rgba(0,0,0,0.09)'
@@ -54,7 +55,7 @@ function LightCard({ product, index = 0 }: { product: Product; index?: number })
         }}
         transition={{ duration: 0.3 }}
       >
-        <Link to={`/products/${product.slug}`}>
+        <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
           <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
             {img && (
               <motion.img
@@ -87,14 +88,14 @@ function LightCard({ product, index = 0 }: { product: Product; index?: number })
               )}
             </AnimatePresence>
           </div>
-          <div className="p-4">
+          <div className="p-4 flex flex-col flex-1">
             <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">
               {product.category.name}
             </p>
             <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">
               {product.name}
             </h3>
-            <div className="mt-3 flex items-center justify-between">
+            <div className="mt-auto pt-3 flex items-center justify-between">
               <div className="flex items-baseline gap-2">
                 <span className="font-bold text-[#2d3444]">{formatPrice(product.price)}</span>
                 {product.compareAtPrice && (

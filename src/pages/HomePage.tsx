@@ -356,6 +356,7 @@ function Card({ product, index = 0 }: { product: Product; index?: number }) {
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.7, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
       ref={ref}
+      className="h-full"
       style={{ perspective: 800 }}
       onMouseMove={onMove}
       onMouseEnter={() => setHovered(true)}
@@ -363,7 +364,7 @@ function Card({ product, index = 0 }: { product: Product; index?: number }) {
     >
       <motion.div
         style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
-        className="bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
+        className="h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
         animate={{
           boxShadow: hovered
             ? '0 16px 48px rgba(0,0,0,0.10)'
@@ -371,7 +372,7 @@ function Card({ product, index = 0 }: { product: Product; index?: number }) {
         }}
         transition={{ duration: 0.3 }}
       >
-        <Link to={`/products/${product.slug}`}>
+        <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
           <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
             {img && (
               <motion.img src={img} alt={product.name} className="size-full object-cover"
@@ -395,10 +396,10 @@ function Card({ product, index = 0 }: { product: Product; index?: number }) {
               )}
             </AnimatePresence>
           </div>
-          <div className="p-4">
+          <div className="p-4 flex flex-col flex-1">
             <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
             <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-            <div className="mt-3 flex items-center justify-between">
+            <div className="mt-auto pt-3 flex items-center justify-between">
               <span className="font-bold text-[#2d3444]">{formatPrice(product.price)}</span>
               <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
             </div>
@@ -635,7 +636,6 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
 // ── THE DROP — featured on dark bg ───────────────────────────────────────
 function TheDropSection({ products }: { products: Product[] }) {
   const sectionRef = useRef<HTMLDivElement>(null)
-  const dispatch   = useAppDispatch()
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -708,13 +708,6 @@ function TheDropSection({ products }: { products: Product[] }) {
                     </div>
                     <div className="p-3">
                       <h3 className="text-[11px] font-bold text-white/70 line-clamp-1 group-hover:text-white transition-colors">{p.name}</h3>
-                      <div className="mt-1 flex items-center justify-between">
-                        <span className="text-[#D4693A] font-black text-sm">{formatPrice(p.price)}</span>
-                        <button
-                          onClick={(e) => { e.preventDefault(); dispatch(addItem({ product: p })); toast.success('Added to cart') }}
-                          className="text-[10px] font-bold text-white/30 hover:text-[#D4693A] transition-colors"
-                        >+ Cart</button>
-                      </div>
                     </div>
                   </Link>
                 </div>

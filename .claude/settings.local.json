@@ -17,7 +17,18 @@
       "WebFetch(domain:www.ciaoenergy.com)",
       "Bash(python3 -c ' *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git ls-tree *)",
+      "Bash(awk '{print $4, $5}')",
+      "Bash(awk '$4 > 100000000 {print $4, $5}')",
+      "Bash(awk '$4 > 100000000')",
+      "Bash(git rm *)",
+      "Bash(git commit *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git cat-file *)",
+      "Bash(grep '\\\\.psd$')",
+      "Bash(git push *)"
     ]
   }
 }

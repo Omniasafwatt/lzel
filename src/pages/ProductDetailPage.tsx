@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw,
+  ShoppingCart, Heart, Share2, Star,
   ChevronLeft, ChevronRight, Minus, Plus, Check, ZoomIn
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -322,20 +322,6 @@ export default function ProductDetailPage() {
             }}>
               <Share2 className="size-5" />
             </Button>
-          </div>
-
-          {/* Shipping info */}
-          <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
-            {[
-              { icon: Truck, text: 'Free shipping on orders over $50' },
-              { icon: Shield, text: '2-year manufacturer warranty' },
-              { icon: RotateCcw, text: '30-day hassle-free returns' },
-            ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-2 text-sm">
-                <Icon className="size-4 text-muted-foreground" />
-                <span>{text}</span>
-              </div>
-            ))}
           </div>
 
           {/* Tags */}
