@@ -8,9 +8,6 @@ import { useGetCategoryQuery, useGetProductsQuery } from '@/data/useMockData'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setFilters } from '@/features/search/store/searchSlice'
 import Pagination from '@/components/common/Pagination'
-import { formatPrice } from '@/lib/utils'
-import { addItem } from '@/features/cart/store/cartSlice'
-import { toast } from 'sonner'
 import type { Product } from '@/types'
 import { useState } from 'react'
 
@@ -23,13 +20,13 @@ const CAT_CONFIG: Record<string, {
   midHeadline: string; midCaption: string
 }> = {
   gaming: {
-    tagline: 'Level Up Your Game',
-    headline: 'GAME\nON.',
-    caption: 'Next-gen wireless controllers with precision sticks, RGB lighting, and tournament-grade responsiveness.',
-    marqueeItems: ['GAMING', 'WIRELESS', 'RGB', 'PRO GRADE', 'ASLITEC', 'CONTROLLERS', 'TOURNAMENT', 'PRECISION'],
-    features: ['Wireless 10m', 'RGB Lighting', 'Turbo Mode', '40hr Battery'],
-    midHeadline: 'BUILT FOR\nCHAMPIONS.',
-    midCaption: 'Every button, every grip — engineered for the perfect play.',
+    tagline: 'Level Up Your Setup',
+    headline: 'GAME\nBOLD.',
+    caption: 'aslitec G7 Pro wireless RGB controllers — engineered for PlayStation 4, PC, and mobile with 8-hour battery and 16.8M colors.',
+    marqueeItems: ['GAMING', 'CONTROLLERS', 'RGB LED', 'WIRELESS', 'PS4', 'PC', 'G7 PRO', 'ASLITEC'],
+    features: ['Bluetooth 5.1', 'RGB 16.8M Colors', '8h Battery', 'Multi-Platform'],
+    midHeadline: 'BUILT TO\nWIN.',
+    midCaption: 'Precision dual-analog sticks, haptic triggers, and RGB that sets the mood — made for players who demand more.',
   },
   accessories: {
     tagline: 'Complete Your Setup',
@@ -85,7 +82,6 @@ function FadeUp({ children, delay = 0, className = '' }: {
 
 // ── Product card ──────────────────────────────────────────────────────────
 function CatCard({ product, index = 0 }: { product: Product; index?: number }) {
-  const dispatch = useAppDispatch()
   const ref = useRef<HTMLDivElement>(null)
   const rx = useMotionValue(0), ry = useMotionValue(0)
   const srx = useSpring(rx, { stiffness: 130, damping: 22 })
@@ -98,10 +94,6 @@ function CatCard({ product, index = 0 }: { product: Product; index?: number }) {
     ry.set(((e.clientX - r.left - r.width / 2) / r.width) * 5)
   }
 
-  const addToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation()
-    dispatch(addItem({ product })); toast.success('Added to cart')
-  }
 
   const img = product.images[0]?.url
 
@@ -131,7 +123,8 @@ function CatCard({ product, index = 0 }: { product: Product; index?: number }) {
         <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
           <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
             {img && (
-              <motion.img src={img} alt={product.name} className="size-full object-cover"
+              <motion.img src={img} alt={product.name} className="size-full object-contain"
+                loading="lazy" decoding="async"
                 animate={hovered ? { scale: 1.06 } : { scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
@@ -139,23 +132,10 @@ function CatCard({ product, index = 0 }: { product: Product; index?: number }) {
             {product.compareAtPrice && (
               <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
             )}
-            <AnimatePresence>
-              {hovered && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                  className="absolute inset-x-3 bottom-3"
-                >
-                  <button onClick={addToCart}
-                    className="w-full rounded-xl bg-[#2d3444] py-2.5 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors duration-200"
-                  >Add to Cart</button>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
           <div className="p-4 flex flex-col flex-1">
             <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-            <div className="mt-auto pt-3 flex items-center justify-between">
-              <span className="font-bold text-[#2d3444]">{formatPrice(product.price)}</span>
+            <div className="mt-auto pt-3">
               <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
             </div>
           </div>
@@ -365,7 +345,7 @@ export default function CategoryPage() {
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
           >
             {cat?.image
-              ? <img src={cat.image} alt={cat.name} className="absolute inset-0 size-full object-cover" />
+              ? <img src={cat.image} alt={cat.name} className="absolute inset-0 size-full object-cover" loading="lazy" decoding="async" />
               : <div className="absolute inset-0 bg-gradient-to-br from-[#D4693A]/20 to-[#2d3444]/20" />
             }
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, #F7F3EE)' }} />
@@ -507,7 +487,6 @@ export default function CategoryPage() {
                   <div className="absolute bottom-0 inset-x-0 p-4">
                     <p className="text-[9px] font-bold uppercase tracking-[.3em] text-[#D4693A] mb-1">{p.category.name}</p>
                     <h3 className="text-[13px] font-bold text-white line-clamp-1 leading-snug">{p.name}</h3>
-                    <p className="text-xs text-white/45 mt-1 font-semibold">{formatPrice(p.price)}</p>
                   </div>
                   {/* Top SALE badge */}
                   {p.compareAtPrice && (
@@ -574,9 +553,9 @@ export default function CategoryPage() {
                     ))}
                   </h2>
                   <p className="mt-7 text-sm text-white/35 max-w-sm leading-relaxed">{cfg.midCaption}</p>
-                  <Link to="/products"
+                  <Link to="/"
                     className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#D4693A] hover:text-white transition-colors duration-200"
-                  >View All Products <ArrowRight className="size-4" /></Link>
+                  >Back to Home <ArrowRight className="size-4" /></Link>
                 </FadeUp>
 
                 {/* Stats */}
@@ -603,7 +582,7 @@ export default function CategoryPage() {
                     <div key={i} className="banner-img-card absolute rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
                       style={{ top: s.top, left: s.left, width: s.w, transform: `rotate(${s.rotate})`, zIndex: 4 - i }}
                     >
-                      <img src={src} alt="" className="w-full aspect-square object-cover" draggable={false} />
+                      <img src={src} alt="" className="w-full aspect-square object-cover" draggable={false} loading="lazy" decoding="async" />
                       <div className="absolute inset-0 pointer-events-none"
                         style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 55%)' }} />
                     </div>
@@ -674,9 +653,9 @@ export default function CategoryPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/products"
+            <Link to="/"
               className="rounded-full bg-white px-9 py-4 text-sm font-bold text-[#D4693A] hover:bg-[#2d3444] hover:text-white transition-colors duration-300"
-            >Shop Everything</Link>
+            >Back to Home</Link>
             <Link to="/"
               className="rounded-full border-2 border-white/40 px-9 py-4 text-sm font-bold text-white hover:bg-white/10 transition-colors duration-300"
             >Back to Home</Link>

@@ -1,28 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, Clock, TrendingUp, ArrowRight } from 'lucide-react'
+import { Search, X, ArrowRight } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { setQuery, addToHistory } from '@/features/search/store/searchSlice'
 import { setSearchOpen } from '@/features/ui/store/uiSlice'
-import { useSearchSuggestionsQuery } from '@/data/useMockData'
+import { useGetProductsQuery } from '@/data/useMockData'
 import { debounce } from '@/lib/utils'
 
 export default function SearchModal() {
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const open = useAppSelector((s) => s.ui.searchOpen)
-  const history = useAppSelector((s) => s.search.history)
   const inputRef = useRef<HTMLInputElement>(null)
   const [input, setInput] = useState('')
   const [debouncedInput, setDebouncedInput] = useState('')
 
-  const { data: suggestionsData } = useSearchSuggestionsQuery(debouncedInput, {
-    skip: debouncedInput.length < 2,
-  })
-  const suggestions = suggestionsData?.data?.suggestions ?? []
-
-  const debouncedUpdate = debounce((val: string) => setDebouncedInput(val), 300)
+  const debouncedUpdate = useMemo(
+    () => debounce((val: string) => setDebouncedInput(val), 300),
+    []
+  )
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
@@ -38,13 +33,8 @@ export default function SearchModal() {
     return () => window.removeEventListener('keydown', handler)
   }, [open, dispatch])
 
-  const handleSearch = (q: string) => {
-    if (!q.trim()) return
-    dispatch(addToHistory(q))
-    dispatch(setQuery(q))
-    dispatch(setSearchOpen(false))
-    navigate(`/search?q=${encodeURIComponent(q)}`)
-  }
+  const { data } = useGetProductsQuery({ query: debouncedInput, limit: 6 })
+  const results = debouncedInput.length >= 2 ? (data?.data ?? []) : []
 
   return (
     <AnimatePresence>
@@ -64,128 +54,85 @@ export default function SearchModal() {
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             className="fixed inset-x-0 top-0 z-50 mx-auto max-w-2xl px-4 pt-4"
           >
-            <div className="overflow-hidden rounded-2xl border bg-background shadow-2xl">
+            <div className="overflow-hidden rounded-2xl border border-[#E8E4DF] bg-white shadow-2xl">
+
               {/* Input */}
-              <div className="flex items-center gap-3 border-b px-4 py-3">
-                <Search className="size-5 shrink-0 text-muted-foreground" />
+              <div className="flex items-center gap-3 border-b border-[#E8E4DF] px-4 py-3.5">
+                <Search className="size-5 shrink-0 text-[#999]" />
                 <input
                   ref={inputRef}
                   value={input}
                   onChange={(e) => { setInput(e.target.value); debouncedUpdate(e.target.value) }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(input)}
-                  placeholder="Search products, categories…"
-                  className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+                  placeholder="Search products, categories..."
+                  className="flex-1 bg-transparent text-base text-[#2d3444] outline-none placeholder:text-[#bbb]"
                 />
                 {input && (
-                  <button onClick={() => { setInput(''); inputRef.current?.focus() }}>
-                    <X className="size-4 text-muted-foreground" />
+                  <button onClick={() => { setInput(''); setDebouncedInput(''); inputRef.current?.focus() }}>
+                    <X className="size-4 text-[#bbb] hover:text-[#2d3444] transition-colors" />
                   </button>
                 )}
                 <button
-                  className="text-xs text-muted-foreground hidden sm:block border rounded px-2 py-0.5"
+                  className="text-xs text-[#bbb] hidden sm:block border border-[#E8E4DF] rounded px-2 py-0.5"
                   onClick={() => dispatch(setSearchOpen(false))}
-                >
-                  ESC
-                </button>
+                >ESC</button>
               </div>
 
               {/* Results */}
-              <div className="max-h-[60vh] overflow-y-auto p-3">
-                {/* Suggestions */}
-                {debouncedInput.length >= 2 && suggestions.length > 0 && (
-                  <div className="mb-3">
-                    <p className="mb-1.5 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Suggestions
+              <div className="max-h-[60vh] overflow-y-auto">
+                {results.length > 0 ? (
+                  <div className="p-3">
+                    <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-[#bbb]">
+                      Results
                     </p>
-                    {suggestions.map((s: string) => (
-                      <button
-                        key={s}
-                        onClick={() => handleSearch(s)}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-accent transition-colors"
+                    {results.map((p) => (
+                      <Link
+                        key={p.id}
+                        to={`/products/${p.slug}`}
+                        onClick={() => dispatch(setSearchOpen(false))}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-[#F7F3EE] transition-colors group"
                       >
-                        <Search className="size-3.5 text-muted-foreground" />
-                        <span dangerouslySetInnerHTML={{
-                          __html: s.replace(
-                            new RegExp(debouncedInput, 'gi'),
-                            (m: string) => `<strong>${m}</strong>`
-                          )
-                        }} />
-                        <ArrowRight className="ml-auto size-3.5 text-muted-foreground" />
-                      </button>
+                        {p.images[0]?.url && (
+                          <img
+                            src={p.images[0].url}
+                            alt={p.name}
+                            className="size-12 rounded-lg object-contain bg-[#F7F3EE] p-1 shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-0.5">
+                            {p.category.name}
+                          </p>
+                          <p className="text-sm font-medium text-[#2d3444] truncate">{p.name}</p>
+                        </div>
+                        <ArrowRight className="size-4 text-[#bbb] group-hover:text-[#D4693A] transition-colors shrink-0" />
+                      </Link>
                     ))}
                   </div>
-                )}
-
-                {/* History */}
-                {!debouncedInput && history.length > 0 && (
-                  <div className="mb-3">
-                    <div className="mb-1.5 flex items-center justify-between px-2">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent</p>
-                      <button
-                        className="text-xs text-muted-foreground hover:text-foreground"
-                        onClick={() => { /* clearHistory */ }}
-                      >
-                        Clear
-                      </button>
+                ) : debouncedInput.length >= 2 ? (
+                  <div className="py-10 text-center text-[#bbb]">
+                    <p className="text-sm">No products found for "<strong className="text-[#2d3444]">{debouncedInput}</strong>"</p>
+                  </div>
+                ) : (
+                  <div className="p-4">
+                    <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-[#bbb]">Browse Categories</p>
+                    <div className="flex flex-wrap gap-2 px-2">
+                      {[
+                        { label: 'Gaming', href: '/categories/gaming' },
+                        { label: 'Accessories', href: '/categories/accessories' },
+                        { label: 'Appliances', href: '/categories/appliances' },
+                        { label: 'Smart Home', href: '/categories/smart-home' },
+                      ].map((c) => (
+                        <Link
+                          key={c.href}
+                          to={c.href}
+                          onClick={() => dispatch(setSearchOpen(false))}
+                          className="rounded-full border border-[#E8E4DF] px-4 py-1.5 text-xs font-semibold text-[#2d3444] hover:border-[#D4693A] hover:text-[#D4693A] transition-colors"
+                        >{c.label}</Link>
+                      ))}
                     </div>
-                    {history.slice(0, 5).map((h) => (
-                      <button
-                        key={h}
-                        onClick={() => handleSearch(h)}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-accent transition-colors"
-                      >
-                        <Clock className="size-3.5 text-muted-foreground" />
-                        {h}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Trending */}
-                {!debouncedInput && (
-                  <div>
-                    <p className="mb-1.5 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Trending
-                    </p>
-                    {['Wireless Headphones', 'Smartphones', 'Smart Watch', 'Laptops'].map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => handleSearch(t)}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-accent transition-colors"
-                      >
-                        <TrendingUp className="size-3.5 text-primary" />
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Empty state */}
-                {debouncedInput.length >= 2 && suggestions.length === 0 && (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <p className="text-sm">No suggestions found for "<strong>{debouncedInput}</strong>"</p>
-                    <button
-                      onClick={() => handleSearch(debouncedInput)}
-                      className="mt-2 text-sm text-primary hover:underline"
-                    >
-                      Search anyway →
-                    </button>
                   </div>
                 )}
               </div>
-
-              {/* Footer */}
-              {input && (
-                <div className="border-t px-4 py-3">
-                  <button
-                    onClick={() => handleSearch(input)}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary/10 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
-                  >
-                    <Search className="size-4" />
-                    Search for "{input}"
-                  </button>
-                </div>
-              )}
             </div>
           </motion.div>
         </>

@@ -1,16 +1,9 @@
-// ── Controllers ─────────────────────────────────────────────────────────────
-import ctrl1_1 from '../assets/gaming/1/1 (1).jpg'
-import ctrl2_1 from '../assets/gaming/2/1 (1).jpg'
-import ctrl3_1 from '../assets/gaming/3/1 (1).jpg'
-import ctrl4_1 from '../assets/gaming/4/1 (1).jpg'
-import ctrl5_1 from '../assets/gaming/5/1 (1).jpg'
-
-// only one shot per controller; reuse it for all four slots
-const ctrl1_2 = ctrl1_1, ctrl1_3 = ctrl1_1, ctrl1_4 = ctrl1_1
-const ctrl2_2 = ctrl2_1, ctrl2_3 = ctrl2_1, ctrl2_4 = ctrl2_1
-const ctrl3_2 = ctrl3_1, ctrl3_3 = ctrl3_1, ctrl3_4 = ctrl3_1
-const ctrl4_2 = ctrl4_1, ctrl4_3 = ctrl4_1, ctrl4_4 = ctrl4_1
-const ctrl5_2 = ctrl5_1, ctrl5_3 = ctrl5_1, ctrl5_4 = ctrl5_1
+// ── Gaming Controllers – G7 Pro ──────────────────────────────────────────────
+import ctrl1_1 from '../assets/gaming/WhatsApp Image 2026-07-30 at 10.59.39 (4)-01.png'
+import ctrl2_1 from '../assets/gaming/WhatsApp Image 2026-07-30 at 10.59.39 (4)-02.png'
+import ctrl3_1 from '../assets/gaming/WhatsApp Image 2026-07-30 at 10.59.39 (4)-03.png'
+import ctrl4_1 from '../assets/gaming/WhatsApp Image 2026-07-30 at 10.59.39 (4)-04.png'
+import ctrl5_1 from '../assets/gaming/WhatsApp Image 2026-07-30 at 10.59.39 (4)-05.png'
 
 // ── Stylus BC23-017C product shots ───────────────────────────────────────────
 import pencil_bc23_y_shot  from '../assets/accessories/pencil aslitec/1 (2).png'
@@ -34,22 +27,22 @@ const pencil_life_pink_top = pencil_bc24016_pink_shot
 const pencil_life_wht_top  = pencil_bc24016_white_shot
 
 // ── Kettles ──────────────────────────────────────────────────────────────────
-import kettle_mint_shot  from '../assets/home appliance/app-a5.png'
-import kettle_mint_life  from '../assets/home appliance/as.png'
+import kettle_mint_shot  from '../assets/home appliance/app-a6.png'
+const kettle_mint_life = kettle_mint_shot
 
-import kettle_black_shot  from '../assets/home appliance/app-a1.png'
-import kettle_black_life1 from '../assets/home appliance/ef.png'
-import kettle_black_life2 from '../assets/home appliance/1780998566828-019eabc8-a418-72f0-b129-bb15548517ed.png'
+import kettle_black_shot from '../assets/home appliance/app-a7.png'
+const kettle_black_life1 = kettle_black_shot
+const kettle_black_life2 = kettle_black_shot
 
 import kettle_white_shot from '../assets/home appliance/app-a2.png'
-import kettle_white_life from '../assets/home appliance/gfh.png'
+const kettle_white_life = kettle_white_shot
 
 import kettle_glass from '../assets/home appliance/1781163413031-019eb59b-9d11-7dab-a991-a37062e43c17.png'
 
 import kettle_steel_shot1 from '../assets/home appliance/Image_20260614110630_265_2.png'
 import kettle_steel_shot2 from '../assets/home appliance/app-a3.png'
 import kettle_steel_shot3 from '../assets/home appliance/app-a4.png'
-import kettle_steel_life  from '../assets/home appliance/Image_20260614110658_266_2.png'
+const kettle_steel_life = kettle_steel_shot2
 
 // ── Chargers (GaN) ───────────────────────────────────────────────────────────
 import _charger_img1 from '../assets/accessories/Home Charger Adapter/charger-u.png'
@@ -115,16 +108,6 @@ import cam_r03_1  from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/3.
 import cam_r03_2  from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/4.jpg'
 
 export {
-  // Controllers – Black
-  ctrl1_1, ctrl1_2, ctrl1_3, ctrl1_4,
-  // Controllers – White
-  ctrl2_1, ctrl2_2, ctrl2_3, ctrl2_4,
-  // Controllers – Green Camo
-  ctrl3_1, ctrl3_2, ctrl3_3, ctrl3_4,
-  // Controllers – Gray Camo
-  ctrl4_1, ctrl4_2, ctrl4_3, ctrl4_4,
-  // Controllers – Blue Camo
-  ctrl5_1, ctrl5_2, ctrl5_3, ctrl5_4,
   // Stylus BC23-017C product shots
   pencil_bc23_y_shot, pencil_bc23_yb_shot, pencil_bc23_w_shot,
   // Stylus BC24-016W product shots
@@ -159,6 +142,12 @@ export {
   ear_front_dl_blk, ear_front_dl_wht, ear_dl_blk, ear_dl_wht, ear_dl_blk_2, ear_dl_wht_2,
   // Earphones – Single Lightning
   ear_front_sl_blk, ear_front_sl_wht, ear_sl_blk, ear_sl_wht, ear_sl_blk_2, ear_sl_wht_2,
+  // Gaming Controllers
+  ctrl1_1,
+  ctrl2_1,
+  ctrl3_1,
+  ctrl4_1,
+  ctrl5_1,
   // Security Cameras
   cam_g12_1, cam_g12_2,
   cam_g20_1, cam_g20_2,

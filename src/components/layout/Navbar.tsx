@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Heart, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react'
+import { Search, Menu, X } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { setCartDrawer, setSearchOpen, setMobileMenu } from '@/features/ui/store/uiSlice'
-import { logout } from '@/features/auth/store/authSlice'
-import { getInitials } from '@/lib/utils'
-import { useGetCategoriesQuery } from '@/data/useMockData'
+import { setSearchOpen, setMobileMenu } from '@/features/ui/store/uiSlice'
 import { Logo } from '@/components/common/Logo'
 
 type Scheme = 'light' | 'dark' | 'orange'
@@ -17,8 +14,6 @@ const SCHEME_COLORS = {
     navActive:  '#D4693A',
     icon:       '#666',
     logoFilter: 'none',
-    signInBg:   '#2d3444',
-    signInText: '#ffffff',
     barColor:   '#D4693A',
     dotColor:   '#D4693A',
   },
@@ -27,8 +22,6 @@ const SCHEME_COLORS = {
     navActive:  '#ffffff',
     icon:       'rgba(255,255,255,0.65)',
     logoFilter: 'brightness(0) invert(1)',
-    signInBg:   'rgba(255,255,255,0.15)',
-    signInText: '#ffffff',
     barColor:   '#D4693A',
     dotColor:   '#ffffff',
   },
@@ -37,19 +30,16 @@ const SCHEME_COLORS = {
     navActive:  '#ffffff',
     icon:       'rgba(255,255,255,0.85)',
     logoFilter: 'brightness(0) invert(1)',
-    signInBg:   '#2d3444',
-    signInText: '#ffffff',
     barColor:   '#ffffff',
     dotColor:   '#ffffff',
   },
 }
 
 const NAV = [
-  { label: 'Shop', href: '/products' },
-  { label: 'Gaming', href: '/categories/gaming' },
+  { label: 'Gaming',      href: '/categories/gaming' },
   { label: 'Accessories', href: '/categories/accessories' },
-  { label: 'Appliances', href: '/categories/appliances' },
-  { label: 'Smart Home', href: '/categories/smart-home' },
+  { label: 'Appliances',  href: '/categories/appliances' },
+  { label: 'Smart Home',  href: '/categories/smart-home' },
 ]
 
 function NavItem({
@@ -112,18 +102,9 @@ function NavItem({
 
 export default function Navbar() {
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated, user } = useAppSelector((s) => s.auth)
-  const cartCount = useAppSelector((s) =>
-    s.cart.cart?.items.filter((i) => !i.savedForLater).reduce((a, i) => a + i.quantity, 0) ?? 0
-  )
-  const wishlistCount = useAppSelector((s) => s.wishlist.items.length)
   const mobileOpen = useAppSelector((s) => s.ui.mobileMenuOpen)
   const [scheme, setScheme] = useState<Scheme>('light')
-  const [userMenu, setUserMenu] = useState(false)
-
-  useGetCategoriesQuery()
 
   useEffect(() => {
     const detect = () => {
@@ -142,7 +123,6 @@ export default function Navbar() {
   }, [])
 
   const colors = SCHEME_COLORS[scheme]
-  const handleLogout = () => { dispatch(logout()); setUserMenu(false); navigate('/') }
 
   return (
     <>
@@ -166,7 +146,7 @@ export default function Navbar() {
             </nav>
 
             {/* Right actions */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => dispatch(setSearchOpen(true))}
                 style={{ color: colors.icon, transition: 'color 0.3s' }}
@@ -174,93 +154,6 @@ export default function Navbar() {
               >
                 <Search className="size-4" />
               </button>
-
-              <Link
-                to="/wishlist"
-                style={{ color: colors.icon, transition: 'color 0.3s' }}
-                className="relative flex size-9 items-center justify-center rounded-lg"
-              >
-                <Heart className="size-4" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#D4693A] text-[9px] font-bold text-white">
-                    {wishlistCount > 9 ? '9+' : wishlistCount}
-                  </span>
-                )}
-              </Link>
-
-              <button
-                onClick={() => dispatch(setCartDrawer(true))}
-                style={{ color: colors.icon, transition: 'color 0.3s' }}
-                className="relative flex size-9 items-center justify-center rounded-lg"
-              >
-                <ShoppingCart className="size-4" />
-                {cartCount > 0 && (
-                  <motion.span
-                    key={cartCount}
-                    initial={{ scale: 1.5 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#D4693A] text-[9px] font-bold text-white"
-                  >
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </motion.span>
-                )}
-              </button>
-
-              {isAuthenticated && user ? (
-                <div className="relative ml-1">
-                  <button
-                    onClick={() => setUserMenu(!userMenu)}
-                    className="flex size-9 items-center justify-center rounded-lg bg-[#D4693A]/10 text-xs font-bold text-[#D4693A] hover:bg-[#D4693A]/20 transition-all"
-                  >
-                    {getInitials(user.firstName, user.lastName)}
-                  </button>
-                  <AnimatePresence>
-                    {userMenu && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 4 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-52 rounded-2xl bg-white border border-[#E8E4DF] overflow-hidden shadow-xl"
-                        onMouseLeave={() => setUserMenu(false)}
-                      >
-                        <div className="p-4 border-b border-[#F0EDE9]">
-                          <p className="font-semibold text-[#2d3444] text-sm">{user.firstName} {user.lastName}</p>
-                          <p className="text-xs text-[#999] truncate mt-0.5">{user.email}</p>
-                        </div>
-                        <div className="p-2">
-                          {['admin', 'vendor'].includes(user.role) && (
-                            <Link to="/admin" onClick={() => setUserMenu(false)}
-                              className="flex items-center gap-2 px-3 py-2 text-sm text-[#555] hover:text-[#2d3444] hover:bg-[#F7F3EE] rounded-lg transition-colors">
-                              <LayoutDashboard className="size-4" /> Admin
-                            </Link>
-                          )}
-                          <Link to="/account" onClick={() => setUserMenu(false)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-[#555] hover:text-[#2d3444] hover:bg-[#F7F3EE] rounded-lg transition-colors">
-                            <User className="size-4" /> My Account
-                          </Link>
-                          <button onClick={handleLogout}
-                            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                            <LogOut className="size-4" /> Sign out
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <Link
-                  to="/auth/login"
-                  style={{
-                    background: colors.signInBg,
-                    color: colors.signInText,
-                    transition: 'background 0.4s, color 0.4s',
-                  }}
-                  className="ml-2 rounded-full px-5 py-2 text-xs font-bold"
-                >
-                  Sign In
-                </Link>
-              )}
 
               <button
                 style={{ color: colors.icon, transition: 'color 0.3s' }}

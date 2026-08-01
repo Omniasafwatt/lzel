@@ -1,22 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, Truck, Shield, Zap } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import {
   useGetFeaturedProductsQuery,
   useGetBestsellersQuery,
   useGetCategoriesQuery,
   useGetNewArrivalsQuery,
+  useGetProductsByCategoryQuery,
 } from '@/data/useMockData'
-import { useAppDispatch } from '@/app/hooks'
-import { addItem } from '@/features/cart/store/cartSlice'
-import { formatPrice } from '@/lib/utils'
-import { toast } from 'sonner'
 import type { Product } from '@/types'
 
-// ── Waterproof cases ──────────────────────────────────────────────────────
+// â”€â”€ Waterproof cases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import caseFront1 from '@/assets/accessories/WaterProof Case/front-01.png'
 import caseFront2 from '@/assets/accessories/WaterProof Case/front-02.png'
 import caseFront3 from '@/assets/accessories/WaterProof Case/front-03.png'
@@ -28,16 +25,16 @@ const casePink  = caseFront3
 const caseGreen = caseFront4
 const caseWhite = caseFront5
 
-// ── Powerbanks ────────────────────────────────────────────────────────────
-import pbHW_gray   from '@/assets/accessories/Powerbank/HW121-灰.png'
-import pbHW_purple from '@/assets/accessories/Powerbank/HW121-紫.png'
-import pbHW_blue   from '@/assets/accessories/Powerbank/HW121-蓝.png'
-import pbHW_silver from '@/assets/accessories/Powerbank/HW121-锖.png'
+// â”€â”€ Powerbanks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import pbHW_gray   from '@/assets/accessories/Powerbank/HW121-gray.png'
+import pbHW_purple from '@/assets/accessories/Powerbank/HW121-purple.png'
+import pbHW_blue   from '@/assets/accessories/Powerbank/HW121-blue.png'
+import pbHW_silver from '@/assets/accessories/Powerbank/HW121-silver.png'
 const pb01 = pbHW_gray
 const pb02 = pbHW_blue
 const pb03 = pbHW_purple
 
-// ── Wave silicone grip cases ──────────────────────────────────────────────
+// â”€â”€ Wave silicone grip cases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import caseRed    from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/E-RED 3.png'
 import caseLBlue  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/B-LIGHT BLUE 3.png'
 import caseWine   from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/K-WINE 3.png'
@@ -54,7 +51,7 @@ import caseLBlue5 from '@/assets/accessories/Cases/No.1 aslitec Wave silicone gr
 import caseSand5  from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/C-SAND 5.png'
 import caseBrown5 from '@/assets/accessories/Cases/No.1 aslitec Wave silicone grip/G-BROWN 5.png'
 
-// ── PC Maze cases (No.10) ─────────────────────────────────────────────────
+// â”€â”€ PC Maze cases (No.10) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import mazeBrown   from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/B-BROWN 3.png'
 import mazeRed     from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/C-RED 3.png'
 import mazeBlack   from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/I-BLACK 3.png'
@@ -67,57 +64,57 @@ import mazeDeepBrn from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/
 import mazeLPurple from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/H-LIGHT PURPLE 3.png'
 import mazeBlkGold from '@/assets/accessories/Cases/No.10 asltitec PC Maze Case/J-BLACK GOLD 3.png'
 
-// ── Coordinate PC case (No.11) ────────────────────────────────────────────
-import coord11Purple from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/机器紫.png'
-import coord11Blue   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/深蓝色.png'
-import coord11Gray   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/灰色.png'
-import coord11Black  from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/黑色.png'
+// â”€â”€ Coordinate PC case (No.11) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import coord11Purple from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/robot-purple.png'
+import coord11Blue   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/deep-blue.png'
+import coord11Gray   from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/gray.png'
+import coord11Black  from '@/assets/accessories/Cases/No.11 asliec Coordinate PC case (update)/black.png'
 
-// ── Cyber Mech case (No.12) ───────────────────────────────────────────────
-import cyber12Blue   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/深蓝色 (1).png'
-import cyber12Gray   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/灰色 (1).png'
-import cyber12Purple from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/紫色 (1).png'
-import cyber12Black  from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/黑色 (1).png'
+// â”€â”€ Cyber Mech case (No.12) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import cyber12Blue   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/deep-blue.png'
+import cyber12Gray   from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/gray.png'
+import cyber12Purple from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/purple.png'
+import cyber12Black  from '@/assets/accessories/Cases/No.12 aslitec Cyber Mech case/black.png'
 
-// ── Leather Coordinate case (No.17) ──────────────────────────────────────
-import leather17Gray   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/灰色 拷贝.png'
-import leather17Purple from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/紫色 拷贝.png'
-import leather17Blue   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/蓝色 拷贝.png'
-import leather17Black  from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/黑色 拷贝.png'
+// â”€â”€ Leather Coordinate case (No.17) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import leather17Gray   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/gray.png'
+import leather17Purple from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/purple.png'
+import leather17Blue   from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/blue.png'
+import leather17Black  from '@/assets/accessories/Cases/No.17 Leather Coordinate case (updated)/black.png'
 
-// ── Silicone Coordinate case (No.20) ─────────────────────────────────────
-import sil20Orange from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/橙色.png'
-import sil20Pink   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/粉色.png'
-import sil20Blue   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/深蓝色.png'
-import sil20Purple from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/机器紫.png'
-import sil20Gray   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/浅灰色.png'
-import sil20Black  from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/黑色.png'
+// â”€â”€ Silicone Coordinate case (No.20) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import sil20Orange from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/orange.png'
+import sil20Pink   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/pink.png'
+import sil20Blue   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/deep-blue.png'
+import sil20Purple from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/robot-purple.png'
+import sil20Gray   from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/light-gray.png'
+import sil20Black  from '@/assets/accessories/Cases/No.20 aslitec Silicone Coordinate case (updated)/black.png'
 
-// ── Leather Kickstand case B (No.5) ──────────────────────────────────────
-import kick5Pink   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-粉色 (1).png'
-import kick5Blue   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-蓝色 (1) - 副本.png'
-import kick5Sand   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-杏色 (1).png'
-import kick5Yellow from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/晶灵腕带双料实色-黄色 (1).png'
+// â”€â”€ Leather Kickstand case B (No.5) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import kick5Pink   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/pink.png'
+import kick5Blue   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/blue.png'
+import kick5Sand   from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/sand.png'
+import kick5Yellow from '@/assets/accessories/Cases/No.5 aslitec Leather Kickstand case B/yellow.png'
 
-// ── Leather Kickstand case D (No.7) ──────────────────────────────────────
-import kick7a from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5652 拷贝.png'
-import kick7b from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5653 拷贝.png'
-import kick7c from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5656 拷贝.png'
-import kick7d from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/001.5657 拷贝.png'
+// â”€â”€ Leather Kickstand case D (No.7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import kick7a from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/5652.png'
+import kick7b from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/5653.png'
+import kick7c from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/5656.png'
+import kick7d from '@/assets/accessories/Cases/No.7 aslitec Leather Kickstand case D (updated)/5657.png'
 
-// ── Leather Kickstand case E (No.8) ──────────────────────────────────────
-import kick8Gray   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-浅灰色 (1).png'
-import kick8Purple from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-紫色 (1).png'
-import kick8Blue   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-蓝色 (1).png'
-import kick8Black  from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/晶灵腕带双料肤感-黑色 (1).png'
+// â”€â”€ Leather Kickstand case E (No.8) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import kick8Gray   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/light-gray.png'
+import kick8Purple from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/purple.png'
+import kick8Blue   from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/blue.png'
+import kick8Black  from '@/assets/accessories/Cases/No.8 aslitec Leather Kickstand case E (updated)/black.png'
 
-// ── Lanyard (No.21) ───────────────────────────────────────────────────────
+// â”€â”€ Lanyard (No.21) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import lanyard1 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (1).png'
 import lanyard2 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (2).png'
 import lanyard3 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (3).png'
 import lanyard4 from '@/assets/accessories/Cases/No.21 aslitec Lanyard/3 (4).png'
 
-// ── Pencils ───────────────────────────────────────────────────────────────
+// â”€â”€ Pencils â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import pencil1  from '@/assets/accessories/pencil aslitec/1 (2).png'
 import pencil2  from '@/assets/accessories/pencil aslitec/2 (2).png'
 import pencil3  from '@/assets/accessories/pencil aslitec/3 (2).png'
@@ -128,24 +125,12 @@ import pencil28 from '@/assets/accessories/pencil aslitec/28 (2).png'
 import pencil29 from '@/assets/accessories/pencil aslitec/29.png'
 import pencil30 from '@/assets/accessories/pencil aslitec/30.png'
 
-// ── Gaming ────────────────────────────────────────────────────────────────
-import g1a from '@/assets/gaming/1/1 (1).jpg'
-import g2a from '@/assets/gaming/2/1 (1).jpg'
-import g3a from '@/assets/gaming/3/1 (1).jpg'
-import g4a from '@/assets/gaming/4/1 (1).jpg'
-import g5a from '@/assets/gaming/5/1 (1).jpg'
-const g1b = g1a, g1c = g1a, g1d = g1a
-const g2b = g2a, g2c = g2a, g2d = g2a
-const g3b = g3a, g3c = g3a, g3d = g3a
-const g4b = g4a, g4c = g4a, g4d = g4a
-const g5b = g5a, g5c = g5a, g5d = g5a
-
 gsap.registerPlugin(ScrollTrigger)
 
-// ── Hero data ─────────────────────────────────────────────────────────────
+// â”€â”€ Hero data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const HERO_IMGS = [
-  caseBlue, pb02, pbHW_blue, caseMint, mazePurple,
-  coord11Blue, cyber12Black, leather17Purple, sil20Orange, kick5Pink, pencil2,
+  caseBlue, caseMint, mazePurple, coord11Blue, cyber12Black,
+  leather17Purple, sil20Orange, kick5Pink, kick7a, kick8Blue, caseGreen,
 ]
 
 const SLOTS = [
@@ -165,10 +150,7 @@ const SLOTS = [
 const FLOAT_PHASES = [0.0, 1.4, 2.7, 0.5, 1.9, 0.2, 1.6, 3.0, 0.8, 2.3, 1.0]
 const FLOAT_AMPS   = [12,  10,   8,  14,  10,  18,  10,  14,   8,  10,  12 ]
 
-// ── Gaming collage images ─────────────────────────────────────────────────
-const GAMING_IMGS = [g1a, g1b, g1c, g1d, g2a, g2b, g2c, g2d, g3a, g3b, g3c, g3d, g4a, g4b, g4c, g4d, g5a, g5b, g5c, g5d]
-
-// ── Showcase images (floating gallery) ───────────────────────────────────
+// â”€â”€ Showcase images (floating gallery) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SHOWCASE = [
   { src: pb02,         label: 'Powerbank Pro',      sub: '20,000mAh · Fast Charge' },
   { src: caseBlue,     label: 'WaterProof Case',     sub: 'IP68 Military Grade' },
@@ -181,7 +163,7 @@ const SHOWCASE = [
   { src: cyber12Black, label: 'Cyber Mech Case',     sub: 'Tactical Edition' },
 ]
 
-// ── 3D Hero ───────────────────────────────────────────────────────────────
+// â”€â”€ 3D Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Hero3DScene() {
   const heroRef   = useRef<HTMLDivElement>(null)
   const innerRef  = useRef<HTMLDivElement>(null)
@@ -197,13 +179,7 @@ function Hero3DScene() {
           { opacity: 0 },
           { opacity: 1, duration: 1.2, ease: 'power2.out', delay: 0.3 + idx * 0.07 }
         )
-        gsap.to(el, {
-          y: FLOAT_AMPS[idx],
-          duration: 4.5 + idx * 0.28,
-          ease: 'sine.inOut',
-          repeat: -1, yoyo: true,
-          delay: 1.8 + FLOAT_PHASES[idx],
-        })
+        // float animation removed — infinite repeat caused GPU jank
       })
 
       gsap.to([innerRef.current, textRef.current], {
@@ -307,104 +283,74 @@ function Hero3DScene() {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 2.2 }}
         >
-          <Link to="/products"
-            className="rounded-full bg-[#2d3444] px-9 py-3.5 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors duration-300"
-          >Shop All</Link>
-          <Link to="/categories/gaming"
-            className="flex items-center gap-2 text-sm font-semibold text-[#2d3444]/60 hover:text-[#D4693A] transition-colors duration-200"
-          >Explore Gaming <ArrowRight className="size-4" /></Link>
         </motion.div>
       </div>
     </div>
   )
 }
 
-// ── Product card (3D tilt) ────────────────────────────────────────────────
 function Card({ product, index = 0 }: { product: Product; index?: number }) {
-  const dispatch = useAppDispatch()
-  const ref = useRef<HTMLDivElement>(null)
-  const rx = useMotionValue(0), ry = useMotionValue(0)
-  const srx = useSpring(rx, { stiffness: 130, damping: 22 })
-  const sry = useSpring(ry, { stiffness: 130, damping: 22 })
-  const [hovered, setHovered] = useState(false)
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = ref.current!.getBoundingClientRect()
-    rx.set(((e.clientY - r.top - r.height / 2) / r.height) * -5)
-    ry.set(((e.clientX - r.left - r.width / 2) / r.width) * 5)
-  }
-
-  const addToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation()
-    dispatch(addItem({ product })); toast.success('Added to cart')
-  }
-
   const img = product.images[0]?.url
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.7, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      ref={ref}
-      className="h-full"
-      style={{ perspective: 800 }}
-      onMouseMove={onMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { rx.set(0); ry.set(0); setHovered(false) }}
+    <div
+      className="home-card group h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-xl transition-shadow duration-300"
+      style={{ animationDelay: `${index * 55}ms` }}
     >
-      <motion.div
-        style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
-        className="h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
-        animate={{
-          boxShadow: hovered
-            ? '0 16px 48px rgba(0,0,0,0.10)'
-            : '0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05)',
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
-          <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
-            {img && (
-              <motion.img src={img} alt={product.name} className="size-full object-cover"
-                animate={hovered ? { scale: 1.06 } : { scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              />
-            )}
-            {product.compareAtPrice && (
-              <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
-            )}
-            <AnimatePresence>
-              {hovered && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                  className="absolute inset-x-3 bottom-3"
-                >
-                  <button onClick={addToCart}
-                    className="w-full rounded-xl bg-[#2d3444] py-2.5 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors duration-200"
-                  >Add to Cart</button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+      <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
+        <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
+          {img && (
+            <img src={img} alt={product.name}
+              className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.06]"
+              loading="lazy" decoding="async"
+            />
+          )}
+          {product.compareAtPrice && (
+            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
+          )}
+        </div>
+        <div className="p-4 flex flex-col flex-1">
+          <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
+          <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
+          <div className="mt-auto pt-3">
+            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
           </div>
-          <div className="p-4 flex flex-col flex-1">
-            <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
-            <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-            <div className="mt-auto pt-3 flex items-center justify-between">
-              <span className="font-bold text-[#2d3444]">{formatPrice(product.price)}</span>
-              <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
-            </div>
-          </div>
-        </Link>
-      </motion.div>
-    </motion.div>
+        </div>
+      </Link>
+    </div>
   )
 }
 
-// ── Marquee strip ─────────────────────────────────────────────────────────
+function BigCard({ product }: { product: Product }) {
+  const img = product.images[0]?.url
+  return (
+    <div className="group h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-xl transition-shadow duration-300">
+      <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
+        <div className="relative flex-1 overflow-hidden bg-[#F7F3EE] min-h-[280px]">
+          {img && (
+            <img src={img} alt={product.name}
+              className="size-full object-contain p-6 transition-transform duration-500 group-hover:scale-[1.05]"
+              loading="lazy" decoding="async"
+            />
+          )}
+          {product.compareAtPrice && (
+            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
+          )}
+        </div>
+        <div className="p-5">
+          <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
+          <h3 className="text-base font-bold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
+          <div className="mt-2">
+            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
+          </div>
+        </div>
+      </Link>
+    </div>
+  )
+}
+
+// â”€â”€ Marquee strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Marquee({ reverse = false }) {
-  const items = ['GAMING', 'POWERBANKS', 'CHARGERS', 'CASES', 'ACCESSORIES', 'ASLITEC', 'TECH']
+  const items = ['POWERBANKS', 'CHARGERS', 'CASES', 'ACCESSORIES', 'ASLITEC', 'TECH']
   const rep = [...items, ...items]
   return (
     <div data-nav-scheme="dark" className="overflow-hidden bg-[#2d3444] py-3.5">
@@ -419,7 +365,7 @@ function Marquee({ reverse = false }) {
   )
 }
 
-// ── Fade-up reveal ────────────────────────────────────────────────────────
+// â”€â”€ Fade-up reveal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FadeUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div className={className}
@@ -430,11 +376,10 @@ function FadeUp({ children, delay = 0, className = '' }: { children: React.React
   )
 }
 
-// ── Horizontal rack (GSAP pinned) ─────────────────────────────────────────
+// â”€â”€ Horizontal rack (GSAP pinned) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function HorizontalRack({ tag, title, products }: { tag: string; title: string; products: Product[] }) {
   const trackRef   = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
-  const dispatch   = useAppDispatch()
 
   useEffect(() => {
     if (!products.length) return
@@ -463,42 +408,30 @@ function HorizontalRack({ tag, title, products }: { tag: string; title: string; 
       </div>
       <div ref={trackRef} className="flex gap-5 pb-16 pt-6 w-max"
         style={{ paddingLeft: 'max(2rem, calc((100vw - 1280px) / 2 + 2rem))', paddingRight: '4rem' }}>
-        {products.map((p, i) => (
-          <motion.div key={p.id} className="w-[270px] shrink-0"
-            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+        {products.map((p) => (
+          <Link key={p.id} to={`/products/${p.slug}`}
+            className="group flex flex-col w-[270px] shrink-0 bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-lg transition-shadow duration-300"
           >
-            <Link to={`/products/${p.slug}`}
-              className="group block bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="aspect-square overflow-hidden bg-[#F7F3EE]">
-                {p.images[0]?.url && (
-                  <img src={p.images[0].url} alt={p.name}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 mb-2">{p.name}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#2d3444] text-sm">{formatPrice(p.price)}</span>
-                  <button
-                    onClick={(e) => { e.preventDefault(); dispatch(addItem({ product: p })); toast.success('Added to cart') }}
-                    className="text-xs font-bold text-[#D4693A] hover:underline"
-                  >+ Cart</button>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
+            <div className="aspect-square overflow-hidden bg-[#F7F3EE] shrink-0">
+              {p.images[0]?.url && (
+                <img src={p.images[0].url} alt={p.name}
+                  className="size-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy" decoding="async"
+                />
+              )}
+            </div>
+            <div className="p-4 flex flex-col flex-1">
+              <h3 className="text-sm font-semibold text-[#2d3444] mb-2 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '2.625rem' }}>{p.name}</h3>
+            </div>
+          </Link>
         ))}
       </div>
     </section>
   )
 }
 
-// ── Count-up stat ─────────────────────────────────────────────────────────
-function CountStat({ value, suffix = '', label }: { value: number; suffix?: string; label: string }) {
+// â”€â”€ Count-up stat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function CountStat({ value, suffix = '', label, labelClass }: { value: number; suffix?: string; label: string; labelClass?: string }) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -519,14 +452,14 @@ function CountStat({ value, suffix = '', label }: { value: number; suffix?: stri
   }, [value])
 
   return (
-    <div ref={ref} className="text-center">
-      <div className="text-5xl font-black text-white tabular-nums">{count.toLocaleString()}{suffix}</div>
-      <p className="mt-2 text-sm text-white/40">{label}</p>
+    <div ref={ref}>
+      <div className="text-[clamp(40px,5vw,56px)] font-black text-white tabular-nums leading-none">{count.toLocaleString()}{suffix}</div>
+      <p className={`mt-2 text-sm font-semibold ${labelClass ?? 'text-white/40'}`}>{label}</p>
     </div>
   )
 }
 
-// ── SCRAPBOOK CATEGORIES ──────────────────────────────────────────────────
+// â”€â”€ SCRAPBOOK CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SCRAP_ANGLES = [-16, 10, -5, 13, -9]
 const SCRAP_FROM   = [
   { x: -700, y: -300, r: -45 },
@@ -565,7 +498,6 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
 
   return (
     <section ref={sectionRef} data-nav-scheme="light" className="relative bg-[#FAFAF8] py-32 overflow-hidden min-h-[780px]">
-      {/* Watermark */}
       <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center">
         <span className="text-[22vw] font-black text-[#2d3444]/[0.03] uppercase leading-none tracking-tighter">
           SHOP
@@ -574,7 +506,7 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
 
       <div className="container relative z-10">
         <FadeUp className="mb-20 text-center">
-          <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">— Collections —</p>
+          <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3"> -  Collections  - </p>
           <h2 className="text-[clamp(40px,6vw,80px)] font-black tracking-tight text-[#2d3444] leading-[.9]">
             Shop by<br />Category
           </h2>
@@ -582,7 +514,7 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
 
         {/* Scattered Polaroid cards */}
         <div className="relative flex flex-wrap justify-center items-center gap-8 md:gap-0 md:min-h-[480px]">
-          {categories.slice(0, 5).map((cat, i, arr) => {
+          {categories.slice(0, 5).map((cat: any, i: number, arr: any[]) => {
             const count = arr.length
             const step  = 100 / (count + 1)
             const leftVal = `calc(${step * (i + 1)}% - 100px)`
@@ -603,7 +535,12 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
                 <div className="bg-white p-3 pb-10 shadow-[0_8px_40px_rgba(45,52,68,0.18)] transition-all duration-300 group-hover:shadow-[0_20px_60px_rgba(45,52,68,0.28)] group-hover:-translate-y-2">
                   <div className="aspect-[3/4] overflow-hidden bg-[#F0EDE9]">
                     {cat.image
-                      ? <img src={cat.image} alt={cat.name} className="size-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      ? <img
+                          src={cat.image}
+                          alt={cat.name}
+                          className={`size-full transition-transform duration-700 group-hover:scale-110 ${cat.slug === 'appliances'||'gaming' ? 'object-contain p-3' : 'object-cover'}`}
+                          style={undefined}
+                        />
                       : <div className="size-full bg-gradient-to-br from-[#D4693A]/20 to-[#2d3444]/20" />
                     }
                   </div>
@@ -615,17 +552,12 @@ function ScrapbookCategories({ categories }: { categories: any[] }) {
           })}
         </div>
 
-        <div className="mt-16 text-center">
-          <Link to="/products"
-            className="inline-flex items-center gap-2 text-sm font-bold text-[#2d3444] hover:text-[#D4693A] transition-colors"
-          >Browse All Categories <ArrowRight className="size-4" /></Link>
-        </div>
       </div>
     </section>
   )
 }
 
-// ── THE DROP — featured on dark bg ───────────────────────────────────────
+// â”€â”€ THE DROP  -  featured on dark bg â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function TheDropSection({ products }: { products: Product[] }) {
   const sectionRef = useRef<HTMLDivElement>(null)
 
@@ -669,9 +601,6 @@ function TheDropSection({ products }: { products: Product[] }) {
             <h2 className="text-[clamp(52px,8vw,110px)] font-black text-white leading-[.85] tracking-tight">
               THE<br /><span className="text-gradient-orange">DROP.</span>
             </h2>
-            <Link to="/products?sort=featured"
-              className="hidden sm:flex items-center gap-2 text-sm font-bold text-white/40 hover:text-[#D4693A] transition-colors shrink-0 mb-2"
-            >View All <ArrowRight className="size-4" /></Link>
           </div>
         </FadeUp>
 
@@ -688,10 +617,11 @@ function TheDropSection({ products }: { products: Product[] }) {
                   <Link to={`/products/${p.slug}`}
                     className="group block rounded-2xl overflow-hidden border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#D4693A]/40 transition-all duration-300"
                   >
-                    <div className="aspect-square overflow-hidden bg-white/5 relative">
+                    <div className="aspect-square overflow-hidden bg-[#1e2530] relative">
                       {p.images[0]?.url && (
                         <img src={p.images[0].url} alt={p.name}
-                          className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="size-full object-contain transition-transform duration-700 group-hover:scale-110"
+                          loading="lazy" decoding="async"
                         />
                       )}
                       {p.compareAtPrice && (
@@ -712,129 +642,6 @@ function TheDropSection({ products }: { products: Product[] }) {
   )
 }
 
-// ── GAMING COLLAGE ────────────────────────────────────────────────────────
-const COLLAGE_TILTS = [-3, 2, -1.5, 3, -2, 1.5, -2.5, 2, -1, 2.5, -1.5, 2]
-
-function GamingCollage() {
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const imgRefs    = useRef<(HTMLDivElement | null)[]>([])
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      imgRefs.current.forEach((el, i) => {
-        if (!el) return
-        gsap.fromTo(el,
-          { opacity: 0, scale: 0.6, y: (i % 2 === 0 ? -60 : 60) },
-          {
-            opacity: 1, scale: 1, y: 0,
-            duration: 0.8, ease: 'back.out(1.3)',
-            delay: i * 0.07,
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 65%',
-              toggleActions: 'play none none reverse',
-            },
-          }
-        )
-      })
-    }, sectionRef)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <section ref={sectionRef} data-nav-scheme="dark" className="relative bg-[#12171f] py-24 overflow-hidden">
-      {/* GAMING watermark */}
-      <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center">
-        <span className="text-[16vw] font-black text-white/[0.03] uppercase leading-none tracking-tighter">GAMING</span>
-      </div>
-
-      {/* Diagonal stripe */}
-      <div className="pointer-events-none absolute inset-0"
-        style={{ background: 'repeating-linear-gradient(135deg, transparent, transparent 80px, rgba(212,105,58,0.015) 80px, rgba(212,105,58,0.015) 82px)' }} />
-
-      <div className="container relative z-10">
-        <div className="flex flex-col lg:flex-row gap-12 items-start">
-
-          {/* Left sticky text */}
-          <div className="lg:w-64 lg:sticky lg:top-1/3 shrink-0">
-            <motion.div
-              initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-4">Level Up</p>
-              <h2 className="text-[clamp(48px,6vw,80px)] font-black text-white leading-[.88] tracking-tight">
-                GAME<br />ON.
-              </h2>
-              <p className="mt-5 text-sm text-white/35 leading-relaxed max-w-[200px]">
-                Next-level gaming gear. Built for champions.
-              </p>
-              <Link to="/categories/gaming"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#D4693A] hover:text-white transition-colors"
-              >Shop Gaming <ArrowRight className="size-4" /></Link>
-            </motion.div>
-          </div>
-
-          {/* Collage — 3 columns, cards exactly 150×150 */}
-          <div className="flex-1 flex gap-5 justify-center">
-            {/* Column A */}
-            <div className="flex flex-col gap-5 items-center">
-              {[0, 1, 2].map((slot) => (
-                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
-                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
-                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
-                >
-                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
-                </div>
-              ))}
-            </div>
-
-            {/* Column B */}
-            <div className="flex flex-col gap-5 items-center">
-              {[3, 4, 5].map((slot) => (
-                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
-                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
-                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
-                >
-                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
-                </div>
-              ))}
-            </div>
-
-            {/* Column C */}
-            <div className="flex flex-col gap-5 items-center">
-              {[6, 7, 8].map((slot) => (
-                <div key={slot} ref={(el) => { imgRefs.current[slot] = el }}
-                  className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.38)] transition-shadow duration-300 w-fit"
-                  style={{ transform: `rotate(${COLLAGE_TILTS[slot]}deg)` }}
-                >
-                  <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom strip — 4 controllers */}
-        <div className="mt-6 flex gap-5 justify-center flex-wrap">
-          {[9, 10, 11, 12].map((slot, i) => (
-            <motion.div
-              key={slot}
-              className="rounded-xl bg-white p-2 shadow-[0_6px_24px_rgba(0,0,0,0.28)] w-fit"
-              style={{ transform: `rotate(${COLLAGE_TILTS[slot % COLLAGE_TILTS.length]}deg)` }}
-              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <img src={GAMING_IMGS[slot % GAMING_IMGS.length]} alt="" className="w-[150px] h-[150px] object-contain" draggable={false} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── FLOATING SHOWCASE ─────────────────────────────────────────────────────
 function FloatingShowcase() {
   return (
     <section data-nav-scheme="light" className="bg-white py-28 overflow-hidden">
@@ -853,31 +660,23 @@ function FloatingShowcase() {
             return (
               <motion.div
                 key={i}
-                className="flex flex-col items-center"
+                className="group flex flex-col items-center"
                 style={{ marginTop: offsetY }}
-                initial={{ opacity: 0, y: 80 + offsetY * 0.5, rotate: (i % 2 === 0 ? -6 : 6) }}
-                whileInView={{ opacity: 1, y: offsetY, rotate: 0 }}
+                initial={{ opacity: 0, y: 50, rotate: (i % 2 === 0 ? -6 : 6) }}
+                whileInView={{ opacity: 1, y: 0, rotate: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 1.0, delay: col * 0.1 + Math.floor(i / 3) * 0.15, ease: [0.16, 1, 0.3, 1] }}
               >
-                <motion.div
-                  className="w-full aspect-square relative"
-                  whileHover={{ scale: 1.06, y: -12, rotate: (i % 2 === 0 ? 3 : -3) }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-                >
+                <div className="w-full aspect-square relative transition-transform duration-500 group-hover:-translate-y-3 group-hover:scale-[1.06]">
                   <img src={src} alt={label} className="size-full object-contain" draggable={false}
+                    loading="lazy" decoding="async"
                     style={{ filter: 'drop-shadow(0 28px 14px rgba(45,52,68,0.18)) drop-shadow(0 10px 4px rgba(45,52,68,0.10))' }}
                   />
-                </motion.div>
-                <motion.div
-                  className="mt-4 text-center"
-                  initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: col * 0.1 + 0.3 }}
-                >
+                </div>
+                <div className="mt-4 text-center">
                   <h3 className="font-black text-[#2d3444] text-xs uppercase tracking-[.15em]">{label}</h3>
                   <p className="text-[11px] text-[#999] mt-0.5">{sub}</p>
-                </motion.div>
+                </div>
               </motion.div>
             )
           })}
@@ -887,7 +686,7 @@ function FloatingShowcase() {
   )
 }
 
-// ── ACCESSORIES CHAOS STRIP ───────────────────────────────────────────────
+// â”€â”€ ACCESSORIES CHAOS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CHAOS_IMGS = [
   caseLBlue, caseRed, caseSand, caseWine, caseFGreen, caseYellow, caseBrown, casePinkS, caseIBlue, caseBlack1,
   lanyard1, lanyard2, lanyard3, lanyard4,
@@ -958,6 +757,7 @@ function AccessoriesChaos() {
             >
               <img src={src} alt="" draggable={false}
                 className="w-full object-contain transition-transform duration-300 hover:scale-110 hover:-translate-y-2"
+                loading="lazy" decoding="async"
                 style={{ filter: 'drop-shadow(0 16px 8px rgba(45,52,68,0.12))' }}
               />
             </div>
@@ -966,15 +766,15 @@ function AccessoriesChaos() {
       </div>
 
       <div className="container relative z-10 mt-10 text-right">
-        <Link to="/products"
+        <Link to="/categories/accessories"
           className="inline-flex items-center gap-2 text-sm font-bold text-[#2d3444] hover:text-[#D4693A] transition-colors"
-        >Shop All Accessories <ArrowRight className="size-4" /></Link>
+        >Shop Accessories <ArrowRight className="size-4" /></Link>
       </div>
     </section>
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────
+// â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HomePage() {
   const { data: featuredData }    = useGetFeaturedProductsQuery()
   const { data: bestsellersData } = useGetBestsellersQuery({})
@@ -986,72 +786,89 @@ export default function HomePage() {
   const categories  = categoriesData?.data  ?? []
   const newArrivals = newArrivalsData?.data  ?? []
 
-  const BENEFITS = [
-    { icon: Truck,  title: 'Free Shipping',  desc: 'On all orders over $50. Fast and reliable.' },
-    { icon: Shield, title: '1-Year Warranty', desc: 'Every product backed by our quality promise.' },
-    { icon: Zap,    title: 'Premium Quality', desc: 'Engineered for performance, built to last.' },
+  const PROMISES = [
+    { icon: '*', title: 'Premium Quality',      desc: 'Every product is hand-picked and held to an uncompromising standard before it ever reaches you.',  highlight: true  },
+    { icon: '+', title: 'Satisfaction Focused', desc: 'Your happiness is the measure of our success  -  we stand behind everything we sell, no exceptions.',  highlight: false },
+    { icon: '>', title: 'Curated Selection',    desc: 'Not just stocked, but chosen. Each product earns its place through real-world performance.',        highlight: false },
+    { icon: '=', title: 'Built to Last',        desc: 'We source products engineered for durability  -  because great gear should go the distance.',          highlight: false },
   ]
 
   return (
     <div>
-      {/* 1 — 3D Hero */}
+      {/* 1  -  3D Hero */}
       <Hero3DScene />
 
-      {/* 2 — Marquee */}
+      {/* 2  -  Marquee */}
       <Marquee />
 
-      {/* 3 — Scrapbook Categories */}
+      {/* 3  -  Scrapbook Categories */}
       <ScrapbookCategories categories={categories} />
 
-      {/* 4 — Featured "THE DROP" on dark */}
+      {/* 4  -  Featured "THE DROP" on dark */}
       <TheDropSection products={featured} />
 
-      {/* 5 — Gaming Collage */}
-      <GamingCollage />
-
-      {/* 6 — New Arrivals horizontal rack */}
+      {/* 5  -  New Arrivals horizontal rack */}
       {newArrivals.length > 0 && (
         <HorizontalRack tag="Fresh Drops" title="New Arrivals" products={newArrivals} />
       )}
 
-      {/* 7 — Floating product showcase */}
+      {/* 7  -  Floating product showcase */}
       <FloatingShowcase />
 
-      {/* 8 — All accessories chaos scroll */}
+      {/* 8  -  All accessories chaos scroll */}
       <AccessoriesChaos />
 
-      {/* 9 — Benefits */}
-      <section data-nav-scheme="light" className="bg-[#F7F3EE] py-20">
-        <div className="container">
-          <div className="grid md:grid-cols-3 gap-5">
-            {BENEFITS.map(({ icon: Icon, title, desc }, i) => (
-              <FadeUp key={title} delay={i * 0.1}>
-                <div className="bg-white rounded-2xl p-8 border border-[#E8E4DF] h-full">
-                  <div className="size-12 rounded-xl bg-[#D4693A]/10 flex items-center justify-center mb-5">
-                    <Icon className="size-5 text-[#D4693A]" />
+      {/* 9  -  Premium Promise + Stats */}
+      <section data-nav-scheme="dark" className="relative bg-[#2d3444] py-28 overflow-hidden">
+        {/* Dot grid background */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.055]"
+          style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '36px 36px' }}
+        />
+        {/* Orange glow */}
+        <div className="absolute -top-48 -right-48 w-[500px] h-[500px] rounded-full bg-[#D4693A]/25 blur-[130px] pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-72 h-72 rounded-full bg-[#D4693A]/10 blur-[100px] pointer-events-none" />
+
+        <div className="container relative">
+          {/* Header */}
+          <FadeUp>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20">
+              <div>
+                <p className="text-[10px] font-black tracking-[.45em] text-[#D4693A] uppercase mb-5">Why Lzel</p>
+                <h2 className="text-[clamp(44px,8vw,96px)] font-black text-white leading-[.9] tracking-tight">
+                  PREMIUM<br />QUALITY<span className="text-[#D4693A]">.</span>
+                </h2>
+              </div>
+              <p className="max-w-[320px] text-sm text-white/35 leading-relaxed lg:mb-3">
+                Every product in our catalog is hand-selected and held to an uncompromising standard  -  because your experience should be nothing short of exceptional.
+              </p>
+            </div>
+          </FadeUp>
+
+          {/* Promise tiles */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {PROMISES.map(({ icon, title, desc, highlight }, i) => (
+              <FadeUp key={title} delay={i * 0.09}>
+                <motion.div
+                  className={`rounded-2xl p-7 h-full flex flex-col gap-6 min-h-[220px] border cursor-default ${
+                    highlight
+                      ? 'bg-[#D4693A] border-[#D4693A]'
+                      : 'bg-white/[0.04] border-white/[0.08]'
+                  }`}
+                  whileHover={{ scale: 1.03, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+                >
+                  <span className={`text-2xl ${highlight ? 'text-white' : 'text-[#D4693A]'}`}>{icon}</span>
+                  <div>
+                    <h3 className="text-base font-black text-white mb-2">{title}</h3>
+                    <p className={`text-xs leading-relaxed ${highlight ? 'text-white/70' : 'text-white/35'}`}>{desc}</p>
                   </div>
-                  <h3 className="text-lg font-bold text-[#2d3444] mb-2">{title}</h3>
-                  <p className="text-sm text-[#777] leading-relaxed">{desc}</p>
-                </div>
+                </motion.div>
               </FadeUp>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 10 — Stats */}
-      <section data-nav-scheme="dark" className="bg-[#2d3444] py-20">
-        <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <CountStat value={5000} suffix="+" label="Happy Customers" />
-            <CountStat value={200}  suffix="+" label="Products Available" />
-            <CountStat value={50}   suffix="+" label="Brands Stocked" />
-            <CountStat value={99}   suffix="%" label="Satisfaction Rate" />
-          </div>
-        </div>
-      </section>
-
-      {/* 11 — CTA Banner */}
+      {/* 11  -  CTA Banner */}
       <section data-nav-scheme="orange" className="bg-[#D4693A] py-28">
         <div className="container text-center">
           <motion.h2
@@ -1071,14 +888,14 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/products"
+            <Link to="/categories/gaming"
               className="inline-flex items-center gap-2 rounded-full bg-white px-9 py-4 text-sm font-bold text-[#D4693A] hover:bg-[#2d3444] hover:text-white transition-colors duration-300"
-            >Shop All Products <ArrowRight className="size-4" /></Link>
+            >Explore Gaming <ArrowRight className="size-4" /></Link>
           </motion.div>
         </div>
       </section>
 
-      {/* 12 — Bestsellers */}
+      {/* 12  -  Bestsellers */}
       <section data-nav-scheme="light" className="bg-white py-24">
         <div className="container">
           <FadeUp className="mb-12 flex items-end justify-between gap-4">
@@ -1086,9 +903,6 @@ export default function HomePage() {
               <p className="text-xs font-bold tracking-[.3em] text-[#D4693A] uppercase mb-3">Most Loved</p>
               <h2 className="text-5xl font-black tracking-tight text-[#2d3444]">Bestsellers</h2>
             </div>
-            <Link to="/products?sort=bestsellers"
-              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-[#2d3444] hover:text-[#D4693A] transition-colors shrink-0"
-            >View All <ArrowRight className="size-4" /></Link>
           </FadeUp>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {bestsellers.slice(0, 8).map((p, i) => <Card key={p.id} product={p} index={i} />)}
@@ -1096,8 +910,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 13 — Final marquee */}
-      <Marquee reverse />
     </div>
   )
 }
+

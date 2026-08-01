@@ -97,7 +97,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
         {/* Image container */}
         <div
           className={cn(
-            'relative overflow-hidden bg-muted',
+            'relative overflow-hidden bg-[#F7F3EE]',
             variant === 'default' ? 'aspect-square' : 'size-20 shrink-0 rounded-lg'
           )}
         >
@@ -106,18 +106,18 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
               src={mainImage}
               alt={product.name}
               className={cn(
-                'size-full object-cover transition-all duration-500',
+                'size-full object-contain transition-all duration-500',
                 hoverImage && 'group-hover:opacity-0'
               )}
-              loading="lazy"
+              loading="lazy" decoding="async"
             />
           )}
           {hoverImage && (
             <img
               src={hoverImage}
               alt={product.name}
-              className="absolute inset-0 size-full object-cover opacity-0 transition-all duration-500 group-hover:opacity-100"
-              loading="lazy"
+              className="absolute inset-0 size-full object-contain opacity-0 transition-all duration-500 group-hover:opacity-100"
+              loading="lazy" decoding="async"
             />
           )}
 
@@ -164,16 +164,6 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
           {/* Quick view */}
           {variant === 'default' && (
             <div className="absolute bottom-0 left-0 right-0 flex translate-y-full items-center justify-center gap-2 bg-gradient-to-t from-black/60 p-3 transition-transform duration-300 group-hover:translate-y-0">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="h-8 gap-1 text-xs"
-                onClick={handleAddToCart}
-                loading={addingToCart}
-              >
-                <ShoppingCart className="size-3" />
-                Add to cart
-              </Button>
               <Button size="icon-sm" variant="secondary" asChild>
                 <Link to={`/products/${product.slug}`} onClick={(e) => e.stopPropagation()}>
                   <Eye className="size-3" />
@@ -210,15 +200,6 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
               <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
             </div>
           )}
-
-          <div className="mt-2 flex items-center gap-2">
-            <span className="font-bold text-foreground">{formatPrice(product.price)}</span>
-            {product.compareAtPrice && (
-              <span className="text-xs text-muted-foreground line-through">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-            )}
-          </div>
 
           {/* Image dots */}
           {variant === 'default' && product.images.length > 1 && (

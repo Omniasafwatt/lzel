@@ -56,7 +56,7 @@ export default function CustomCursor() {
   }, [mouseX, mouseY])
 
   const ringSize = hovered ? 36 : 12
-  const ringBg = hovered ? 'rgba(212,105,58,0.15)' : 'transparent'
+  const ringBg = hovered ? 'rgba(212,105,58,0.15)' : 'rgba(0,0,0,0)'
   const scale = pressed ? 0.7 : 1
 
   return (
@@ -107,7 +107,6 @@ export default function CustomCursor() {
             height: '100%',
             borderRadius: '50%',
             border: '1.5px solid rgba(212,105,58,0.4)',
-            backgroundColor: ringBg,
           }}
         />
       </motion.div>

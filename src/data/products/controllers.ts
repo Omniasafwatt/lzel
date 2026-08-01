@@ -1,11 +1,11 @@
 import type { Product } from '@/types'
 import { getCategoryById } from '../mockCategories'
 import {
-  ctrl1_1, ctrl1_2, ctrl1_3, ctrl1_4,
-  ctrl2_1, ctrl2_2, ctrl2_3, ctrl2_4,
-  ctrl3_1, ctrl3_2, ctrl3_3, ctrl3_4,
-  ctrl4_1, ctrl4_2, ctrl4_3, ctrl4_4,
-  ctrl5_1, ctrl5_2, ctrl5_3, ctrl5_4,
+  ctrl1_1,
+  ctrl2_1,
+  ctrl3_1,
+  ctrl4_1,
+  ctrl5_1,
 } from '../localImages'
 
 const cat = getCategoryById('cat-gaming')!
@@ -23,12 +23,11 @@ const SPECS = [
 ]
 
 export const controllers: Product[] = [
-  // ── Black RGB ──────────────────────────────────────────────────────────────
   {
     id: 'prod-ctrl-black',
     name: 'aslitec G7 Pro Controller – Black RGB',
     slug: 'aslitec-g7-pro-controller-black-rgb',
-    description: 'The aslitec G7 Pro is a premium wireless game controller featuring full-body RGB LED strips with 16.8 million customizable colors. Engineered for PlayStation 4, PC, Android, and iOS, it delivers precise dual-analog control with haptic vibration feedback. The matte black finish with glowing color arcs makes it a statement piece on any setup.',
+    description: 'The aslitec G7 Pro is a premium wireless game controller featuring full-body RGB LED strips with 16.8 million customizable colors. Engineered for PlayStation 4, PC, Android, and iOS, it delivers precise dual-analog control with haptic vibration feedback.',
     shortDescription: 'Wireless RGB controller. 8 h battery. BT 5.1 + USB-C.',
     sku: 'ASL-G7P-BLK',
     price: 59.99,
@@ -40,9 +39,7 @@ export const controllers: Product[] = [
     variants: [],
     images: [
       { id: 'img-ctrl-b1', url: ctrl1_1, alt: 'G7 Pro Black RGB – front', sortOrder: 0 },
-      { id: 'img-ctrl-b2', url: ctrl1_2, alt: 'G7 Pro Black RGB – side',  sortOrder: 1 },
-      { id: 'img-ctrl-b3', url: ctrl1_3, alt: 'G7 Pro Black RGB – angle', sortOrder: 2 },
-      { id: 'img-ctrl-b4', url: ctrl1_4, alt: 'G7 Pro Black RGB – back',  sortOrder: 3 },
+
     ],
     specifications: SPECS,
     tags: ['controller', 'gaming', 'rgb', 'wireless', 'black', 'ps4', 'pc'],
@@ -59,13 +56,11 @@ export const controllers: Product[] = [
     createdAt: '2025-01-10T00:00:00Z',
     updatedAt: '2025-06-01T00:00:00Z',
   },
-
-  // ── White RGB ──────────────────────────────────────────────────────────────
   {
     id: 'prod-ctrl-white',
     name: 'aslitec G7 Pro Controller – White RGB',
     slug: 'aslitec-g7-pro-controller-white-rgb',
-    description: 'The G7 Pro in Glacier White pairs a clean, luminous body with vivid RGB strip lighting that pops against the white shell. Every feature of the Black edition — BT 5.1, 8-hour battery, dual haptic motors — delivered in an eye-catching snow-white finish.',
+    description: 'The G7 Pro in Glacier White pairs a clean, luminous body with vivid RGB strip lighting. Every feature of the Black edition — BT 5.1, 8-hour battery, dual haptic motors — delivered in a snow-white finish.',
     shortDescription: 'Wireless RGB controller. Glacier White. BT 5.1 + USB-C.',
     sku: 'ASL-G7P-WHT',
     price: 59.99,
@@ -77,9 +72,6 @@ export const controllers: Product[] = [
     variants: [],
     images: [
       { id: 'img-ctrl-w1', url: ctrl2_1, alt: 'G7 Pro White RGB – front', sortOrder: 0 },
-      { id: 'img-ctrl-w2', url: ctrl2_2, alt: 'G7 Pro White RGB – side',  sortOrder: 1 },
-      { id: 'img-ctrl-w3', url: ctrl2_3, alt: 'G7 Pro White RGB – angle', sortOrder: 2 },
-      { id: 'img-ctrl-w4', url: ctrl2_4, alt: 'G7 Pro White RGB – back',  sortOrder: 3 },
     ],
     specifications: SPECS,
     tags: ['controller', 'gaming', 'rgb', 'wireless', 'white', 'ps4', 'pc'],
@@ -96,13 +88,11 @@ export const controllers: Product[] = [
     createdAt: '2025-01-10T00:00:00Z',
     updatedAt: '2025-06-01T00:00:00Z',
   },
-
-  // ── Green Camo RGB ─────────────────────────────────────────────────────────
   {
     id: 'prod-ctrl-green',
     name: 'aslitec G7 Pro Controller – Green Camo RGB',
     slug: 'aslitec-g7-pro-controller-green-camo-rgb',
-    description: 'Take your setup off the grid with the G7 Pro in Forest Green Camo. The military-inspired camouflage print is layered with full RGB arc lighting for a bold contrast that commands attention. Built with the same precision internals as the rest of the G7 Pro line.',
+    description: 'Military-inspired camouflage print layered with full RGB arc lighting for a bold contrast. Built with the same precision internals as the rest of the G7 Pro line.',
     shortDescription: 'Wireless RGB controller. Forest Green Camo. BT 5.1.',
     sku: 'ASL-G7P-GRN',
     price: 64.99,
@@ -114,9 +104,6 @@ export const controllers: Product[] = [
     variants: [],
     images: [
       { id: 'img-ctrl-g1', url: ctrl3_1, alt: 'G7 Pro Green Camo – front', sortOrder: 0 },
-      { id: 'img-ctrl-g2', url: ctrl3_2, alt: 'G7 Pro Green Camo – side',  sortOrder: 1 },
-      { id: 'img-ctrl-g3', url: ctrl3_3, alt: 'G7 Pro Green Camo – angle', sortOrder: 2 },
-      { id: 'img-ctrl-g4', url: ctrl3_4, alt: 'G7 Pro Green Camo – back',  sortOrder: 3 },
     ],
     specifications: SPECS,
     tags: ['controller', 'gaming', 'rgb', 'wireless', 'camo', 'green', 'ps4', 'pc'],
@@ -133,13 +120,11 @@ export const controllers: Product[] = [
     createdAt: '2025-02-14T00:00:00Z',
     updatedAt: '2025-06-01T00:00:00Z',
   },
-
-  // ── Gray Camo RGB ──────────────────────────────────────────────────────────
   {
     id: 'prod-ctrl-gray',
     name: 'aslitec G7 Pro Controller – Gray Camo RGB',
     slug: 'aslitec-g7-pro-controller-gray-camo-rgb',
-    description: 'Urban stealth meets gaming performance. The G7 Pro Gray Camo wraps the controller in a subtle city-grey camouflage that lets the full-spectrum RGB arc lighting steal the show. Perfect for players who want style without sacrificing subtlety.',
+    description: 'Urban stealth meets gaming performance. The G7 Pro Gray Camo wraps the controller in a subtle city-grey camouflage that lets the full-spectrum RGB arc lighting steal the show.',
     shortDescription: 'Wireless RGB controller. Urban Gray Camo. BT 5.1.',
     sku: 'ASL-G7P-GRY',
     price: 64.99,
@@ -151,9 +136,6 @@ export const controllers: Product[] = [
     variants: [],
     images: [
       { id: 'img-ctrl-gr1', url: ctrl4_1, alt: 'G7 Pro Gray Camo – front', sortOrder: 0 },
-      { id: 'img-ctrl-gr2', url: ctrl4_2, alt: 'G7 Pro Gray Camo – side',  sortOrder: 1 },
-      { id: 'img-ctrl-gr3', url: ctrl4_3, alt: 'G7 Pro Gray Camo – angle', sortOrder: 2 },
-      { id: 'img-ctrl-gr4', url: ctrl4_4, alt: 'G7 Pro Gray Camo – back',  sortOrder: 3 },
     ],
     specifications: SPECS,
     tags: ['controller', 'gaming', 'rgb', 'wireless', 'camo', 'gray', 'ps4', 'pc'],
@@ -170,13 +152,11 @@ export const controllers: Product[] = [
     createdAt: '2025-02-14T00:00:00Z',
     updatedAt: '2025-06-01T00:00:00Z',
   },
-
-  // ── Blue Camo RGB ──────────────────────────────────────────────────────────
   {
     id: 'prod-ctrl-blue',
     name: 'aslitec G7 Pro Controller – Blue Camo RGB',
     slug: 'aslitec-g7-pro-controller-blue-camo-rgb',
-    description: 'The G7 Pro Blue Camo brings deep-sea energy to your gaming setup. The arctic-blue and white camo print pairs with flowing RGB arc effects for a look that\'s impossible to ignore. Same pro-grade internals, completely unique style.',
+    description: 'The G7 Pro Blue Camo brings deep-sea energy to your gaming setup. Arctic-blue and white camo print pairs with flowing RGB arc effects for a look that\'s impossible to ignore.',
     shortDescription: 'Wireless RGB controller. Arctic Blue Camo. BT 5.1.',
     sku: 'ASL-G7P-BLU',
     price: 64.99,
@@ -188,9 +168,6 @@ export const controllers: Product[] = [
     variants: [],
     images: [
       { id: 'img-ctrl-bl1', url: ctrl5_1, alt: 'G7 Pro Blue Camo – front', sortOrder: 0 },
-      { id: 'img-ctrl-bl2', url: ctrl5_2, alt: 'G7 Pro Blue Camo – side',  sortOrder: 1 },
-      { id: 'img-ctrl-bl3', url: ctrl5_3, alt: 'G7 Pro Blue Camo – angle', sortOrder: 2 },
-      { id: 'img-ctrl-bl4', url: ctrl5_4, alt: 'G7 Pro Blue Camo – back',  sortOrder: 3 },
     ],
     specifications: SPECS,
     tags: ['controller', 'gaming', 'rgb', 'wireless', 'camo', 'blue', 'ps4', 'pc'],

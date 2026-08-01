@@ -3,23 +3,22 @@ import { Instagram, Twitter, Youtube } from 'lucide-react'
 
 const LINKS = {
   Products: [
-    { label: 'All Products', href: '/products' },
-    { label: 'Gaming', href: '/categories/gaming' },
-    { label: 'Accessories', href: '/categories/accessories' },
-    { label: 'Appliances', href: '/categories/appliances' },
-    { label: 'New Arrivals', href: '/products?sort=newest' },
+    { label: 'Gaming',           href: '/categories/gaming' },
+    { label: 'Accessories',      href: '/categories/accessories' },
+    { label: 'Appliances',       href: '/categories/appliances' },
+    { label: 'Smart Home',       href: '/categories/smart-home' },
   ],
   Company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
+    { label: 'About Us',         href: '/about' },
+    { label: 'Contact',          href: '/contact' },
+    { label: 'Privacy Policy',   href: '/privacy' },
+    { label: 'Terms',            href: '/terms' },
   ],
   Support: [
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Track Order', href: '/track-order' },
-    { label: 'Returns', href: '/support' },
-    { label: 'Warranty', href: '/faq#warranty' },
+    { label: 'FAQ',              href: '/faq' },
+    { label: 'Track Order',      href: '/track-order' },
+    { label: 'Returns',          href: '/support' },
+    { label: 'Warranty',         href: '/faq#warranty' },
   ],
 }
 
@@ -69,11 +68,6 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/20">© {new Date().getFullYear()} Aslitec. All rights reserved.</p>
-          <div className="flex items-center gap-2">
-            {['VISA', 'MC', 'PayPal', 'Stripe'].map((p) => (
-              <span key={p} className="px-2 py-1 rounded-md border border-white/8 text-[10px] font-mono text-white/20">{p}</span>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

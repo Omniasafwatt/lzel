@@ -1,15 +1,15 @@
 import type { Category } from '@/types'
-import { ctrl1_1 }                from './localImages'
 import { pencil_bc24018_white_shot } from './localImages'
-import { kettle_mint_shot }        from './localImages'
-import { cam_g20_1 }               from './localImages'
+import { kettle_steel_shot2 }        from './localImages'
+import { cam_g20_1 }                 from './localImages'
+import { ctrl1_1 }                   from './localImages'
 
 export const mockCategories: Category[] = [
   {
     id: 'cat-gaming',
     name: 'Gaming',
     slug: 'gaming',
-    description: 'aslitec wireless game controllers with RGB lighting',
+    description: 'aslitec G7 Pro wireless RGB controllers for PlayStation and PC',
     image: ctrl1_1,
     isActive: true,
     sortOrder: 1,
@@ -32,7 +32,7 @@ export const mockCategories: Category[] = [
     name: 'Appliances',
     slug: 'appliances',
     description: 'aslitec home appliances — kettles and more',
-    image: kettle_mint_shot,
+    image: kettle_steel_shot2,
     isActive: true,
     sortOrder: 3,
     productCount: 5,

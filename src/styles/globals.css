@@ -96,6 +96,7 @@
 @keyframes glow-pulse    { 0%,100% { opacity:.25 } 50% { opacity:.6 } }
 @keyframes beam          { 0% { transform:translateX(-100%) } 100% { transform:translateX(400%) } }
 @keyframes fade-in       { from { opacity:0;transform:translateY(10px) } to { opacity:1;transform:none } }
+@keyframes fadeInUp      { from { opacity:0;transform:translateY(28px) } to { opacity:1;transform:none } }
 
 .animate-marquee     { animation: marquee 30s linear infinite; }
 .animate-marquee-rev { animation: marquee-rev 30s linear infinite; }
@@ -104,6 +105,7 @@
 .animate-glow-pulse  { animation: glow-pulse 2.5s ease-in-out infinite; }
 .animate-beam        { animation: beam 2.5s ease-in-out infinite; }
 .animate-fade-in     { animation: fade-in 0.5s ease-out both; }
+.gaming-card         { animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 
 .clip-wrap  { overflow: hidden; }
 .clip-inner { display: block; will-change: transform; }

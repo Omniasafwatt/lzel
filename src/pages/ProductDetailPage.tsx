@@ -1,54 +1,25 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ShoppingCart, Heart, Share2, Star,
-  ChevronLeft, ChevronRight, Minus, Plus, Check, ZoomIn
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Star, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react'
 import { useGetProductQuery, useGetRelatedProductsQuery } from '@/data/useMockData'
-import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { addItem } from '@/features/cart/store/cartSlice'
-import { addToWishlist, removeFromWishlist } from '@/features/wishlist/store/wishlistSlice'
-import { addToRecentlyViewed } from '@/features/search/store/searchSlice'
-import ProductGrid from '@/features/products/components/ProductGrid'
-import ProductReviews from '@/features/reviews/components/ProductReviews'
 import { Skeleton } from '@/components/common/Skeleton'
-import { formatPrice, getDiscountPercentage } from '@/lib/utils'
 import type { ProductVariant } from '@/types'
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const dispatch = useAppDispatch()
   const { data, isLoading } = useGetProductQuery(slug!)
   const product = data?.data
 
   const [selectedImageIdx, setSelectedImageIdx] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
-  const [quantity, setQuantity] = useState(1)
-  const [addingToCart, setAddingToCart] = useState(false)
-  const [tab, setTab] = useState<'description' | 'specs' | 'reviews'>('description')
-
-  const isWishlisted = useAppSelector((s) =>
-    s.wishlist.items.some((i) => i.productId === product?.id)
-  )
+  const [tab, setTab] = useState<'description' | 'specs'>('description')
 
   const { data: relatedData } = useGetRelatedProductsQuery(product?.id ?? '', {
     skip: !product?.id,
   })
   const related = relatedData?.data ?? []
-
-  if (product && !isWishlisted) {
-    dispatch(addToRecentlyViewed(product.id))
-  }
-
-  const effectivePrice = selectedVariant?.price ?? product?.price ?? 0
-  const effectiveCompare = selectedVariant?.compareAtPrice ?? product?.compareAtPrice
-  const effectiveStock = selectedVariant?.stock ?? product?.stock ?? 0
-  const discountPct = effectiveCompare ? getDiscountPercentage(effectivePrice, effectiveCompare) : 0
 
   const handleAttributeSelect = (attrName: string, value: string) => {
     const newAttrs = { ...selectedAttributes, [attrName]: value }
@@ -59,36 +30,15 @@ export default function ProductDetailPage() {
     setSelectedVariant(matchedVariant ?? null)
   }
 
-  const handleAddToCart = async () => {
-    if (!product) return
-    setAddingToCart(true)
-    await new Promise((r) => setTimeout(r, 400))
-    dispatch(addItem({ product, variant: selectedVariant ?? undefined, quantity }))
-    toast.success('Added to cart!', { description: product.name })
-    setAddingToCart(false)
-  }
-
-  const handleWishlist = () => {
-    if (!product) return
-    if (isWishlisted) {
-      dispatch(removeFromWishlist(product.id))
-      toast.success('Removed from wishlist')
-    } else {
-      dispatch(addToWishlist(product))
-      toast.success('Added to wishlist')
-    }
-  }
-
   if (isLoading) {
     return (
-      <div className="container py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+      <div className="container pt-28 pb-16">
+        <div className="grid gap-10 lg:grid-cols-2">
           <Skeleton className="aspect-square rounded-2xl" />
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-6 w-1/4" />
-            <Skeleton className="h-12 w-1/3" />
-            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-5 w-1/3" />
+            <Skeleton className="h-20 w-full" />
           </div>
         </div>
       </div>
@@ -96,291 +46,230 @@ export default function ProductDetailPage() {
   }
 
   if (!product) return (
-    <div className="container py-20 text-center">
-      <h1 className="text-2xl font-bold">Product not found</h1>
-      <Button className="mt-4" asChild><Link to="/products">Browse Products</Link></Button>
+    <div className="container pt-28 pb-16 text-center">
+      <h1 className="text-2xl font-bold text-[#2d3444]">Product not found</h1>
+      <Link to="/" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#D4693A] hover:underline">
+        <ArrowLeft className="size-4" /> Back to Home
+      </Link>
     </div>
   )
 
   const images = product.images
 
   return (
-    <div className="container py-8 animate-fade-in">
-      {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">Home</Link>
-        {' / '}
-        <Link to="/products" className="hover:text-foreground">Products</Link>
-        {product.category && (
-          <>
-            {' / '}
-            <Link to={`/categories/${product.category.slug}`} className="hover:text-foreground">
-              {product.category.name}
-            </Link>
-          </>
-        )}
-        {' / '}
-        <span className="text-foreground font-medium">{product.name}</span>
-      </nav>
+    <div className="min-h-screen bg-[#FAFAF8]">
+      <div className="container pt-28 pb-20">
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Images */}
-        <div>
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={selectedImageIdx}
-                src={images[selectedImageIdx]?.url}
-                alt={product.name}
-                className="size-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              />
-            </AnimatePresence>
-
-            {/* Nav arrows */}
-            {images.length > 1 && (
-              <>
-                <button
-                  className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm shadow hover:bg-background transition-all"
-                  onClick={() => setSelectedImageIdx((i) => (i - 1 + images.length) % images.length)}
-                >
-                  <ChevronLeft className="size-4" />
-                </button>
-                <button
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm shadow hover:bg-background transition-all"
-                  onClick={() => setSelectedImageIdx((i) => (i + 1) % images.length)}
-                >
-                  <ChevronRight className="size-4" />
-                </button>
-              </>
-            )}
-
-            {discountPct > 0 && (
-              <Badge variant="destructive" className="absolute left-3 top-3 text-sm px-2">
-                -{discountPct}%
-              </Badge>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {images.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto">
-              {images.map((img, i) => (
-                <button
-                  key={img.id}
-                  onClick={() => setSelectedImageIdx(i)}
-                  className={`size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
-                    i === selectedImageIdx ? 'border-primary' : 'border-transparent hover:border-muted-foreground/30'
-                  }`}
-                >
-                  <img src={img.url} alt={img.alt || product.name} className="size-full object-cover" />
-                </button>
-              ))}
-            </div>
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex items-center gap-1.5 text-xs text-[#999]">
+          <Link to="/" className="hover:text-[#2d3444] transition-colors">Home</Link>
+          <span>/</span>
+          {product.category && (
+            <>
+              <Link to={`/categories/${product.category.slug}`} className="hover:text-[#2d3444] transition-colors capitalize">
+                {product.category.name}
+              </Link>
+              <span>/</span>
+            </>
           )}
-        </div>
+          <span className="text-[#2d3444] font-medium truncate max-w-[200px]">{product.name}</span>
+        </nav>
 
-        {/* Info */}
-        <div className="space-y-5">
-          <span className="text-sm font-semibold text-primary">aslitec</span>
+        <div className="grid gap-12 lg:grid-cols-2">
 
+          {/* ── Images ─────────────────────────────────────────────────── */}
           <div>
-            <h1 className="text-2xl font-bold leading-tight md:text-3xl">{product.name}</h1>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`size-4 ${
-                      i < Math.floor(product.averageRating)
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'fill-muted text-muted'
+            <div className="relative aspect-square overflow-hidden rounded-3xl bg-[#F7F3EE] border border-[#E8E4DF]">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={selectedImageIdx}
+                  src={images[selectedImageIdx]?.url}
+                  alt={product.name}
+                  className="size-full object-contain p-6"
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.25 }}
+                />
+              </AnimatePresence>
+
+              {images.length > 1 && (
+                <>
+                  <button
+                    className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-all"
+                    onClick={() => setSelectedImageIdx((i) => (i - 1 + images.length) % images.length)}
+                  >
+                    <ChevronLeft className="size-4 text-[#2d3444]" />
+                  </button>
+                  <button
+                    className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-all"
+                    onClick={() => setSelectedImageIdx((i) => (i + 1) % images.length)}
+                  >
+                    <ChevronRight className="size-4 text-[#2d3444]" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            {images.length > 1 && (
+              <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+                {images.map((img, i) => (
+                  <button
+                    key={img.id}
+                    onClick={() => setSelectedImageIdx(i)}
+                    className={`size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                      i === selectedImageIdx
+                        ? 'border-[#D4693A]'
+                        : 'border-transparent hover:border-[#E8E4DF]'
                     }`}
-                  />
+                  >
+                    <img src={img.url} alt={img.alt || product.name} className="size-full object-contain bg-[#F7F3EE] p-1" />
+                  </button>
                 ))}
               </div>
-              <span className="text-sm font-medium">{product.averageRating.toFixed(1)}</span>
-              <button
-                className="text-sm text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-                onClick={() => setTab('reviews')}
-              >
-                {product.reviewCount} reviews
-              </button>
-            </div>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-bold">{formatPrice(effectivePrice)}</span>
-            {effectiveCompare && effectiveCompare > effectivePrice && (
-              <span className="text-lg text-muted-foreground line-through">
-                {formatPrice(effectiveCompare)}
-              </span>
-            )}
-            {discountPct > 0 && (
-              <Badge variant="destructive">{discountPct}% off</Badge>
             )}
           </div>
 
-          {/* Stock status */}
-          <div className="flex items-center gap-2">
-            {effectiveStock > 0 ? (
-              <>
-                <Check className="size-4 text-emerald-500" />
-                <span className="text-sm font-medium text-emerald-600">
-                  {effectiveStock <= 10 ? `Only ${effectiveStock} left!` : 'In Stock'}
-                </span>
-              </>
-            ) : (
-              <span className="text-sm font-medium text-destructive">Out of Stock</span>
-            )}
-          </div>
+          {/* ── Info ───────────────────────────────────────────────────── */}
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.3em] text-[#D4693A] mb-2">aslitec</p>
+              <h1 className="text-2xl md:text-3xl font-black text-[#2d3444] leading-tight">{product.name}</h1>
 
-          {/* Variants */}
-          {product.attributes.map((attr) => (
-            <div key={attr.id}>
-              <label className="mb-2 block text-sm font-semibold">
-                {attr.name}:{' '}
-                <span className="font-normal text-muted-foreground">
-                  {selectedAttributes[attr.name] || 'Select'}
-                </span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {attr.values.map((val) => {
-                  const selected = selectedAttributes[attr.name] === val
-                  return (
-                    <button
-                      key={val}
-                      onClick={() => handleAttributeSelect(attr.name, val)}
-                      className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-all ${
-                        selected
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border hover:border-foreground'
+              {/* Rating */}
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`size-4 ${
+                        i < Math.floor(product.averageRating)
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'fill-[#E8E4DF] text-[#E8E4DF]'
                       }`}
-                    >
-                      {val}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-
-          {/* Quantity */}
-          <div>
-            <label className="mb-2 block text-sm font-semibold">Quantity</label>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center rounded-lg border">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="flex size-10 items-center justify-center hover:bg-accent transition-colors"
-                >
-                  <Minus className="size-4" />
-                </button>
-                <span className="w-12 text-center text-sm font-semibold">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(Math.min(effectiveStock, quantity + 1))}
-                  className="flex size-10 items-center justify-center hover:bg-accent transition-colors"
-                  disabled={quantity >= effectiveStock}
-                >
-                  <Plus className="size-4" />
-                </button>
-              </div>
-              <span className="text-xs text-muted-foreground">{effectiveStock} available</span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              size="lg"
-              className="flex-1 gap-2"
-              onClick={handleAddToCart}
-              loading={addingToCart}
-              disabled={effectiveStock === 0}
-            >
-              <ShoppingCart className="size-5" />
-              {effectiveStock === 0 ? 'Out of Stock' : 'Add to Cart'}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleWishlist}
-              className={isWishlisted ? 'border-primary text-primary' : ''}
-            >
-              <Heart className={isWishlisted ? 'fill-primary size-5' : 'size-5'} />
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => {
-              navigator.share?.({ title: product.name, url: window.location.href })
-                .catch(() => {
-                  navigator.clipboard?.writeText(window.location.href)
-                  toast.success('Link copied!')
-                })
-            }}>
-              <Share2 className="size-5" />
-            </Button>
-          </div>
-
-          {/* Tags */}
-          {product.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {product.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">{tag}</Badge>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mt-12">
-        <div className="flex border-b">
-          {(['description', 'specs', 'reviews'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-                tab === t
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {t === 'reviews' ? `Reviews (${product.reviewCount})` : t}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6">
-          {tab === 'description' && (
-            <div
-              className="prose prose-sm dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
-          )}
-          {tab === 'specs' && (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {product.specifications.map((spec) => (
-                <div key={spec.label} className="flex gap-4 rounded-lg border p-3">
-                  <span className="text-sm font-medium text-muted-foreground w-32 shrink-0">{spec.label}</span>
-                  <span className="text-sm">{spec.value}</span>
+                    />
+                  ))}
                 </div>
+                <span className="text-sm font-semibold text-[#2d3444]">{product.averageRating.toFixed(1)}</span>
+                <span className="text-sm text-[#999]">· {product.reviewCount} reviews</span>
+              </div>
+            </div>
+
+            {/* Variants */}
+            {product.attributes.map((attr) => (
+              <div key={attr.id}>
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[#999]">
+                  {attr.name}
+                  {selectedAttributes[attr.name] && (
+                    <span className="ml-2 normal-case font-semibold text-[#2d3444]">{selectedAttributes[attr.name]}</span>
+                  )}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {attr.values.map((val) => {
+                    const selected = selectedAttributes[attr.name] === val
+                    return (
+                      <button
+                        key={val}
+                        onClick={() => handleAttributeSelect(attr.name, val)}
+                        className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
+                          selected
+                            ? 'border-[#D4693A] bg-[#D4693A]/8 text-[#D4693A]'
+                            : 'border-[#E8E4DF] text-[#555] hover:border-[#2d3444]'
+                        }`}
+                      >
+                        {val}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {/* Tags */}
+            {product.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {product.tags.map((tag) => (
+                  <span key={tag} className="rounded-full border border-[#E8E4DF] px-3 py-1 text-[11px] font-semibold text-[#999] uppercase tracking-wide">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Tabs ─────────────────────────────────────────────────────── */}
+        <div className="mt-16">
+          <div className="flex border-b border-[#E8E4DF]">
+            {(['description', 'specs'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-6 py-3 text-sm font-bold capitalize transition-colors border-b-2 -mb-px ${
+                  tab === t
+                    ? 'border-[#D4693A] text-[#D4693A]'
+                    : 'border-transparent text-[#999] hover:text-[#2d3444]'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8">
+            {tab === 'description' && (
+              <div
+                className="prose prose-sm max-w-none text-[#555] leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
+            )}
+            {tab === 'specs' && (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {product.specifications.map((spec) => (
+                  <div key={spec.label} className="flex gap-4 rounded-xl border border-[#E8E4DF] p-4 bg-white">
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#999] w-28 shrink-0 pt-0.5">{spec.label}</span>
+                    <span className="text-sm text-[#2d3444] font-medium">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Related ───────────────────────────────────────────────────── */}
+        {related.length > 0 && (
+          <section className="mt-20">
+            <p className="text-xs font-bold uppercase tracking-[.35em] text-[#D4693A] mb-2">You might also like</p>
+            <h2 className="text-2xl font-black text-[#2d3444] mb-8">Related Products</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {related.slice(0, 8).map((p) => (
+                <Link
+                  key={p.id}
+                  to={`/products/${p.slug}`}
+                  className="group rounded-2xl bg-white border border-[#E8E4DF] overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="aspect-square bg-[#F7F3EE] overflow-hidden">
+                    {p.images[0]?.url && (
+                      <img
+                        src={p.images[0].url}
+                        alt={p.name}
+                        className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-1">{p.category.name}</p>
+                    <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
+                    <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>
+                  </div>
+                </Link>
               ))}
             </div>
-          )}
-          {tab === 'reviews' && <ProductReviews productId={product.id} />}
-        </div>
+          </section>
+        )}
       </div>
-
-      {/* Related */}
-      {related.length > 0 && (
-        <section className="mt-16">
-          <h2 className="mb-6 text-xl font-bold">You might also like</h2>
-          <ProductGrid products={related} columns={4} />
-        </section>
-      )}
     </div>
   )
 }

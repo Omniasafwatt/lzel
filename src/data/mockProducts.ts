@@ -1,9 +1,12 @@
 import type { Product } from '@/types'
-import { controllers } from './products/controllers'
-import { stylus }      from './products/stylus'
-import { kettles }     from './products/kettles'
-import { chargers }    from './products/chargers'
-import { smartHome }   from './products/smartHome'
+import { stylus }          from './products/stylus'
+import { kettles }         from './products/kettles'
+import { chargers }        from './products/chargers'
+import { smartHome }       from './products/smartHome'
+import { controllers }     from './products/controllers'
+import { powerbanks }      from './products/powerbanks'
+import { waterproofCases } from './products/waterproofCases'
+import { phoneCases }      from './products/phoneCases'
 
 export { mockCategories, getCategoryById, getCategoryBySlug } from './mockCategories'
 
@@ -11,13 +14,16 @@ export const mockProducts: Product[] = [
   ...controllers,
   ...stylus,
   ...chargers,
+  ...powerbanks,
+  ...waterproofCases,
+  ...phoneCases,
   ...kettles,
   ...smartHome,
 ]
 
 export const productsByCategory: Record<string, Product[]> = {
   gaming:       controllers,
-  accessories:  [...stylus, ...chargers],
+  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases],
   appliances:   kettles,
   'smart-home': smartHome,
 }
@@ -28,9 +34,23 @@ export const bestSellers: Product[] = [...mockProducts]
   .sort((a, b) => b.salesCount - a.salesCount)
   .slice(0, 12)
 
-export const newArrivals: Product[] = [...mockProducts]
-  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  .slice(0, 12)
+const NEW_ARRIVALS_IDS = [
+  'prod-ear-dl-white',
+  'prod-ear-sl-black',
+  'prod-ear-dc-white',
+  'prod-ear-sc-black',
+  'prod-cam-js-g20',
+  'prod-cam-js-r02',
+  'prod-ket-glass',
+  'prod-ket-vintage-mint',
+  'prod-sty-bc24018-p',
+  'prod-sty-bc24016-w',
+  'prod-charger-200w',
+  'prod-sty-bc23-w',
+]
+export const newArrivals: Product[] = NEW_ARRIVALS_IDS
+  .map(id => mockProducts.find(p => p.id === id))
+  .filter((p): p is Product => p !== undefined)
 
 export const topRated: Product[] = [...mockProducts]
   .sort((a, b) => b.averageRating - a.averageRating || b.reviewCount - a.reviewCount)
