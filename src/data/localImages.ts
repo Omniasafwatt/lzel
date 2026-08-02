@@ -93,19 +93,20 @@ import ear_sl_wht   from '../assets/smart home/Earphones SoundPod Elite - aslite
 import ear_sl_blk_2 from '../assets/smart home/Earphones SoundPod Elite - aslitec/single lightning/black lighting single 2.png'
 import ear_sl_wht_2 from '../assets/smart home/Earphones SoundPod Elite - aslitec/single lightning/white lighting single 2.png'
 
-// ── Eva Security Cameras ──────────────────────────────────────────────────────
-import cam_g12_1  from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/G12.1770.jpg'
-import cam_g12_2  from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/G12.1771.jpg'
-import cam_g20_1  from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/1.png'
-import cam_g20_2  from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/2.png'
-import cam_p160_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-P160/1.jpg'
-import cam_p160_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-P160/2.jpg'
-import cam_p200_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/1.1910(1).jpg'
-import cam_p200_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/2.1904(1).jpg'
-import cam_r02_1  from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-4.png'
-import cam_r02_2  from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-2.png'
-import cam_r03_1  from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/3.jpg'
-import cam_r03_2  from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/4.jpg'
+// ── Eva Security Cameras (PNG only) ──────────────────────────────────────────
+import cam_g20_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/1.png'
+import cam_g20_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/2.png'
+import cam_g20_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/3.png'
+import cam_g20_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/4.png'
+import cam_g20_5 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/5.png'
+import cam_g20_6 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/6.png'
+import cam_g20_7 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/7.png'
+import cam_g20_8 from '../assets/smart home/Eva Security Cam- aslitec/JS-G20/8.png'
+import cam_r02_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-1.png'
+import cam_r02_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-2.png'
+import cam_r02_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-3.png'
+import cam_r02_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-4.png'
+import cam_r03_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/3.png'
 
 export {
   // Stylus BC23-017C product shots
@@ -148,11 +149,8 @@ export {
   ctrl3_1,
   ctrl4_1,
   ctrl5_1,
-  // Security Cameras
-  cam_g12_1, cam_g12_2,
-  cam_g20_1, cam_g20_2,
-  cam_p160_1, cam_p160_2,
-  cam_p200_1, cam_p200_2,
-  cam_r02_1, cam_r02_2,
-  cam_r03_1, cam_r03_2,
+  // Security Cameras (PNG only)
+  cam_g20_1, cam_g20_2, cam_g20_3, cam_g20_4, cam_g20_5, cam_g20_6, cam_g20_7, cam_g20_8,
+  cam_r02_1, cam_r02_2, cam_r02_3, cam_r02_4,
+  cam_r03_1,
 }

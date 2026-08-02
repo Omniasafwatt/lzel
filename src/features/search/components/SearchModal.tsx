@@ -7,6 +7,15 @@ import { setSearchOpen } from '@/features/ui/store/uiSlice'
 import { useGetProductsQuery } from '@/data/useMockData'
 import { debounce } from '@/lib/utils'
 
+const CATEGORIES = [
+  { label: 'Gaming', href: '/categories/gaming' },
+  { label: 'Accessories', href: '/categories/accessories' },
+  { label: 'Appliances', href: '/categories/appliances' },
+  { label: 'Smart Home', href: '/categories/smart-home' },
+]
+
+const DISPLAY_LIMIT = 8
+
 export default function SearchModal() {
   const dispatch = useAppDispatch()
   const open = useAppSelector((s) => s.ui.searchOpen)
@@ -33,8 +42,11 @@ export default function SearchModal() {
     return () => window.removeEventListener('keydown', handler)
   }, [open, dispatch])
 
-  const { data } = useGetProductsQuery({ query: debouncedInput, limit: 6 })
-  const results = debouncedInput.length >= 2 ? (data?.data ?? []) : []
+  const isSearching = debouncedInput.length >= 2
+  const { data } = useGetProductsQuery({ query: debouncedInput, limit: 200 })
+  const allResults = isSearching ? (data?.data ?? []) : []
+  const results = allResults.slice(0, DISPLAY_LIMIT)
+  const total = allResults.length
 
   return (
     <AnimatePresence>
@@ -63,7 +75,7 @@ export default function SearchModal() {
                   ref={inputRef}
                   value={input}
                   onChange={(e) => { setInput(e.target.value); debouncedUpdate(e.target.value) }}
-                  placeholder="Search products, categories..."
+                  placeholder="Search products across all categories..."
                   className="flex-1 bg-transparent text-base text-[#2d3444] outline-none placeholder:text-[#bbb]"
                 />
                 {input && (
@@ -78,50 +90,68 @@ export default function SearchModal() {
               </div>
 
               {/* Results */}
-              <div className="max-h-[60vh] overflow-y-auto">
-                {results.length > 0 ? (
-                  <div className="p-3">
-                    <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-[#bbb]">
-                      Results
-                    </p>
-                    {results.map((p) => (
-                      <Link
-                        key={p.id}
-                        to={`/products/${p.slug}`}
-                        onClick={() => dispatch(setSearchOpen(false))}
-                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-[#F7F3EE] transition-colors group"
-                      >
-                        {p.images[0]?.url && (
-                          <img
-                            src={p.images[0].url}
-                            alt={p.name}
-                            className="size-12 rounded-lg object-contain bg-[#F7F3EE] p-1 shrink-0"
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-0.5">
-                            {p.category.name}
-                          </p>
-                          <p className="text-sm font-medium text-[#2d3444] truncate">{p.name}</p>
-                        </div>
-                        <ArrowRight className="size-4 text-[#bbb] group-hover:text-[#D4693A] transition-colors shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                ) : debouncedInput.length >= 2 ? (
-                  <div className="py-10 text-center text-[#bbb]">
-                    <p className="text-sm">No products found for "<strong className="text-[#2d3444]">{debouncedInput}</strong>"</p>
-                  </div>
+              <div className="max-h-[65vh] overflow-y-auto">
+                {isSearching ? (
+                  results.length > 0 ? (
+                    <div className="p-3">
+                      <div className="mb-2 flex items-center justify-between px-2">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb]">
+                          Products
+                        </p>
+                        <p className="text-[10px] text-[#bbb]">
+                          {total > DISPLAY_LIMIT ? `Showing ${DISPLAY_LIMIT} of ${total}` : `${total} result${total !== 1 ? 's' : ''}`}
+                        </p>
+                      </div>
+                      {results.map((p) => (
+                        <Link
+                          key={p.id}
+                          to={`/products/${p.slug}`}
+                          onClick={() => dispatch(setSearchOpen(false))}
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-[#F7F3EE] transition-colors group"
+                        >
+                          {p.images[0]?.url && (
+                            <img
+                              src={p.images[0].url}
+                              alt={p.name}
+                              className="size-12 rounded-lg object-contain bg-[#F7F3EE] p-1 shrink-0"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-0.5">
+                              {p.category.name}
+                            </p>
+                            <p className="text-sm font-medium text-[#2d3444] truncate">{p.name}</p>
+                          </div>
+                          <ArrowRight className="size-4 text-[#bbb] group-hover:text-[#D4693A] transition-colors shrink-0" />
+                        </Link>
+                      ))}
+                      {total > DISPLAY_LIMIT && (
+                        <p className="mt-2 px-3 text-center text-xs text-[#bbb]">
+                          Refine your search to see more specific results
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-10 text-center text-[#bbb]">
+                      <p className="text-sm">No products found for "<strong className="text-[#2d3444]">{debouncedInput}</strong>"</p>
+                      <p className="mt-1 text-xs">Try a different keyword or browse categories below</p>
+                      <div className="mt-4 flex flex-wrap justify-center gap-2 px-4">
+                        {CATEGORIES.map((c) => (
+                          <Link
+                            key={c.href}
+                            to={c.href}
+                            onClick={() => dispatch(setSearchOpen(false))}
+                            className="rounded-full border border-[#E8E4DF] px-4 py-1.5 text-xs font-semibold text-[#2d3444] hover:border-[#D4693A] hover:text-[#D4693A] transition-colors"
+                          >{c.label}</Link>
+                        ))}
+                      </div>
+                    </div>
+                  )
                 ) : (
                   <div className="p-4">
                     <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-[#bbb]">Browse Categories</p>
                     <div className="flex flex-wrap gap-2 px-2">
-                      {[
-                        { label: 'Gaming', href: '/categories/gaming' },
-                        { label: 'Accessories', href: '/categories/accessories' },
-                        { label: 'Appliances', href: '/categories/appliances' },
-                        { label: 'Smart Home', href: '/categories/smart-home' },
-                      ].map((c) => (
+                      {CATEGORIES.map((c) => (
                         <Link
                           key={c.href}
                           to={c.href}
