@@ -6,11 +6,6 @@ import type { Product } from '@/types'
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   {
-    key: 'earphones',
-    title: 'Earphones',
-    filter: (p: Product) => p.tags.includes('earphones'),
-  },
-  {
     key: 'camera',
     title: 'Security Cameras',
     filter: (p: Product) => p.tags.includes('camera'),
@@ -153,7 +148,7 @@ export default function SmartHomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            Security cameras, SoundPod earphones, and smart devices that protect and elevate your world.
+            Security cameras and smart devices that protect and monitor your world, anywhere, anytime.
           </motion.p>
         </div>
       </div>
@@ -161,8 +156,8 @@ export default function SmartHomePage() {
       {/* ── MARQUEE ──────────────────────────────────────────────────── */}
       <div className="overflow-hidden bg-[#2d3444] py-3.5">
         <div className="flex whitespace-nowrap gap-10 animate-marquee">
-          {['CAMERAS', 'EARPHONES', 'SMART HOME', 'SECURITY', 'ASLITEC', 'SOUNDPOD', 'AI DETECT', 'AUDIO'].concat(
-            ['CAMERAS', 'EARPHONES', 'SMART HOME', 'SECURITY', 'ASLITEC', 'SOUNDPOD', 'AI DETECT', 'AUDIO']
+          {['CAMERAS', 'SMART HOME', 'SECURITY', 'ASLITEC', 'EVA CAM', 'AI DETECT', '2K QHD', 'WIFI'].concat(
+            ['CAMERAS', 'SMART HOME', 'SECURITY', 'ASLITEC', 'EVA CAM', 'AI DETECT', '2K QHD', 'WIFI']
           ).map((t, i) => (
             <span
               key={i}

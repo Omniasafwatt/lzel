@@ -6,6 +6,11 @@ import type { Product } from '@/types'
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   {
+    key: 'earphones',
+    title: 'Earphones',
+    filter: (p: Product) => p.tags.includes('earphones'),
+  },
+  {
     key: 'case-phone',
     title: 'Cases',
     filter: (p: Product) => p.tags.includes('case') && !p.tags.includes('waterproof-case'),
@@ -168,7 +173,7 @@ export default function AccessoriesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            Stylus pens, GaN chargers, premium cases, and powerbanks — accessories engineered to match your ambition.
+            Earphones, stylus pens, GaN chargers, premium cases, and powerbanks — accessories engineered to match your ambition.
           </motion.p>
         </div>
       </div>
@@ -176,8 +181,8 @@ export default function AccessoriesPage() {
       {/* ── MARQUEE ──────────────────────────────────────────────────── */}
       <div className="overflow-hidden bg-[#2d3444] py-3.5">
         <div className="flex whitespace-nowrap gap-10 animate-marquee">
-          {['STYLUS', 'CHARGERS', 'CASES', 'POWERBANK', 'WATERPROOF', 'ACCESSORIES', 'ASLITEC', 'GaN 200W', 'PREMIUM'].concat(
-            ['STYLUS', 'CHARGERS', 'CASES', 'POWERBANK', 'WATERPROOF', 'ACCESSORIES', 'ASLITEC', 'GaN 200W', 'PREMIUM']
+          {['EARPHONES', 'STYLUS', 'CHARGERS', 'CASES', 'POWERBANK', 'WATERPROOF', 'ACCESSORIES', 'ASLITEC', 'GaN 200W'].concat(
+            ['EARPHONES', 'STYLUS', 'CHARGERS', 'CASES', 'POWERBANK', 'WATERPROOF', 'ACCESSORIES', 'ASLITEC', 'GaN 200W']
           ).map((t, i) => (
             <span
               key={i}

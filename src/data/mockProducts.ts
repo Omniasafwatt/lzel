@@ -7,6 +7,7 @@ import { controllers }     from './products/controllers'
 import { powerbanks }      from './products/powerbanks'
 import { waterproofCases } from './products/waterproofCases'
 import { phoneCases }      from './products/phoneCases'
+import { earphones }       from './products/earphones'
 
 export { mockCategories, getCategoryById, getCategoryBySlug } from './mockCategories'
 
@@ -17,13 +18,14 @@ export const mockProducts: Product[] = [
   ...powerbanks,
   ...waterproofCases,
   ...phoneCases,
+  ...earphones,
   ...kettles,
   ...smartHome,
 ]
 
 export const productsByCategory: Record<string, Product[]> = {
   gaming:       controllers,
-  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases],
+  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases, ...earphones],
   appliances:   kettles,
   'smart-home': smartHome,
 }
