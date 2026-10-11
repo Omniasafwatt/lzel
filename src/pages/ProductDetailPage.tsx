@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react'
 import { useGetProductQuery, useGetRelatedProductsQuery } from '@/data/useMockData'
 import { Skeleton } from '@/components/common/Skeleton'
+import { getSmartHomeSection } from '@/data/products/smartHomeLayout'
 import type { ProductVariant } from '@/types'
+import SmartHomeProductPage from './SmartHomeProductPage'
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -53,6 +55,9 @@ export default function ProductDetailPage() {
       </Link>
     </div>
   )
+
+  const smartHomeSection = getSmartHomeSection(product)
+  if (smartHomeSection) return <SmartHomeProductPage key={product.slug} product={product} section={smartHomeSection} />
 
   const images = product.images
 
