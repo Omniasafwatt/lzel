@@ -30,6 +30,9 @@ export default function ProductDetailPage() {
       Object.entries(newAttrs).every(([k, val]) => v.attributes[k] === val)
     )
     setSelectedVariant(matchedVariant ?? null)
+    // show the photo that belongs to the chosen option
+    const idx = product?.images.findIndex((img) => img.url === matchedVariant?.images[0]) ?? -1
+    if (idx >= 0) setSelectedImageIdx(idx)
   }
 
   if (isLoading) {
@@ -90,7 +93,7 @@ export default function ProductDetailPage() {
                   key={selectedImageIdx}
                   src={images[selectedImageIdx]?.url}
                   alt={product.name}
-                  className="size-full object-contain p-6"
+                  className="size-full object-contain p-6 mix-blend-multiply"
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.97 }}
@@ -142,7 +145,12 @@ export default function ProductDetailPage() {
               <p className="text-xs font-bold uppercase tracking-[.3em] text-[#D4693A] mb-2">aslitec</p>
               <h1 className="text-2xl md:text-3xl font-black text-[#2d3444] leading-tight">{product.name}</h1>
 
+              {product.shortDescription && (
+                <p className="mt-2 text-sm font-semibold text-[#777]">{product.shortDescription}</p>
+              )}
+
               {/* Rating */}
+              {product.reviewCount > 0 && (
               <div className="mt-3 flex items-center gap-2">
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -159,6 +167,7 @@ export default function ProductDetailPage() {
                 <span className="text-sm font-semibold text-[#2d3444]">{product.averageRating.toFixed(1)}</span>
                 <span className="text-sm text-[#999]">· {product.reviewCount} reviews</span>
               </div>
+              )}
             </div>
 
             {/* Variants */}
@@ -259,7 +268,7 @@ export default function ProductDetailPage() {
                       <img
                         src={p.images[0].url}
                         alt={p.name}
-                        className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                        className="size-full object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />
                     )}
@@ -267,7 +276,7 @@ export default function ProductDetailPage() {
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-1">{p.category.name}</p>
                     <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
-                    <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>
+                    {p.reviewCount > 0 && <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>}
                   </div>
                 </Link>
               ))}

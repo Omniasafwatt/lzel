@@ -42,11 +42,11 @@ export const mockCategories: Category[] = [
     id: 'cat-smart-home',
     name: 'Smart Home',
     slug: 'smart-home',
-    description: 'Eva security cameras, SoundPod earphones, and connected living',
+    description: 'Eva security cameras, bladeless fans, humidifiers, aroma diffusers and magnetic car mounts',
     image: cam_g20_1,
     isActive: true,
     sortOrder: 4,
-    productCount: 14,
+    productCount: 17,
     createdAt: '2024-01-01T00:00:00Z',
   },
 ]

@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
@@ -6,12 +6,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight } from 'lucide-react'
 import {
   useGetFeaturedProductsQuery,
-  useGetBestsellersQuery,
   useGetCategoriesQuery,
   useGetNewArrivalsQuery,
   useGetProductsByCategoryQuery,
 } from '@/data/useMockData'
 import type { Product } from '@/types'
+import { mockProducts } from '@/data/mockProducts'
+import { newAccessories } from '@/data/products/newAccessories'
+import CampaignBanners from '@/components/home/CampaignBanners'
 
 // â”€â”€ Waterproof cases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import caseFront1 from '@/assets/accessories/WaterProof Case/front-01.png'
@@ -289,37 +291,6 @@ function Hero3DScene() {
   )
 }
 
-function Card({ product, index = 0 }: { product: Product; index?: number }) {
-  const img = product.images[0]?.url
-  return (
-    <div
-      className="home-card group h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-xl transition-shadow duration-300"
-      style={{ animationDelay: `${index * 55}ms` }}
-    >
-      <Link to={`/products/${product.slug}`} className="flex flex-col h-full">
-        <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
-          {img && (
-            <img src={img} alt={product.name}
-              className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.06]"
-              loading="lazy" decoding="async"
-            />
-          )}
-          {product.compareAtPrice && (
-            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
-          )}
-        </div>
-        <div className="p-4 flex flex-col flex-1">
-          <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
-          <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-          <div className="mt-auto pt-3">
-            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
-          </div>
-        </div>
-      </Link>
-    </div>
-  )
-}
-
 function BigCard({ product }: { product: Product }) {
   const img = product.images[0]?.url
   return (
@@ -340,7 +311,7 @@ function BigCard({ product }: { product: Product }) {
           <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
           <h3 className="text-base font-bold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
           <div className="mt-2">
-            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
+            {product.reviewCount > 0 && <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>}
           </div>
         </div>
       </Link>
@@ -350,7 +321,7 @@ function BigCard({ product }: { product: Product }) {
 
 // â”€â”€ Marquee strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Marquee({ reverse = false }) {
-  const items = ['POWERBANKS', 'CHARGERS', 'CASES', 'ACCESSORIES', 'ASLITEC', 'TECH']
+  const items = ['POWERBANKS', 'GAN CHARGERS', 'CASES', 'GRIP RINGS', 'SMART HOME', 'ACCESSORIES', 'ASLITEC', 'TECH']
   const rep = [...items, ...items]
   return (
     <div data-nav-scheme="dark" className="overflow-hidden bg-[#2d3444] py-3.5">
@@ -415,7 +386,7 @@ function HorizontalRack({ tag, title, products }: { tag: string; title: string; 
             <div className="aspect-square overflow-hidden bg-[#F7F3EE] shrink-0">
               {p.images[0]?.url && (
                 <img src={p.images[0].url} alt={p.name}
-                  className="size-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="size-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                   loading="lazy" decoding="async"
                 />
               )}
@@ -642,6 +613,99 @@ function TheDropSection({ products }: { products: Product[] }) {
   )
 }
 
+// ── Just landed (latest drop, filterable) ─────────────────────────────────────
+const LANDED_TABS = [
+  { key: 'all',         label: 'All' },
+  { key: 'smart-home',  label: 'Smart Home' },
+  { key: 'accessories', label: 'Accessories' },
+] as const
+
+function JustLandedSection() {
+  const [tab, setTab] = useState<(typeof LANDED_TABS)[number]['key']>('all')
+  // round-robin across product families so the grid doesn't open with six chargers
+  const all = useMemo(() => {
+    const families = new Map<string, Product[]>()
+    for (const p of mockProducts.filter((x) => x.tags.includes('new'))) {
+      const key = p.tags[3] ?? p.id
+      families.set(key, [...(families.get(key) ?? []), p])
+    }
+    const lists = [...families.values()]
+    const out: Product[] = []
+    for (let i = 0; out.length < lists.flat().length; i++) lists.forEach((l) => l[i] && out.push(l[i]))
+    return out
+  }, [])
+  const shown = tab === 'all' ? all : all.filter((p) => p.category.slug === tab)
+
+  return (
+    <section data-nav-scheme="light" className="bg-[#FAFAF8] py-24">
+      <div className="container">
+        <FadeUp className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">Just Landed · {all.length} new products</p>
+            <h2 className="text-[clamp(40px,6vw,80px)] font-black tracking-tight text-[#2d3444] leading-[.9]">
+              NEW IN<span className="text-[#D4693A]">.</span>
+            </h2>
+          </div>
+          <div className="flex gap-1 rounded-full bg-white border border-[#E8E4DF] p-1 self-start md:self-auto">
+            {LANDED_TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[.15em] transition-colors ${
+                  tab === t.key ? 'bg-[#2d3444] text-white' : 'text-[#555] hover:text-[#D4693A]'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </FadeUp>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {shown.map((p, i) => {
+            const colors = p.attributes.find((a) => a.name === 'Color')?.values ?? []
+            return (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.6, delay: (i % 4) * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Link
+                  to={`/products/${p.slug}`}
+                  className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-[#E8E4DF] hover:shadow-xl transition-shadow duration-300"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-[#F7F3EE]">
+                    <img src={p.images[0]?.url} alt={p.name}
+                      className="size-full object-contain p-5 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.06]"
+                      loading="lazy" decoding="async"
+                    />
+                    <span className="absolute top-3 left-3 rounded-full bg-[#2d3444] px-2.5 py-0.5 text-[10px] font-bold text-white">NEW</span>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{p.category.name}</p>
+                    <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
+                    <p className="mt-1 text-xs text-[#999] line-clamp-1">{p.shortDescription?.split('·')[0].trim()}</p>
+                    <div className="mt-auto pt-3 flex items-center justify-between">
+                      <span className="text-[10px] font-semibold text-[#999]">
+                        {colors.length > 1 ? `${colors.length} colours` : ''}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[#2d3444] group-hover:text-[#D4693A] transition-colors">
+                        View <ArrowRight className="size-3" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function FloatingShowcase() {
   return (
     <section data-nav-scheme="light" className="bg-white py-28 overflow-hidden">
@@ -686,6 +750,10 @@ function FloatingShowcase() {
   )
 }
 
+const NEW_ACC_IMGS = newAccessories
+  .filter((p) => !p.tags.includes('lens protector'))
+  .flatMap((p) => p.variants.map((v) => v.images[0]))
+
 // â”€â”€ ACCESSORIES CHAOS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CHAOS_IMGS = [
   caseLBlue, caseRed, caseSand, caseWine, caseFGreen, caseYellow, caseBrown, casePinkS, caseIBlue, caseBlack1,
@@ -702,7 +770,11 @@ const CHAOS_IMGS = [
   caseFront1, caseFront2, caseFront3, caseBlack, casePink, caseGreen, caseWhite,
   caseRed5, caseLBlue5, caseSand5, caseBrown5,
   kick5Blue, kick5Sand, kick5Yellow,
-]
+  // October 2026 drop – one shot per colour, interleaved with the cases
+].flatMap((src, i, all) => {
+  const extra = NEW_ACC_IMGS[i]
+  return extra && i < all.length ? [src, extra] : [src]
+})
 
 const CHAOS_SIZES = [80, 120, 100, 90, 140, 75, 110, 95, 130, 85, 105, 115]
 const CHAOS_TOPS  = [10, 30, 5,  40, 15, 50, 8, 35, 20, 45, 12, 38]
@@ -777,12 +849,10 @@ function AccessoriesChaos() {
 // â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HomePage() {
   const { data: featuredData }    = useGetFeaturedProductsQuery()
-  const { data: bestsellersData } = useGetBestsellersQuery({})
   const { data: categoriesData }  = useGetCategoriesQuery()
   const { data: newArrivalsData } = useGetNewArrivalsQuery({})
 
   const featured    = featuredData?.data    ?? []
-  const bestsellers = bestsellersData?.data ?? []
   const categories  = categoriesData?.data  ?? []
   const newArrivals = newArrivalsData?.data  ?? []
 
@@ -804,6 +874,9 @@ export default function HomePage() {
       {/* 3  -  Scrapbook Categories */}
       <ScrapbookCategories categories={categories} />
 
+      {/* 3b -  Campaign banners, stacked on scroll */}
+      <CampaignBanners />
+
       {/* 4  -  Featured "THE DROP" on dark */}
       <TheDropSection products={featured} />
 
@@ -811,6 +884,9 @@ export default function HomePage() {
       {newArrivals.length > 0 && (
         <HorizontalRack tag="Fresh Drops" title="New Arrivals" products={newArrivals} />
       )}
+
+      {/* 6  -  Just landed: every product from the latest drop */}
+      <JustLandedSection />
 
       {/* 7  -  Floating product showcase */}
       <FloatingShowcase />
@@ -892,21 +968,6 @@ export default function HomePage() {
               className="inline-flex items-center gap-2 rounded-full bg-white px-9 py-4 text-sm font-bold text-[#D4693A] hover:bg-[#2d3444] hover:text-white transition-colors duration-300"
             >Explore Gaming <ArrowRight className="size-4" /></Link>
           </motion.div>
-        </div>
-      </section>
-
-      {/* 12  -  Bestsellers */}
-      <section data-nav-scheme="light" className="bg-white py-24">
-        <div className="container">
-          <FadeUp className="mb-12 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-bold tracking-[.3em] text-[#D4693A] uppercase mb-3">Most Loved</p>
-              <h2 className="text-5xl font-black tracking-tight text-[#2d3444]">Bestsellers</h2>
-            </div>
-          </FadeUp>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {bestsellers.slice(0, 8).map((p, i) => <Card key={p.id} product={p} index={i} />)}
-          </div>
         </div>
       </section>
 

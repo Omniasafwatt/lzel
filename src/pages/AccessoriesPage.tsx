@@ -16,9 +16,29 @@ const SECTIONS = [
     filter: (p: Product) => p.tags.includes('case') && !p.tags.includes('waterproof-case'),
   },
   {
+    key: 'grip',
+    title: 'Phone Grips & Ring Stands',
+    filter: (p: Product) => p.tags.includes('grip') && !p.tags.includes('case'),
+  },
+  {
+    key: 'lens',
+    title: 'Lens Protectors',
+    filter: (p: Product) => p.tags.includes('lens protector'),
+  },
+  {
     key: 'charger',
     title: 'Home Charger Adapter',
-    filter: (p: Product) => p.tags.includes('charger'),
+    filter: (p: Product) => p.tags.includes('charger') && !p.tags.includes('display-charger'),
+  },
+  {
+    key: 'display-charger',
+    title: 'GaN Display Chargers',
+    filter: (p: Product) => p.tags.includes('display-charger'),
+  },
+  {
+    key: 'smart-band',
+    title: 'Smart Bands',
+    filter: (p: Product) => p.tags.includes('smart band'),
   },
   {
     key: 'stylus',
@@ -56,6 +76,27 @@ function FadeUp({ children, delay = 0, className = '' }: {
   )
 }
 
+// ── Colour swatches ───────────────────────────────────────────────────────────
+const SWATCH: Record<string, string> = {
+  Black: '#1f1f1f', Gunmetal: '#5d6670', Silver: '#cfd2d6', Titanium: '#b9ada3', Cream: '#f3dfb0',
+  Plum: '#4a1f3d', Orange: '#f26b2a', Navy: '#26305a', 'Sky Blue': '#93aee0', 'Cream & Wine': '#7a1f2b',
+  Pink: '#f3d3cf', Blue: '#4f74c9', 'Orange Grey': '#b8643a', Grey: '#bfc4c6', 'Berry Red': '#ee6a6a',
+  'Deep Blue': '#23345f', White: '#f4f4f2',
+}
+
+function Swatches({ product }: { product: Product }) {
+  const colors = product.attributes.find((a) => a.name === 'Color')?.values ?? []
+  if (colors.length < 2) return null
+  return (
+    <div className="mt-2 flex items-center gap-1">
+      {colors.slice(0, 7).map((c) => (
+        <span key={c} title={c} className="size-3 rounded-full border border-black/10" style={{ background: SWATCH[c] ?? '#ddd' }} />
+      ))}
+      <span className="ml-1 text-[10px] font-semibold text-[#999]">{colors.length} colours</span>
+    </div>
+  )
+}
+
 // ── Product card ──────────────────────────────────────────────────────────────
 function AccessoryCard({ product, index = 0 }: { product: Product; index?: number }) {
   const img = product.images[0]?.url
@@ -77,7 +118,7 @@ function AccessoryCard({ product, index = 0 }: { product: Product; index?: numbe
             <img
               src={img}
               alt={product.name}
-              className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.06]"
+              className="size-full object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.06]"
               loading="lazy"
               decoding="async"
             />
@@ -87,15 +128,28 @@ function AccessoryCard({ product, index = 0 }: { product: Product; index?: numbe
               SALE
             </div>
           )}
+          {product.tags.includes('new') && (
+            <div className="absolute top-3 left-3 rounded-full bg-[#2d3444] px-2.5 py-0.5 text-[10px] font-bold text-white">
+              NEW
+            </div>
+          )}
         </div>
         <div className="p-4 flex flex-col flex-1">
           <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">
             {product.name}
           </h3>
+          {product.tags.includes('new') && product.shortDescription && (
+            <p className="mt-1 text-xs text-[#999] line-clamp-1">{product.shortDescription.split('·')[0].trim()}</p>
+          )}
+          <Swatches product={product} />
           <div className="mt-auto pt-3">
-            <span className="text-xs text-amber-500">
-              ★ {product.averageRating.toFixed(1)}
-            </span>
+            {product.reviewCount > 0 ? (
+              <span className="text-xs text-amber-500">
+                ★ {product.averageRating.toFixed(1)}
+              </span>
+            ) : (
+              <span className="text-xs font-bold text-[#2d3444] group-hover:text-[#D4693A] transition-colors">View →</span>
+            )}
           </div>
         </div>
       </Link>

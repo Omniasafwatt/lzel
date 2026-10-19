@@ -108,6 +108,23 @@ import cam_r02_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02
 import cam_r02_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-4.png'
 import cam_r03_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/3.png'
 
+// ── Smart Home – fans, car mounts, humidifiers & diffusers ───────────────────
+import fan_brz_a09 from '../assets/smart home/1x/BRZ-A09.webp'
+import fan_cma660 from '../assets/smart home/1x/CMA660.webp'
+import mount_dxm12t from '../assets/smart home/2x/DXM12T.webp'
+import mount_mcdy1h from '../assets/smart home/2x/MCDY1H.webp'
+import mount_mcet2m from '../assets/smart home/2x/MCET2M.webp'
+import mount_mgd10x2 from '../assets/smart home/2x/MGD10X2.webp'
+import mount_mge10x from '../assets/smart home/2x/MGE10X.webp'
+import mount_mgp40s from '../assets/smart home/2x/MGP40S.webp'
+import mount_mgqv2c from '../assets/smart home/2x/MGQV2C.webp'
+import mount_mgtm40 from '../assets/smart home/2x/MGTM40.webp'
+import mount_rdgm44 from '../assets/smart home/2x/RDGM44.webp'
+import hum_vas302 from '../assets/smart home/3x/VAS-302.webp'
+import dif_vra807_blk from '../assets/smart home/3x/VR-A807B.webp'
+import dif_vra807_wht from '../assets/smart home/3x/VR-A807W.webp'
+import dif_vrm370 from '../assets/smart home/3x/VRM-370.webp'
+
 export {
   // Stylus BC23-017C product shots
   pencil_bc23_y_shot, pencil_bc23_yb_shot, pencil_bc23_w_shot,
@@ -153,4 +170,9 @@ export {
   cam_g20_1, cam_g20_2, cam_g20_3, cam_g20_4, cam_g20_5, cam_g20_6, cam_g20_7, cam_g20_8,
   cam_r02_1, cam_r02_2, cam_r02_3, cam_r02_4,
   cam_r03_1,
+  // Smart Home – fans, car mounts, humidifiers & diffusers
+  fan_brz_a09, fan_cma660,
+  mount_dxm12t, mount_mcdy1h, mount_mcet2m, mount_mgd10x2, mount_mge10x,
+  mount_mgp40s, mount_mgqv2c, mount_mgtm40, mount_rdgm44,
+  hum_vas302, dif_vra807_blk, dif_vra807_wht, dif_vrm370,
 }

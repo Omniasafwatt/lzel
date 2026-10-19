@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
-import { smartHome } from '@/data/products/smartHome'
-import { groupSpecs, highlightsOf, type SmartHomeSection } from '@/data/products/smartHomeLayout'
+import { productsByCategory } from '@/data/mockProducts'
+import { groupSpecs, highlightsOf, subtitleOf, chipsOf, type SmartHomeSection } from '@/data/products/smartHomeLayout'
 import type { Product } from '@/types'
 
 type Tab = 'overview' | 'specs'
@@ -14,7 +14,9 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
   const images = product.images
   const highlights = highlightsOf(product)
   const model = product.specifications.find((s) => s.label === 'Model')?.value
-  const related = smartHome.filter((p) => p.id !== product.id)
+  // same section first, then the rest of Smart Home
+  const others = productsByCategory['smart-home'].filter((p) => p.id !== product.id)
+  const related = [...others.filter(section.match), ...others.filter((p) => !section.match(p))].slice(0, 8)
 
   const switchTab = (t: Tab) => {
     setTab(t)
@@ -67,7 +69,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                       key={imgIdx}
                       src={images[imgIdx]?.url}
                       alt={images[imgIdx]?.alt ?? product.name}
-                      className="size-full object-contain p-8"
+                      className="size-full object-contain p-8 mix-blend-multiply"
                       initial={{ opacity: 0, scale: 0.97 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.97 }}
@@ -113,8 +115,9 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
               <div>
                 <p className="text-xs font-bold uppercase tracking-[.3em] text-[#D4693A] mb-3">aslitec</p>
                 <h1 className="text-[clamp(36px,5vw,64px)] font-black text-[#2d3444] leading-[.95] tracking-tight">{product.name}</h1>
-                <p className="mt-4 text-lg font-semibold text-[#555]">{section.subtitle}</p>
+                <p className="mt-4 text-lg font-semibold text-[#555]">{subtitleOf(product, section)}</p>
 
+                {product.reviewCount > 0 && (
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex items-center gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -129,18 +132,43 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                   <span className="text-sm font-semibold text-[#2d3444]">{product.averageRating.toFixed(1)}</span>
                   <span className="text-sm text-[#999]">· {product.reviewCount} reviews</span>
                 </div>
+                )}
 
                 <p className="mt-5 text-sm text-[#777] leading-relaxed max-w-lg">{product.description}</p>
 
-                {product.shortDescription && (
+                {chipsOf(product).length > 0 && (
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {product.shortDescription.split('·').map((o) => (
+                    {chipsOf(product).map((o) => (
                       <span key={o} className="rounded-xl border border-[#E8E4DF] bg-white px-4 py-2 text-sm font-semibold text-[#2d3444]">
-                        {o.trim()}
+                        {o}
                       </span>
                     ))}
                   </div>
                 )}
+
+                {product.attributes.map((attr) => (
+                  <div key={attr.id} className="mt-6">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[#999]">{attr.name}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {attr.values.map((val) => {
+                        const variantImg = product.variants.find((v) => v.attributes[attr.name] === val)?.images[0]
+                        const idx = images.findIndex((img) => img.url === variantImg)
+                        const selected = idx >= 0 && idx === imgIdx
+                        return (
+                          <button
+                            key={val}
+                            onClick={() => idx >= 0 && setImgIdx(idx)}
+                            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
+                              selected ? 'border-[#D4693A] text-[#D4693A]' : 'border-[#E8E4DF] bg-white text-[#555] hover:border-[#2d3444]'
+                            }`}
+                          >
+                            {val}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
 
                 {model && (
                   <p className="mt-6 text-xs text-[#999]">
@@ -189,7 +217,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                 <div className="grid gap-4 sm:grid-cols-2">
                   {images.map((img) => (
                     <div key={img.id} className="aspect-[4/3] rounded-3xl bg-[#F7F3EE] border border-[#E8E4DF] overflow-hidden">
-                      <img src={img.url} alt={img.alt} loading="lazy" className="size-full object-contain p-6" />
+                      <img src={img.url} alt={img.alt} loading="lazy" className="size-full object-contain p-6 mix-blend-multiply" />
                     </div>
                   ))}
                 </div>
@@ -205,7 +233,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
             </div>
             {images[0] && (
               <div className="mx-auto mt-8 max-w-md aspect-[4/3] rounded-3xl bg-white border border-[#E8E4DF] overflow-hidden">
-                <img src={images[0].url} alt={product.name} className="size-full object-contain p-6" />
+                <img src={images[0].url} alt={product.name} className="size-full object-contain p-6 mix-blend-multiply" />
               </div>
             )}
 
@@ -250,7 +278,9 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-1">aslitec</p>
                     <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
-                    <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>
+                    {p.reviewCount > 0 && (
+                      <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>
+                    )}
                   </div>
                 </Link>
               ))}

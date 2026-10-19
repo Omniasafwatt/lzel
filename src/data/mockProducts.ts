@@ -3,6 +3,8 @@ import { stylus }          from './products/stylus'
 import { kettles }         from './products/kettles'
 import { chargers }        from './products/chargers'
 import { smartHome }       from './products/smartHome'
+import { smartHomeDevices } from './products/smartHomeDevices'
+import { newAccessories }  from './products/newAccessories'
 import { controllers }     from './products/controllers'
 import { powerbanks }      from './products/powerbanks'
 import { waterproofCases } from './products/waterproofCases'
@@ -19,15 +21,17 @@ export const mockProducts: Product[] = [
   ...waterproofCases,
   ...phoneCases,
   ...earphones,
+  ...newAccessories,
   ...kettles,
   ...smartHome,
+  ...smartHomeDevices,
 ]
 
 export const productsByCategory: Record<string, Product[]> = {
   gaming:       controllers,
-  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases, ...earphones],
+  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases, ...earphones, ...newAccessories],
   appliances:   kettles,
-  'smart-home': smartHome,
+  'smart-home': [...smartHome, ...smartHomeDevices],
 }
 
 export const featuredProducts: Product[] = mockProducts.filter((p) => p.isFeatured)
@@ -37,6 +41,21 @@ export const bestSellers: Product[] = [...mockProducts]
   .slice(0, 12)
 
 const NEW_ARRIVALS_IDS = [
+  // October 2026 drop
+  'prod-acc-duo-lens',
+  'prod-sh-cma660',
+  'prod-acc-r001',
+  'prod-acc-gan-100w',
+  'prod-sh-vas-302',
+  'prod-acc-sb-f',
+  'prod-sh-mgqv2c',
+  'prod-acc-r012',
+  'prod-sh-vrm-370',
+  'prod-acc-gan-65w',
+  'prod-sh-brz-a09',
+  'prod-acc-r008-b',
+  'prod-sh-vr-a807',
+  'prod-acc-sb-a',
   'prod-ear-dl-white',
   'prod-ear-sl-black',
   'prod-ear-dc-white',

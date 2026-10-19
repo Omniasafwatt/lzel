@@ -11,6 +11,9 @@ export const SMART_HOME_SECTIONS: SmartHomeSection[] = [
   { name: 'Pan & Tilt Cameras', subtitle: 'Smart Pan & Tilt Wi-Fi Camera', match: (p) => p.tags.includes('ptz') },
   { name: 'Wire-Free Cameras',  subtitle: 'Solar-Powered Wire-Free Camera', match: (p) => p.tags.includes('solar') },
   { name: 'Video Doorbells',    subtitle: 'Smart Wi-Fi Video Doorbell',      match: (p) => p.tags.includes('doorbell') },
+  { name: 'Bladeless Fans',     subtitle: 'Bladeless Fan',                   match: (p) => p.tags.includes('fan') },
+  { name: 'Humidifiers & Diffusers', subtitle: 'Humidifier & Aroma Diffuser', match: (p) => p.tags.includes('humidifier') || p.tags.includes('diffuser') },
+  { name: 'Magnetic Car Mounts', subtitle: 'Magnetic Phone Mount',           match: (p) => p.tags.includes('car mount') },
 ]
 
 export const getSmartHomeSection = (p: Product) =>
@@ -30,11 +33,24 @@ const SPEC_GROUPS: Record<string, string> = {
   Power: 'Power',
   Standby: 'Power',
   Protection: 'General',
+  Color: 'General',
+  Finish: 'General',
+  Design: 'Design & Controls',
+  Form: 'Design & Controls',
+  'Air Intake': 'Design & Controls',
+  'Mist Outlets': 'Design & Controls',
+  Display: 'Design & Controls',
+  Lighting: 'Design & Controls',
+  Controls: 'Design & Controls',
+  Mounting: 'Mounting',
+  Holding: 'Mounting',
+  Adjustment: 'Mounting',
+  Arm: 'Mounting',
 }
 
 export function groupSpecs(p: Product) {
   const groups: { name: string; rows: Product['specifications'] }[] = []
-  const order = ['General', 'Camera', 'Smart Features', 'Storage', 'Network', 'Power']
+  const order = ['General', 'Design & Controls', 'Mounting', 'Camera', 'Smart Features', 'Storage', 'Network', 'Power']
   for (const s of p.specifications) {
     const name = SPEC_GROUPS[s.label] ?? 'General'
     let g = groups.find((x) => x.name === name)
@@ -55,3 +71,13 @@ export function highlightsOf(p: Product) {
   const rest = p.specifications.filter((s) => !picked.includes(s) && !extras.includes(s) && s.label !== 'Model')
   return [...picked, ...extras, ...rest].slice(0, 6)
 }
+
+// Feature chips, minus the one already used as the subtitle
+export const chipsOf = (p: Product) => {
+  const chips = p.shortDescription?.split('·').map((c) => c.trim()).filter(Boolean) ?? []
+  return p.tags.includes('camera') ? chips : chips.slice(1)
+}
+
+// Cameras share their section's subtitle; other devices describe themselves
+export const subtitleOf = (p: Product, section: SmartHomeSection) =>
+  p.tags.includes('camera') ? section.subtitle : p.shortDescription?.split('·')[0].trim() || section.subtitle

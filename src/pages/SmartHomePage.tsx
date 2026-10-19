@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useGetProductsByCategoryQuery } from '@/data/useMockData'
-import { SMART_HOME_SECTIONS, getSmartHomeSection } from '@/data/products/smartHomeLayout'
+import { SMART_HOME_SECTIONS, getSmartHomeSection, subtitleOf, chipsOf } from '@/data/products/smartHomeLayout'
 import type { Product } from '@/types'
 
 // ── Section config ────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ function FadeUp({ children, delay = 0, className = '' }: {
 function SmartHomeCard({ product, index = 0 }: { product: Product; index?: number }) {
   const img = product.images[0]?.url
   const section = getSmartHomeSection(product)
-  const chips = product.shortDescription?.split('·').map((c) => c.trim()).filter(Boolean) ?? []
+  const chips = chipsOf(product)
 
   return (
     <motion.div
@@ -53,7 +53,7 @@ function SmartHomeCard({ product, index = 0 }: { product: Product; index?: numbe
             <img
               src={img}
               alt={product.name}
-              className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.06]"
+              className="size-full object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.06]"
               loading="lazy"
               decoding="async"
             />
@@ -67,7 +67,7 @@ function SmartHomeCard({ product, index = 0 }: { product: Product; index?: numbe
         <div className="p-4 flex flex-col flex-1">
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#D4693A] mb-1">aslitec</p>
           <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-          {section && <p className="mt-1 text-xs text-[#999] line-clamp-1">{section.subtitle}</p>}
+          {section && <p className="mt-1 text-xs text-[#999] line-clamp-1">{subtitleOf(product, section)}</p>}
           {chips.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1">
               {chips.map((c) => (
@@ -78,7 +78,9 @@ function SmartHomeCard({ product, index = 0 }: { product: Product; index?: numbe
             </div>
           )}
           <div className="mt-auto pt-3 flex items-center justify-between">
-            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
+            {product.reviewCount > 0 ? (
+              <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
+            ) : <span />}
             <span className="inline-flex items-center gap-1 text-xs font-bold text-[#2d3444] group-hover:text-[#D4693A] transition-colors">
               More <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
             </span>
