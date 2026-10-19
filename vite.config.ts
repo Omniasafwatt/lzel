@@ -18,7 +18,7 @@ function imageResizePlugin(maxPx = 800): Plugin {
             const buf    = Buffer.from(asset.source as Buffer)
             const meta   = await sharp(buf).metadata()
             // full-width campaign banners (src/assets/banners/*-wide|*-mobile) need more pixels
-            const limit  = /-(wide|mobile)-[\w-]{8}\.jpe?g$/.test(asset.fileName) ? 2000 : maxPx
+            const limit  = /-(wide|mobile)-[\w-]{8}\.(jpe?g|webp)$/.test(asset.fileName) ? 2000 : maxPx
             const tooBig = (meta.width ?? 0) > limit || (meta.height ?? 0) > limit
             if (!tooBig) return                          // already small — skip
             const img = sharp(buf).resize({

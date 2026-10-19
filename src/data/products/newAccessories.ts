@@ -12,19 +12,19 @@ const byFile = (g: Glob, file: string) => {
   return g[key]
 }
 
-const charger35  = import.meta.glob<string>('../../assets/accessories/35/*.png',  { eager: true, import: 'default' })
-const charger45  = import.meta.glob<string>('../../assets/accessories/45/*.png',  { eager: true, import: 'default' })
-const charger65  = import.meta.glob<string>('../../assets/accessories/65/*.png',  { eager: true, import: 'default' })
-const charger100 = import.meta.glob<string>('../../assets/accessories/100/*.png', { eager: true, import: 'default' })
-const charger140 = import.meta.glob<string>('../../assets/accessories/140/*.png', { eager: true, import: 'default' })
-const charger200 = import.meta.glob<string>('../../assets/accessories/200/*.png', { eager: true, import: 'default' })
-const r001  = import.meta.glob<string>('../../assets/accessories/R001/*.png',   { eager: true, import: 'default' })
-const r002  = import.meta.glob<string>('../../assets/accessories/R002/*.png',   { eager: true, import: 'default' })
-const r005  = import.meta.glob<string>('../../assets/accessories/R005/*.png',   { eager: true, import: 'default' })
-const r008  = import.meta.glob<string>('../../assets/accessories/R008-B/*.png', { eager: true, import: 'default' })
-const r012  = import.meta.glob<string>('../../assets/accessories/R012/*.png',   { eager: true, import: 'default' })
-const band  = import.meta.glob<string>('../../assets/accessories/Smart Band/*.png',   { eager: true, import: 'default' })
-const lens  = import.meta.glob<string>('../../assets/accessories/iPh Duo Lens/*.png', { eager: true, import: 'default' })
+const charger35  = import.meta.glob<string>('../../assets/accessories/35/*.webp',  { eager: true, import: 'default' })
+const charger45  = import.meta.glob<string>('../../assets/accessories/45/*.webp',  { eager: true, import: 'default' })
+const charger65  = import.meta.glob<string>('../../assets/accessories/65/*.webp',  { eager: true, import: 'default' })
+const charger100 = import.meta.glob<string>('../../assets/accessories/100/*.webp', { eager: true, import: 'default' })
+const charger140 = import.meta.glob<string>('../../assets/accessories/140/*.webp', { eager: true, import: 'default' })
+const charger200 = import.meta.glob<string>('../../assets/accessories/200/*.webp', { eager: true, import: 'default' })
+const r001  = import.meta.glob<string>('../../assets/accessories/R001/*.webp',   { eager: true, import: 'default' })
+const r002  = import.meta.glob<string>('../../assets/accessories/R002/*.webp',   { eager: true, import: 'default' })
+const r005  = import.meta.glob<string>('../../assets/accessories/R005/*.webp',   { eager: true, import: 'default' })
+const r008  = import.meta.glob<string>('../../assets/accessories/R008-B/*.webp', { eager: true, import: 'default' })
+const r012  = import.meta.glob<string>('../../assets/accessories/R012/*.webp',   { eager: true, import: 'default' })
+const band  = import.meta.glob<string>('../../assets/accessories/Smart Band/*.webp',   { eager: true, import: 'default' })
+const lens  = import.meta.glob<string>('../../assets/accessories/iPh Duo Lens/*.webp', { eager: true, import: 'default' })
 
 interface Option { name: string; image: string; extra?: Record<string, string> }
 interface Input {
@@ -136,14 +136,14 @@ const ring = (model: string, title: string, description: string, short: string, 
 
 // ── Lens protector: colour × style ────────────────────────────────────────────
 const lensOptions: Option[] = [
-  { name: 'Deep Blue · Double', image: byFile(lens, 'DEEP Blue Double-1.png'), extra: { Color: 'Deep Blue', Style: 'Double' } },
-  { name: 'Deep Blue · Single', image: byFile(lens, 'DEEP Blue single-1.png'), extra: { Color: 'Deep Blue', Style: 'Single' } },
-  { name: 'White · Double',     image: byFile(lens, 'White Double -1.png'),    extra: { Color: 'White', Style: 'Double' } },
-  { name: 'White · Single',     image: byFile(lens, 'White single -1.png'),    extra: { Color: 'White', Style: 'Single' } },
+  { name: 'Deep Blue · Double', image: byFile(lens, 'DEEP Blue Double-1.webp'), extra: { Color: 'Deep Blue', Style: 'Double' } },
+  { name: 'Deep Blue · Single', image: byFile(lens, 'DEEP Blue single-1.webp'), extra: { Color: 'Deep Blue', Style: 'Single' } },
+  { name: 'White · Double',     image: byFile(lens, 'White Double -1.webp'),    extra: { Color: 'White', Style: 'Double' } },
+  { name: 'White · Single',     image: byFile(lens, 'White single -1.webp'),    extra: { Color: 'White', Style: 'Single' } },
 ]
 const lensGallery = [
-  'DEEP Blue Double-2.png', 'DEEP Blue single-2.png', 'White Double -2 .png', 'White single -2.png',
-  '1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.png', '8.png',
+  'DEEP Blue Double-2.webp', 'DEEP Blue single-2.webp', 'White Double -2 .webp', 'White single -2.webp',
+  '1.webp', '2.webp', '3.webp', '4.webp', '5.webp', '6.webp', '7.webp', '8.webp',
 ].map((f) => byFile(lens, f))
 
 const inputs: Input[] = [
@@ -188,10 +188,10 @@ const inputs: Input[] = [
     tags: ['smart band', 'wearable', 'band'],
     specs: [{ label: 'Strap', value: 'Nylon with metal buckle' }, { label: 'Color', value: 'Orange, Pink, Blue, Black' }],
     options: [
-      { name: 'Orange', image: byFile(band, 'F橙尼龙.png') },
-      { name: 'Pink',   image: byFile(band, 'F粉尼龙.png') },
-      { name: 'Blue',   image: byFile(band, 'F蓝尼龙.png') },
-      { name: 'Black',  image: byFile(band, 'F黑尼龙.png') },
+      { name: 'Orange', image: byFile(band, 'F橙尼龙.webp') },
+      { name: 'Pink',   image: byFile(band, 'F粉尼龙.webp') },
+      { name: 'Blue',   image: byFile(band, 'F蓝尼龙.webp') },
+      { name: 'Black',  image: byFile(band, 'F黑尼龙.webp') },
     ],
     featured: true,
   },
@@ -203,10 +203,10 @@ const inputs: Input[] = [
     tags: ['smart band', 'wearable', 'band'],
     specs: [{ label: 'Strap', value: 'Woven nylon loop' }, { label: 'Color', value: 'Orange Grey, Grey, Berry Red, Blue' }],
     options: [
-      { name: 'Orange Grey', image: byFile(band, '橙灰尼龙A.png') },
-      { name: 'Grey',        image: byFile(band, '灰尼龙A.png') },
-      { name: 'Berry Red',   image: byFile(band, '莓果红尼龙A.png') },
-      { name: 'Blue',        image: byFile(band, '蓝尼龙A.png') },
+      { name: 'Orange Grey', image: byFile(band, '橙灰尼龙A.webp') },
+      { name: 'Grey',        image: byFile(band, '灰尼龙A.webp') },
+      { name: 'Berry Red',   image: byFile(band, '莓果红尼龙A.webp') },
+      { name: 'Blue',        image: byFile(band, '蓝尼龙A.webp') },
     ],
   },
 

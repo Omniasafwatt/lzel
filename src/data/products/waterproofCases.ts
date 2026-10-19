@@ -1,10 +1,10 @@
 import type { Product } from '@/types'
 import { getCategoryById } from '../mockCategories'
-import wp_black from '../../assets/accessories/WaterProof Case/front-01.png'
-import wp_blue  from '../../assets/accessories/WaterProof Case/front-02.png'
-import wp_pink  from '../../assets/accessories/WaterProof Case/front-03.png'
-import wp_green from '../../assets/accessories/WaterProof Case/front-04.png'
-import wp_white from '../../assets/accessories/WaterProof Case/front-05.png'
+import wp_black from '../../assets/accessories/WaterProof Case/front-01.webp'
+import wp_blue  from '../../assets/accessories/WaterProof Case/front-02.webp'
+import wp_pink  from '../../assets/accessories/WaterProof Case/front-03.webp'
+import wp_green from '../../assets/accessories/WaterProof Case/front-04.webp'
+import wp_white from '../../assets/accessories/WaterProof Case/front-05.webp'
 
 const cat = getCategoryById('cat-accessories')!
 

@@ -6,14 +6,14 @@ import {
 } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
-import cameraWide  from '@/assets/banners/security-camera-wide.jpg'
-import cameraPhone from '@/assets/banners/security-camera-mobile.jpg'
-import chargerWide  from '@/assets/banners/wall-charger-wide.jpg'
-import chargerPhone from '@/assets/banners/wall-charger-mobile.jpg'
-import cablesWide  from '@/assets/banners/cables-wide.jpg'
-import cablesPhone from '@/assets/banners/cables-mobile.jpg'
-import lanyardWide  from '@/assets/banners/lanyard-wide.jpg'
-import lanyardPhone from '@/assets/banners/lanyard-mobile.jpg'
+import cameraWide  from '@/assets/banners/security-camera-wide.webp'
+import cameraPhone from '@/assets/banners/security-camera-mobile.webp'
+import chargerWide  from '@/assets/banners/wall-charger-wide.webp'
+import chargerPhone from '@/assets/banners/wall-charger-mobile.webp'
+import cablesWide  from '@/assets/banners/cables-wide.webp'
+import cablesPhone from '@/assets/banners/cables-mobile.webp'
+import lanyardWide  from '@/assets/banners/lanyard-wide.webp'
+import lanyardPhone from '@/assets/banners/lanyard-mobile.webp'
 
 // One design per campaign folder: the wide artboard on desktop, the taller one on phones
 const BANNERS = [

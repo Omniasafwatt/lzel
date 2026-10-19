@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import sidebarLogo from '../../assets/sidebar logo.png'
+import sidebarLogo from '../../assets/sidebar logo.webp'
 
 interface LoadingScreenProps {
   onComplete: () => void

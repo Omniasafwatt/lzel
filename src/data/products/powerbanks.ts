@@ -1,9 +1,9 @@
 import type { Product } from '@/types'
 import { getCategoryById } from '../mockCategories'
-import pb_gray   from '../../assets/accessories/Powerbank/HW121-gray.png'
-import pb_purple from '../../assets/accessories/Powerbank/HW121-purple.png'
-import pb_blue   from '../../assets/accessories/Powerbank/HW121-blue.png'
-import pb_silver from '../../assets/accessories/Powerbank/HW121-silver.png'
+import pb_gray   from '../../assets/accessories/Powerbank/HW121-gray.webp'
+import pb_purple from '../../assets/accessories/Powerbank/HW121-purple.webp'
+import pb_blue   from '../../assets/accessories/Powerbank/HW121-blue.webp'
+import pb_silver from '../../assets/accessories/Powerbank/HW121-silver.webp'
 
 const cat = getCategoryById('cat-accessories')!
 

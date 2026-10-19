@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
-import logoImg from '../../assets/logo.png'
-import sidebarLogoImg from '../../assets/sidebar logo.png'
+import logoImg from '../../assets/logo.webp'
+import sidebarLogoImg from '../../assets/sidebar logo.webp'
 
 // ─── Size → height in px ─────────────────────────────────────────────────────
 const SIZES = {
