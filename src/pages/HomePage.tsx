@@ -357,14 +357,16 @@ function HorizontalRack({ tag, title, products }: { tag: string; title: string; 
     const ctx = gsap.context(() => {
       const track = trackRef.current, section = sectionRef.current
       if (!track || !section) return
-      const dist = track.scrollWidth - window.innerWidth + 96
-      if (dist <= 0) return
+      // measured on every refresh so it stays right after resizes
+      const dist = () => track.scrollWidth - window.innerWidth + 96
+      if (dist() <= 0) return
       gsap.to(track, {
-        x: -dist, ease: 'none',
+        x: () => -dist(), ease: 'none',
         scrollTrigger: {
           trigger: section, start: 'top top',
-          end: () => `+=${dist}`,
+          end: () => `+=${dist()}`,
           pin: true, scrub: 1, anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
       })
     }, sectionRef)

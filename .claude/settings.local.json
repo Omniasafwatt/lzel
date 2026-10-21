@@ -63,7 +63,8 @@
       "Bash(rm fix_pages.py)",
       "Bash(python3 remove_shop.py)",
       "Bash(rm remove_shop.py)",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(git fetch *)"
     ]
   }
 }

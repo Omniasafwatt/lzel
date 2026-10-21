@@ -2,60 +2,8 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useGetProductsByCategoryQuery } from '@/data/useMockData'
 import type { Product } from '@/types'
-
-// ── Section config ────────────────────────────────────────────────────────────
-const SECTIONS = [
-  {
-    key: 'earphones',
-    title: 'Earphones',
-    filter: (p: Product) => p.tags.includes('earphones'),
-  },
-  {
-    key: 'case-phone',
-    title: 'Cases',
-    filter: (p: Product) => p.tags.includes('case') && !p.tags.includes('waterproof-case'),
-  },
-  {
-    key: 'grip',
-    title: 'Phone Grips & Ring Stands',
-    filter: (p: Product) => p.tags.includes('grip') && !p.tags.includes('case'),
-  },
-  {
-    key: 'lens',
-    title: 'Lens Protectors',
-    filter: (p: Product) => p.tags.includes('lens protector'),
-  },
-  {
-    key: 'charger',
-    title: 'Home Charger Adapter',
-    filter: (p: Product) => p.tags.includes('charger') && !p.tags.includes('display-charger'),
-  },
-  {
-    key: 'display-charger',
-    title: 'GaN Display Chargers',
-    filter: (p: Product) => p.tags.includes('display-charger'),
-  },
-  {
-    key: 'smart-band',
-    title: 'Smart Bands',
-    filter: (p: Product) => p.tags.includes('smart band'),
-  },
-  {
-    key: 'stylus',
-    title: 'Stylus',
-    filter: (p: Product) => p.tags.includes('stylus'),
-  },
-  {
-    key: 'powerbank',
-    title: 'Powerbank',
-    filter: (p: Product) => p.tags.includes('powerbank'),
-  },
-  {
-    key: 'waterproof',
-    title: 'WaterProof Case',
-    filter: (p: Product) => p.tags.includes('waterproof-case'),
-  },
-]
+import { ACCESSORY_SECTIONS as SECTIONS, accessorySectionId } from '@/data/products/accessoriesLayout'
+import { useHashScroll } from '@/lib/useHashScroll'
 
 // ── FadeUp helper ─────────────────────────────────────────────────────────────
 function FadeUp({ children, delay = 0, className = '' }: {
@@ -161,6 +109,7 @@ function AccessoryCard({ product, index = 0 }: { product: Product; index?: numbe
 export default function AccessoriesPage() {
   const { data, isLoading } = useGetProductsByCategoryQuery('accessories')
   const products = data?.data ?? []
+  useHashScroll(!isLoading && products.length > 0, 90)
 
   return (
     <div className="min-h-screen">
@@ -266,7 +215,7 @@ export default function AccessoriesPage() {
             const sectionProducts = products.filter(section.filter)
             if (sectionProducts.length === 0) return null
             return (
-              <section key={section.key} className="container pt-20">
+              <section key={section.key} id={accessorySectionId(section.key)} className="container pt-20 scroll-mt-24">
                 <FadeUp className="mb-8">
                   <p className="text-xs font-bold tracking-[.35em] text-[#D4693A] uppercase mb-3">
                     — Accessories —

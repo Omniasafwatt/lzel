@@ -1,22 +1,48 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowRight, type LucideIcon } from 'lucide-react'
 import { productsByCategory } from '@/data/mockProducts'
-import { groupSpecs, highlightsOf, subtitleOf, chipsOf, type SmartHomeSection } from '@/data/products/smartHomeLayout'
+import { groupSpecs, subtitleOf, modelOf, type SmartHomeSection } from '@/data/products/smartHomeLayout'
+import { detailOf, scenesOf } from '@/data/products/smartHomeDetail'
+import { storyOf } from '@/data/products/smartHomeStory'
+import SmartHomeCard from '@/components/smart-home/SmartHomeCard'
 import type { Product } from '@/types'
 
-type Tab = 'overview' | 'specs'
+// EZVIZ-style product page (lifestyle hero, feature grid, ring diagram,
+// use cases, stats, placement, specs) in the aslitec palette.
+type Tab = 'detail' | 'specs'
+
+function FadeUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+const Heading = ({ title, text, light = false }: { title: string; text?: string; light?: boolean }) => (
+  <FadeUp className="mx-auto max-w-3xl text-center">
+    <h2 className={`text-2xl md:text-4xl font-bold leading-tight ${light ? 'text-white' : 'text-[#2d3444]'}`}>{title}</h2>
+    {text && <p className={`mt-4 text-sm md:text-base leading-relaxed ${light ? 'text-white/70' : 'text-[#666]'}`}>{text}</p>}
+  </FadeUp>
+)
 
 export default function SmartHomeProductPage({ product, section }: { product: Product; section: SmartHomeSection }) {
-  const [tab, setTab] = useState<Tab>('overview')
-  const [imgIdx, setImgIdx] = useState(0)
-  const images = product.images
-  const highlights = highlightsOf(product)
-  const model = product.specifications.find((s) => s.label === 'Model')?.value
-  // same section first, then the rest of Smart Home
+  const [tab, setTab] = useState<Tab>('detail')
+  const model = modelOf(product) ?? product.name
+  const subtitle = subtitleOf(product, section)
+  const content = detailOf(product)
+  const scenes = scenesOf(product)
+  const story = storyOf(product)
   const others = productsByCategory['smart-home'].filter((p) => p.id !== product.id)
-  const related = [...others.filter(section.match), ...others.filter((p) => !section.match(p))].slice(0, 8)
+  const related = [...others.filter(section.match), ...others.filter((p) => !section.match(p))].slice(0, 4)
 
   const switchTab = (t: Tab) => {
     setTab(t)
@@ -24,227 +50,237 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div data-nav-scheme="light" className="min-h-screen bg-[#FAFAF8] pt-16 md:pt-[68px]">
+      {/* Solid header backing (the site navbar is transparent) */}
+      <div className="fixed inset-x-0 top-0 z-40 h-16 md:h-[68px] bg-white" />
 
-      {/* ── Product bar: name + Detail / Specifications ──────────────── */}
-      <div data-nav-scheme="light" className="sticky top-16 md:top-[68px] z-30 mt-16 md:mt-[68px] bg-white/90 backdrop-blur border-y border-[#E8E4DF]">
-        <div className="container flex items-center justify-between gap-4 h-12">
-          <p className="truncate text-sm font-black text-[#2d3444]">{product.name}</p>
-          <div className="flex items-center gap-1 shrink-0">
-            {(['overview', 'specs'] as const).map((t) => (
+      {/* ── Product bar ─────────────────────────────────────────────── */}
+      <div className="sticky top-16 md:top-[68px] z-30 bg-white shadow-[0_1px_0_#E8E4DF]">
+        <div className="mx-auto max-w-[1200px] px-4 h-12 md:h-14 flex items-center justify-between gap-4">
+          <p className="truncate text-base md:text-lg font-bold text-[#2d3444]">{model}</p>
+          <div className="flex items-center gap-4 md:gap-7 shrink-0">
+            {(['detail', 'specs'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => switchTab(t)}
-                className={`px-3 md:px-4 py-1.5 text-xs font-bold rounded-full transition-colors ${
-                  tab === t ? 'bg-[#2d3444] text-white' : 'text-[#555] hover:text-[#D4693A]'
+                className={`relative h-12 md:h-14 text-xs md:text-sm transition-colors ${
+                  tab === t ? 'text-[#D4693A] font-semibold' : 'text-[#2d3444] hover:text-[#D4693A]'
                 }`}
               >
-                {t === 'overview' ? 'Detail' : 'Specifications'}
+                {t === 'detail' ? 'Detail' : 'Specification'}
+                {tab === t && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#D4693A]" />}
               </button>
             ))}
+            <Link
+              to="/contact"
+              className="hidden sm:inline-flex rounded-full bg-[#D4693A] px-5 py-2 text-xs md:text-sm font-semibold text-white hover:bg-[#2d3444] transition-colors"
+            >
+              Enquire
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="container pt-8 pb-20">
-        {/* Breadcrumb */}
-        <nav className="mb-8 flex flex-wrap items-center gap-1.5 text-xs text-[#999]">
-          <Link to="/" className="hover:text-[#2d3444] transition-colors">Home</Link>
-          <span>/</span>
-          <Link to="/categories/smart-home" className="hover:text-[#2d3444] transition-colors">Smart Home</Link>
-          <span>/</span>
-          <span>{section.name}</span>
-          <span>/</span>
-          <span className="text-[#2d3444] font-medium truncate max-w-[200px]">{product.name}</span>
-        </nav>
-
-        {tab === 'overview' ? (
-          <>
-            {/* ── Hero ─────────────────────────────────────────────────── */}
-            <div className="grid gap-10 lg:gap-16 lg:grid-cols-2 items-center">
-              <div>
-                <div className="relative aspect-square overflow-hidden rounded-3xl bg-[#F7F3EE] border border-[#E8E4DF]">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={imgIdx}
-                      src={images[imgIdx]?.url}
-                      alt={images[imgIdx]?.alt ?? product.name}
-                      className="size-full object-contain p-8 mix-blend-multiply"
-                      initial={{ opacity: 0, scale: 0.97 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.97 }}
-                      transition={{ duration: 0.25 }}
-                    />
-                  </AnimatePresence>
-                  {images.length > 1 && (
-                    <>
-                      <button
-                        aria-label="Previous image"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-all"
-                        onClick={() => setImgIdx((i) => (i - 1 + images.length) % images.length)}
-                      >
-                        <ChevronLeft className="size-4 text-[#2d3444]" />
-                      </button>
-                      <button
-                        aria-label="Next image"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-all"
-                        onClick={() => setImgIdx((i) => (i + 1) % images.length)}
-                      >
-                        <ChevronRight className="size-4 text-[#2d3444]" />
-                      </button>
-                    </>
-                  )}
-                </div>
-                {images.length > 1 && (
-                  <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                    {images.map((img, i) => (
-                      <button
-                        key={img.id}
-                        onClick={() => setImgIdx(i)}
-                        className={`size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
-                          i === imgIdx ? 'border-[#D4693A]' : 'border-transparent hover:border-[#E8E4DF]'
-                        }`}
-                      >
-                        <img src={img.url} alt={img.alt} className="size-full object-contain bg-[#F7F3EE] p-1" />
-                      </button>
-                    ))}
+      {tab === 'detail' ? (
+        <>
+          {/* ── Hero ──────────────────────────────────────────────────── */}
+          <section className="relative overflow-hidden bg-[#12171f]">
+            {scenes.hero ? (
+              <img src={scenes.hero} alt={product.name} className="block w-full h-[440px] md:h-auto md:aspect-[1920/800] object-cover object-[72%_center]" />
+            ) : (
+              <div className="h-[440px] md:aspect-[1920/800]" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#12171f]/75 via-[#12171f]/30 to-transparent" />
+            <div className="absolute inset-0 flex items-end md:items-center">
+              <div className="mx-auto w-full max-w-[1200px] px-4 pb-10 md:pb-0">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="max-w-[520px]"
+                >
+                  <p className="text-[11px] font-bold uppercase tracking-[.35em] text-[#D4693A]">aslitec</p>
+                  <h1 className="mt-3 text-5xl md:text-7xl font-bold text-white tracking-tight">{model}</h1>
+                  <p className="mt-3 text-lg md:text-2xl text-white/90">{subtitle}</p>
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <Link to="/contact" className="rounded-full bg-[#D4693A] px-7 py-3 text-sm font-semibold text-white hover:bg-white hover:text-[#D4693A] transition-colors">
+                      Enquire Now
+                    </Link>
+                    <button onClick={() => switchTab('specs')} className="rounded-full border border-white/70 px-7 py-3 text-sm font-semibold text-white hover:bg-white hover:text-[#2d3444] transition-colors">
+                      Specifications
+                    </button>
                   </div>
-                )}
+                </motion.div>
               </div>
+            </div>
+          </section>
 
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[.3em] text-[#D4693A] mb-3">aslitec</p>
-                <h1 className="text-[clamp(36px,5vw,64px)] font-black text-[#2d3444] leading-[.95] tracking-tight">{product.name}</h1>
-                <p className="mt-4 text-lg font-semibold text-[#555]">{subtitleOf(product, section)}</p>
-
-                {product.reviewCount > 0 && (
-                <div className="mt-3 flex items-center gap-2">
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`size-4 ${
-                          i < Math.floor(product.averageRating) ? 'fill-amber-400 text-amber-400' : 'fill-[#E8E4DF] text-[#E8E4DF]'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm font-semibold text-[#2d3444]">{product.averageRating.toFixed(1)}</span>
-                  <span className="text-sm text-[#999]">· {product.reviewCount} reviews</span>
-                </div>
-                )}
-
-                <p className="mt-5 text-sm text-[#777] leading-relaxed max-w-lg">{product.description}</p>
-
-                {chipsOf(product).length > 0 && (
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {chipsOf(product).map((o) => (
-                      <span key={o} className="rounded-xl border border-[#E8E4DF] bg-white px-4 py-2 text-sm font-semibold text-[#2d3444]">
-                        {o}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {product.attributes.map((attr) => (
-                  <div key={attr.id} className="mt-6">
-                    <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[#999]">{attr.name}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {attr.values.map((val) => {
-                        const variantImg = product.variants.find((v) => v.attributes[attr.name] === val)?.images[0]
-                        const idx = images.findIndex((img) => img.url === variantImg)
-                        const selected = idx >= 0 && idx === imgIdx
-                        return (
-                          <button
-                            key={val}
-                            onClick={() => idx >= 0 && setImgIdx(idx)}
-                            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
-                              selected ? 'border-[#D4693A] text-[#D4693A]' : 'border-[#E8E4DF] bg-white text-[#555] hover:border-[#2d3444]'
-                            }`}
-                          >
-                            {val}
-                          </button>
-                        )
-                      })}
+          {/* ── Intro + feature icons ─────────────────────────────────── */}
+          <section className="bg-[#F7F3EE] py-16 md:py-24">
+            <div className="mx-auto max-w-[1200px] px-4">
+              <Heading title={story.tagline} text={product.description} />
+              <div className="mt-12 md:mt-16 divide-y divide-[#E8E4DF] rounded-3xl bg-white px-6 md:px-12 shadow-[0_8px_30px_rgba(45,52,68,0.05)]">
+                {story.pillars.map((pillar, pi) => (
+                  <FadeUp key={pillar.title} delay={pi * 0.06} className="grid gap-6 py-8 md:grid-cols-[200px_1fr] md:items-center">
+                    <h3 className="text-2xl md:text-3xl font-bold italic text-[#D4693A]">{pillar.title}</h3>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
+                      {pillar.items.map(({ icon: Icon, label }) => (
+                        <div key={label} className="flex items-center gap-3">
+                          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F7F3EE] text-[#D4693A]">
+                            <Icon className="size-6" strokeWidth={1.5} />
+                          </div>
+                          <p className="text-sm text-[#2d3444] leading-snug">{label}</p>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  </FadeUp>
                 ))}
-
-                {model && (
-                  <p className="mt-6 text-xs text-[#999]">
-                    Model <span className="font-mono text-[#555]">{model}</span>
-                  </p>
-                )}
-
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <button
-                    onClick={() => switchTab('specs')}
-                    className="rounded-full bg-[#2d3444] px-7 py-3 text-sm font-bold text-white hover:bg-[#D4693A] transition-colors"
-                  >
-                    View Specifications
-                  </button>
-                  <Link
-                    to="/contact"
-                    className="rounded-full border border-[#2d3444] px-7 py-3 text-sm font-bold text-[#2d3444] hover:border-[#D4693A] hover:text-[#D4693A] transition-colors"
-                  >
-                    Ask About This Product
-                  </Link>
-                </div>
               </div>
             </div>
+          </section>
 
-            {/* ── Highlights ───────────────────────────────────────────── */}
-            {highlights.length > 0 && (
-              <section className="mt-20">
-                <p className="text-xs font-bold uppercase tracking-[.35em] text-[#D4693A] mb-2">Key Features</p>
-                <h2 className="text-2xl font-black text-[#2d3444] mb-8">At a glance</h2>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                  {highlights.map((h) => (
-                    <div key={h.label} className="rounded-2xl border border-[#E8E4DF] bg-white p-5">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#999]">{h.label}</p>
-                      <p className="mt-2 text-sm md:text-base font-bold text-[#2d3444] leading-snug">{h.value}</p>
+          {/* ── Split: text + ring diagram ────────────────────────────── */}
+          <section className="bg-white py-16 md:py-24">
+            <div className="mx-auto max-w-[1200px] px-4 grid gap-12 lg:grid-cols-2 items-center">
+              <FadeUp>
+                <p className="text-[11px] font-bold uppercase tracking-[.35em] text-[#D4693A]">{section.name}</p>
+                <h2 className="mt-3 text-2xl md:text-4xl font-bold leading-tight text-[#2d3444]">{content.ringTitle}</h2>
+                <p className="mt-5 text-sm md:text-base leading-relaxed text-[#666]">{content.ringText}</p>
+                <button onClick={() => switchTab('specs')} className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#D4693A] hover:gap-2.5 transition-all">
+                  View all specifications <ArrowRight className="size-4" />
+                </button>
+              </FadeUp>
+              <FadeUp delay={0.1}>
+                <RingDiagram image={product.images[0]?.url} alt={product.name} items={content.ring} />
+              </FadeUp>
+            </div>
+          </section>
+
+          {/* ── Numbered benefits (01–03) ─────────────────────────────── */}
+          {story.steps.some((st) => st.image) && (
+            <section className="bg-[#F7F3EE] py-16 md:py-24">
+              <div className="mx-auto max-w-[1200px] px-4 space-y-6">
+                {story.steps.map((st, i) => (
+                  <FadeUp key={st.title} className="grid items-center gap-8 overflow-hidden rounded-3xl bg-white p-6 md:grid-cols-2 md:p-10">
+                    <div className={i % 2 ? 'md:order-2' : ''}>
+                      <p className="text-3xl md:text-4xl font-bold italic text-[#D4693A]">{String(i + 1).padStart(2, '0')}</p>
+                      <h3 className="mt-3 text-2xl md:text-3xl font-bold text-[#2d3444] leading-tight">{st.title}</h3>
+                      <p className="mt-4 text-sm md:text-base leading-relaxed text-[#666]">{st.text}</p>
                     </div>
+                    {st.image && (
+                      <div className="overflow-hidden rounded-2xl">
+                        <img src={st.image} alt={st.title} loading="lazy" className="w-full aspect-[10/7] object-cover transition-transform duration-700 hover:scale-105" />
+                      </div>
+                    )}
+                  </FadeUp>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {story.spotlights[0] && <Spotlight {...story.spotlights[0]} />}
+
+          {/* ── Use cases ─────────────────────────────────────────────── */}
+          {scenes.uses.length > 0 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="mx-auto max-w-[1200px] px-4">
+                <Heading title={content.usesTitle} text={content.usesText} />
+                <div className="mt-12 grid gap-5 md:grid-cols-3">
+                  {scenes.uses.map((src, i) => (
+                    <FadeUp key={src} delay={i * 0.08}>
+                      <div className="overflow-hidden rounded-2xl">
+                        <img src={src} alt={content.uses[i]} loading="lazy" className="w-full aspect-[10/7] object-cover transition-transform duration-700 hover:scale-105" />
+                      </div>
+                      <h3 className="mt-5 text-lg font-bold text-[#2d3444]">{content.uses[i]}</h3>
+                      {story.useTexts[i] && <p className="mt-2 text-sm leading-relaxed text-[#666]">{story.useTexts[i]}</p>}
+                    </FadeUp>
                   ))}
                 </div>
-              </section>
-            )}
+              </div>
+            </section>
+          )}
 
-            {/* ── Gallery ──────────────────────────────────────────────── */}
-            {images.length > 1 && (
-              <section className="mt-20">
-                <p className="text-xs font-bold uppercase tracking-[.35em] text-[#D4693A] mb-2">Gallery</p>
-                <h2 className="text-2xl font-black text-[#2d3444] mb-8">Every angle</h2>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {images.map((img) => (
-                    <div key={img.id} className="aspect-[4/3] rounded-3xl bg-[#F7F3EE] border border-[#E8E4DF] overflow-hidden">
-                      <img src={img.url} alt={img.alt} loading="lazy" className="size-full object-contain p-6 mix-blend-multiply" />
+          {/* ── Stats ─────────────────────────────────────────────────── */}
+          {scenes.stats.length > 0 && (
+            <section className="bg-[#F7F3EE] py-16 md:py-24">
+              <div className="mx-auto max-w-[1200px] px-4 grid gap-6 md:grid-cols-2">
+                {content.stats.map((s, i) => (
+                  <FadeUp key={s.label} delay={i * 0.08}>
+                    <div className="relative overflow-hidden rounded-2xl">
+                      <img src={scenes.stats[i]} alt="" loading="lazy" className="w-full aspect-[10/7] object-cover" />
+                      <div className="absolute left-6 top-6 md:left-8 md:top-8">
+                        <p className={`text-5xl md:text-6xl font-bold tracking-tight ${i === 0 ? 'text-white' : 'text-[#2d3444]'}`}>{s.value}</p>
+                        <p className={`mt-1 text-sm ${i === 0 ? 'text-[#e9a57f]' : 'text-[#D4693A]'}`}>{s.label}</p>
+                      </div>
                     </div>
+                    <h3 className="mt-5 text-lg md:text-xl font-bold text-[#2d3444]">{s.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#666]">{s.text}</p>
+                  </FadeUp>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {story.spotlights[1] && <Spotlight {...story.spotlights[1]} />}
+
+          {/* ── Placement ─────────────────────────────────────────────── */}
+          {scenes.places.length > 0 && (
+            <section className="bg-[#F7F3EE] py-16 md:py-24">
+              <div className="mx-auto max-w-[1200px] px-4">
+                <Heading title={content.placeTitle} text={content.placeText} />
+                <div className="mt-12 grid gap-5 md:grid-cols-2">
+                  {scenes.places.map((src, i) => (
+                    <FadeUp key={src} delay={i * 0.08} className="relative overflow-hidden rounded-2xl">
+                      <img src={src} alt={content.places[i]} loading="lazy" className="w-full aspect-[10/7] object-cover" />
+                      <span className="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#2d3444]/80 px-5 py-2 text-sm font-semibold text-white backdrop-blur">
+                        {content.places[i]}
+                      </span>
+                    </FadeUp>
                   ))}
                 </div>
-              </section>
-            )}
-          </>
-        ) : (
-          /* ── Specifications ─────────────────────────────────────────── */
-          <section>
+              </div>
+            </section>
+          )}
+
+          {/* ── Every angle (real product photos) ─────────────────────── */}
+          {product.images.length > 1 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="mx-auto max-w-[1200px] px-4">
+                <Heading title="Every angle" />
+                <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {product.images.map((img, i) => (
+                    <FadeUp key={img.id} delay={(i % 4) * 0.05} className="aspect-square rounded-2xl bg-[#F7F3EE] overflow-hidden">
+                      <img src={img.url} alt={img.alt} loading="lazy" className="size-full object-contain p-5 mix-blend-multiply" />
+                    </FadeUp>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      ) : (
+        /* ── Specifications ──────────────────────────────────────────── */
+        <section className="bg-white py-14 md:py-20">
+          <div className="mx-auto max-w-[960px] px-4">
             <div className="text-center">
-              <p className="text-xs font-bold uppercase tracking-[.35em] text-[#D4693A] mb-2">{product.name}</p>
-              <h1 className="text-3xl md:text-4xl font-black text-[#2d3444]">Specifications</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-[#2d3444]">{model}</h1>
+              <p className="mt-2 text-sm text-[#666]">{subtitle}</p>
             </div>
-            {images[0] && (
-              <div className="mx-auto mt-8 max-w-md aspect-[4/3] rounded-3xl bg-white border border-[#E8E4DF] overflow-hidden">
-                <img src={images[0].url} alt={product.name} className="size-full object-contain p-6 mix-blend-multiply" />
-              </div>
-            )}
-
-            <div className="mx-auto mt-12 max-w-4xl space-y-8">
+            <div className="mt-10 flex justify-center gap-6 md:gap-12 border-b border-[#E8E4DF] pb-10">
+              {product.images.slice(0, 2).map((img) => (
+                <img key={img.id} src={img.url} alt={img.alt} className="h-48 md:h-64 w-auto max-w-[45%] object-contain" />
+              ))}
+            </div>
+            <h2 className="mt-14 text-center text-2xl md:text-3xl font-semibold text-[#2d3444]">Specifications</h2>
+            <div className="mx-auto mt-3 h-0.5 w-12 bg-[#D4693A]" />
+            <div className="mt-10">
               {groupSpecs(product).map((g) => (
-                <div key={g.name} className="overflow-hidden rounded-2xl border border-[#E8E4DF] bg-white">
-                  <h2 className="bg-[#F7F3EE] px-5 py-3 text-xs font-black uppercase tracking-[.2em] text-[#2d3444]">{g.name}</h2>
+                <div key={g.name} className="mb-8">
+                  <h3 className="border-b-2 border-[#2d3444] pb-3 text-base font-semibold text-[#2d3444]">{g.name}</h3>
                   <dl>
                     {g.rows.map((s, i) => (
-                      <div key={s.label + i} className="grid sm:grid-cols-[200px_1fr] gap-1 sm:gap-6 px-5 py-3.5 border-t border-[#F0ECE7] first:border-t-0">
-                        <dt className="text-xs font-bold uppercase tracking-wider text-[#999] pt-0.5">{s.label}</dt>
+                      <div key={s.label + i} className="grid grid-cols-[120px_1fr] md:grid-cols-[240px_1fr] gap-4 border-b border-[#E8E4DF] py-4">
+                        <dt className="text-sm text-[#999]">{s.label}</dt>
                         <dd className="text-sm text-[#2d3444]">{s.value}</dd>
                       </div>
                     ))}
@@ -252,42 +288,79 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                 </div>
               ))}
             </div>
-          </section>
-        )}
-
-        {/* ── Related ─────────────────────────────────────────────────── */}
-        {related.length > 0 && (
-          <section className="mt-24">
-            <p className="text-xs font-bold uppercase tracking-[.35em] text-[#D4693A] mb-2">More Smart Home</p>
-            <h2 className="text-2xl font-black text-[#2d3444] mb-8">You might also like</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {related.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/products/${p.slug}`}
-                  className="group rounded-2xl bg-white border border-[#E8E4DF] overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                >
-                  <div className="aspect-square bg-[#F7F3EE] overflow-hidden">
-                    <img
-                      src={p.images[0]?.url}
-                      alt={p.name}
-                      className="size-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-1">aslitec</p>
-                    <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
-                    {p.reviewCount > 0 && (
-                      <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>
-                    )}
-                  </div>
-                </Link>
-              ))}
+            <div className="mt-10 text-center">
+              <Link to="/contact" className="inline-flex rounded-full bg-[#D4693A] px-8 py-3 text-sm font-semibold text-white hover:bg-[#2d3444] transition-colors">
+                Ask About This Product
+              </Link>
             </div>
-          </section>
-        )}
-      </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Related ─────────────────────────────────────────────────── */}
+      {related.length > 0 && (
+        <section className="bg-[#FAFAF8] py-16 md:py-20">
+          <div className="mx-auto max-w-[1200px] px-4">
+            <div className="mb-8 flex items-end justify-between gap-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#2d3444]">You might also like</h2>
+              <Link to="/categories/smart-home" className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[#D4693A]">
+                All Smart Home <ArrowRight className="size-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {related.map((p, i) => <SmartHomeCard key={p.id} product={p} index={i} />)}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
+  )
+}
+
+// Product in the middle, uses arranged on a ring around it
+function RingDiagram({ image, alt, items }: { image?: string; alt: string; items: { icon: LucideIcon; label: string }[] }) {
+  return (
+    <div className="relative mx-auto aspect-square w-full max-w-[460px]">
+      <div className="absolute inset-[4%] rounded-full border border-dashed border-[#D4693A]/40" />
+      <div className="absolute inset-[20%] rounded-full bg-[#F7F3EE]" />
+      <div className="absolute inset-[30%] rounded-full bg-white shadow-[0_10px_40px_rgba(212,105,58,0.18)] flex items-center justify-center">
+        {image && <img src={image} alt={alt} className="size-[78%] object-contain" />}
+      </div>
+      {items.map(({ icon: Icon, label }, i) => {
+        const a = (i / items.length) * Math.PI * 2 - Math.PI / 2
+        return (
+          <div
+            key={label}
+            className="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
+            style={{ left: `${50 + 46 * Math.cos(a)}%`, top: `${50 + 46 * Math.sin(a)}%` }}
+          >
+            <div className="flex size-11 md:size-12 items-center justify-center rounded-full bg-white text-[#D4693A] shadow-[0_4px_14px_rgba(45,52,68,0.1)]">
+              <Icon className="size-5" strokeWidth={1.6} />
+            </div>
+            <p className="mt-1.5 text-[11px] md:text-xs font-medium text-[#2d3444] leading-tight">{label}</p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Full-width benefit scene with the headline over it (RH2 style)
+function Spotlight({ title, text, image }: { title: string; text: string; image?: string }) {
+  if (!image) return null
+  return (
+    <section className="relative overflow-hidden bg-[#12171f]">
+      <img src={image} alt={title} loading="lazy" className="block w-full h-[420px] md:h-auto md:aspect-[1920/760] object-cover object-[75%_center]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#12171f]/80 via-[#12171f]/35 to-transparent" />
+      <div className="absolute inset-0 flex items-end md:items-center">
+        <FadeUp className="mx-auto w-full max-w-[1200px] px-4 pb-10 md:pb-0">
+          <div className="max-w-[460px]">
+            <span className="block h-1 w-12 rounded-full bg-[#D4693A]" />
+            <h2 className="mt-5 text-3xl md:text-5xl font-bold leading-tight text-white">{title}</h2>
+            <p className="mt-4 text-sm md:text-lg leading-relaxed text-white/80">{text}</p>
+          </div>
+        </FadeUp>
+      </div>
+    </section>
   )
 }

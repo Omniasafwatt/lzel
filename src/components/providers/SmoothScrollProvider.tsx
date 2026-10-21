@@ -24,7 +24,26 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
     gsap.ticker.lagSmoothing(0)
 
+    // Pinned sections (hero, banners, horizontal rack) measure their scroll
+    // positions once. When the page height changes later (images or data
+    // loading, sections mounting) those positions go stale and pins overlap
+    // the sections around them, so re-sort and refresh after any resize.
+    let timer: ReturnType<typeof setTimeout>
+    const refresh = () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        ScrollTrigger.sort()
+        ScrollTrigger.refresh()
+      }, 150)
+    }
+    const observer = new ResizeObserver(refresh)
+    observer.observe(document.body)
+    window.addEventListener('load', refresh)
+
     return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+      window.removeEventListener('load', refresh)
       lenis.destroy()
     }
   }, [])

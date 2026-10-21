@@ -1,4 +1,7 @@
 import type { Product } from '@/types'
+import securityBanner from '@/assets/banners/smart-home/security-wide.webp'
+import comfortBanner from '@/assets/banners/smart-home/comfort-wide.webp'
+import driveBanner from '@/assets/banners/smart-home/drive-wide.webp'
 
 // Section layout for the Smart Home page and its product pages
 export interface SmartHomeSection {
@@ -16,7 +19,43 @@ export const SMART_HOME_SECTIONS: SmartHomeSection[] = [
   { name: 'Magnetic Car Mounts', subtitle: 'Magnetic Phone Mount',           match: (p) => p.tags.includes('car mount') },
 ]
 
-export const getSmartHomeSection = (p: Product) =>
+// Top-level groups on the Smart Home page, each with its banner and sections
+export interface SmartHomeGroup {
+  name: string
+  tagline: string
+  banner: string
+  darkBanner?: boolean
+  sections: string[]
+}
+
+export const SMART_HOME_GROUPS: SmartHomeGroup[] = [
+  {
+    name: 'Smart Security',
+    tagline: 'See, hear and protect every corner of your home',
+    banner: securityBanner,
+    sections: ['Pan & Tilt Cameras', 'Wire-Free Cameras', 'Video Doorbells'],
+  },
+  {
+    name: 'Home Comfort',
+    tagline: 'Cleaner air, gentle mist and calm scents, room by room',
+    banner: comfortBanner,
+    sections: ['Bladeless Fans', 'Humidifiers & Diffusers'],
+  },
+  {
+    name: 'Smart Drive',
+    tagline: 'Magnetic mounts that keep your phone steady on every road',
+    banner: driveBanner,
+    darkBanner: true,
+    sections: ['Magnetic Car Mounts'],
+  },
+]
+
+// Anchor ids on the Smart Home page (groups and sections)
+export const smartHomeAnchor = (name: string) => 'sh-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
+export const modelOf = (p: Product) => p.specifications.find((s) => s.label === 'Model')?.value
+
+export const getSmartHomeSection =(p: Product) =>
   p.categoryId === 'cat-smart-home' ? SMART_HOME_SECTIONS.find((s) => s.match(p)) : undefined
 
 const SPEC_GROUPS: Record<string, string> = {
