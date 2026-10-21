@@ -7,3 +7,6 @@ dist
 .vite
 coverage
 *.psd
+
+# Claude Code agent worktrees
+.claude/worktrees/
