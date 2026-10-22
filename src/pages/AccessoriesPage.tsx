@@ -71,11 +71,6 @@ function AccessoryCard({ product, index = 0 }: { product: Product; index?: numbe
               decoding="async"
             />
           )}
-          {product.compareAtPrice && (
-            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">
-              SALE
-            </div>
-          )}
           {product.tags.includes('new') && (
             <div className="absolute top-3 left-3 rounded-full bg-[#2d3444] px-2.5 py-0.5 text-[10px] font-bold text-white">
               NEW
@@ -91,13 +86,7 @@ function AccessoryCard({ product, index = 0 }: { product: Product; index?: numbe
           )}
           <Swatches product={product} />
           <div className="mt-auto pt-3">
-            {product.reviewCount > 0 ? (
-              <span className="text-xs text-amber-500">
-                ★ {product.averageRating.toFixed(1)}
-              </span>
-            ) : (
-              <span className="text-xs font-bold text-[#2d3444] group-hover:text-[#D4693A] transition-colors">View →</span>
-            )}
+            <span className="text-xs font-bold text-[#2d3444] group-hover:text-[#D4693A] transition-colors">View →</span>
           </div>
         </div>
       </Link>

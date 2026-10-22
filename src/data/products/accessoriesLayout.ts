@@ -52,6 +52,21 @@ export const ACCESSORY_SECTIONS = [
     title: 'WaterProof Case',
     filter: (p: Product) => p.tags.includes('waterproof-case'),
   },
+  {
+    key: 'fan',
+    title: 'Bladeless Fans',
+    filter: (p: Product) => p.tags.includes('fan'),
+  },
+  {
+    key: 'humidifier',
+    title: 'Humidifiers & Diffusers',
+    filter: (p: Product) => p.tags.includes('humidifier') || p.tags.includes('diffuser'),
+  },
+  {
+    key: 'car-mount',
+    title: 'Magnetic Car Mounts',
+    filter: (p: Product) => p.tags.includes('car mount'),
+  },
 ]
 
 export const accessorySectionId = (key: string) => `acc-${key}`

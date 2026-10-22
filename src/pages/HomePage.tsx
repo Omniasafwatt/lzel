@@ -303,16 +303,10 @@ function BigCard({ product }: { product: Product }) {
               loading="lazy" decoding="async"
             />
           )}
-          {product.compareAtPrice && (
-            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
-          )}
         </div>
         <div className="p-5">
           <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">{product.category.name}</p>
           <h3 className="text-base font-bold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-          <div className="mt-2">
-            {product.reviewCount > 0 && <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>}
-          </div>
         </div>
       </Link>
     </div>
@@ -596,9 +590,6 @@ function TheDropSection({ products }: { products: Product[] }) {
                           className="size-full object-contain transition-transform duration-700 group-hover:scale-110"
                           loading="lazy" decoding="async"
                         />
-                      )}
-                      {p.compareAtPrice && (
-                        <div className="absolute top-2 left-2 rounded-full bg-[#D4693A] px-2 py-0.5 text-[9px] font-bold text-white">SALE</div>
                       )}
                     </div>
                     <div className="p-3">

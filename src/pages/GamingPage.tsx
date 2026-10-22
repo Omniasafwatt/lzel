@@ -74,18 +74,12 @@ function GamingCard({ product, index = 0 }: { product: Product; index?: number }
               decoding="async"
             />
           )}
-          {product.compareAtPrice && (
-            <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
-          )}
         </div>
         <div className="p-4 flex flex-col flex-1">
           <p className="text-[10px] text-[#D4693A] font-semibold uppercase tracking-widest mb-1">
             {product.category.name}
           </p>
           <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-          <div className="mt-auto pt-3">
-            <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
-          </div>
         </div>
       </Link>
     </div>
@@ -400,9 +394,6 @@ export default function GamingPage() {
                     <p className="text-[9px] font-bold uppercase tracking-[.3em] text-[#D4693A] mb-1">{p.category.name}</p>
                     <h3 className="text-[13px] font-bold text-white line-clamp-1 leading-snug">{p.name}</h3>
                   </div>
-                  {p.compareAtPrice && (
-                    <div className="absolute top-3 right-3 rounded-full bg-[#D4693A] px-2 py-0.5 text-[9px] font-bold text-white">SALE</div>
-                  )}
                 </Link>
               </motion.div>
             ))}
@@ -466,8 +457,6 @@ export default function GamingPage() {
                 <FadeUp delay={0.1} className="mt-12 flex gap-10 flex-wrap">
                   {[
                     { val: `${meta?.total ?? products.length}`, label: 'Models' },
-                    { val: '4.7★', label: 'Avg Rating' },
-                    { val: '1500+', label: 'Sold' },
                   ].map(({ val, label }) => (
                     <div key={label}>
                       <div className="text-3xl font-black text-white tabular-nums">{val}</div>

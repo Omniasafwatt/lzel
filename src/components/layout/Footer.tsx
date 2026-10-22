@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Instagram, Twitter, Youtube } from 'lucide-react'
 
 const LINKS = {
   Products: [
@@ -7,18 +6,6 @@ const LINKS = {
     { label: 'Accessories',      href: '/categories/accessories' },
     { label: 'Appliances',       href: '/categories/appliances' },
     { label: 'Smart Home',       href: '/categories/smart-home' },
-  ],
-  Company: [
-    { label: 'About Us',         href: '/about' },
-    { label: 'Contact',          href: '/contact' },
-    { label: 'Privacy Policy',   href: '/privacy' },
-    { label: 'Terms',            href: '/terms' },
-  ],
-  Support: [
-    { label: 'FAQ',              href: '/faq' },
-    { label: 'Track Order',      href: '/track-order' },
-    { label: 'Returns',          href: '/support' },
-    { label: 'Warranty',         href: '/faq#warranty' },
   ],
 }
 
@@ -33,20 +20,9 @@ export default function Footer() {
             <Link to="/" className="inline-block text-xl font-black tracking-tight text-white mb-4">
               aslitec
             </Link>
-            <p className="text-sm text-white/35 leading-relaxed mb-6 max-w-xs">
+            <p className="text-sm text-white/35 leading-relaxed max-w-xs">
               Premium tech accessories for gamers, creators, and everyday explorers.
             </p>
-            <div className="flex gap-3">
-              {([Instagram, Twitter, Youtube] as const).map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="flex size-9 items-center justify-center rounded-full border border-white/10 text-white/35 hover:text-white hover:border-[#D4693A]/50 hover:bg-[#D4693A]/10 transition-all duration-200"
-                >
-                  <Icon className="size-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Link columns */}

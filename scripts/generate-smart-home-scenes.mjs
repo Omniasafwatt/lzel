@@ -15,6 +15,9 @@ const PRODUCTS = {
   'JS-G20':  [`${CAM}/JS-G20/1.webp`, 'ptz'],
   'JS-R02':  [`${CAM}/JS-R02/r02-1.webp`, 'solar'],
   'JS-R03':  [`${CAM}/JS-R03/3.webp`, 'doorbell'],
+  'JS-G12':  [`${CAM}/JS-G12/g12-1.webp`, 'indoorShelf'],
+  'JS-P160': [`${CAM}/JS-P160/p160-1.webp`, 'indoorDesk'],
+  'JS-P200': [`${CAM}/JS-P200/p200-1.webp`, 'indoorLiving'],
   'BRZ-A09': [`${SRC}/1x/BRZ-A09.webp`, 'fan'],
   'CMA660':  [`${SRC}/1x/CMA660.webp`, 'fan'],
   'VAS-302': [`${SRC}/3x/VAS-302.webp`, 'humidifier'],
@@ -753,6 +756,10 @@ const CAMERA = {
   'stat-1': ['spot', S(0.55, 0.5)],
   'stat-2': ['studio', S(0.55, 0.5)],
 }
+const INDOOR = {
+  'use-1': ['living', S(0.34, 0.72)], 'use-2': ['office', S(0.36, 0.78)], 'use-3': ['bedroom', S(0.34, 0.76)],
+  'place-1': ['shelf', S(0.5, 0.55)], 'place-2': ['desk', S(0.5, 0.7)],
+}
 const SHOTS = {
   ptz: { hero: ['exterior', S(0.62, 0.78, { base: 0.82 })], ...CAMERA,
     'place-1': ['shelf', S(0.5, 0.55)], 'place-2': ['exterior', S(0.5, 0.8, { base: 0.7 })] },
@@ -784,6 +791,10 @@ const SHOTS = {
     'use-1': ['carNight', S(0.42, 0.72)], 'use-2': ['car', S(0.42, 0.7)], 'use-3': ['vent', S(0.55, 0.66, { base: 0.88 })],
     'stat-1': ['spot', S(0.55, 0.5)], 'stat-2': ['studio', S(0.52, 0.5)],
     'place-1': ['vent', S(0.55, 0.66, { base: 0.88 })], 'place-2': ['car', S(0.42, 0.7)] },
+  // Indoor cameras: the same room shots, each with its own hero
+  indoorShelf: { hero: ['shelf', S(0.5, 0.76)], ...INDOOR },
+  indoorDesk: { hero: ['desk', S(0.46, 0.76)], ...INDOOR },
+  indoorLiving: { hero: ['living', S(0.36, 0.76)], ...INDOOR },
   stand: { hero: ['desk', S(0.5, 0.72)],
     'use-1': ['office', S(0.5, 0.76)], 'use-2': ['car', S(0.45, 0.7)], 'use-3': ['bedroom', S(0.45, 0.76)],
     'stat-1': ['spot', S(0.55, 0.5)], 'stat-2': ['studio', S(0.52, 0.5)],
@@ -834,7 +845,15 @@ const MOUNT_STORY = (base) => ({
   'spot-1-wide': F('car', S(0.42, 0.72), 'phoneMap'),
   'spot-2-wide': F('carNight', S(0.42, 0.72), 'phoneMap'),
 })
+const INDOOR_STORY = {
+  'step-1': F('spot', S(0.48, 0.5)),
+  'step-2': F('shelf', S(0.5, 0.6)),
+  'step-3': F('bedroom', S(0.36, 0.74)),
+  'spot-1-wide': F('living', S(0.4, 0.76)),
+  'spot-2-wide': F('shelf', S(0.55, 0.76)),
+}
 const STORY = {
+  indoorShelf: INDOOR_STORY, indoorDesk: INDOOR_STORY, indoorLiving: INDOOR_STORY,
   ptz: { 'step-1': F('spot', S(0.48, 0.5), 'panRing'), 'step-2': F('exterior', S(0.42, 0.85, { base: 0.62 }), 'track'), ...CAM_STORY },
   solar: { 'step-1': F('exterior', S(0.45, 0.8, { base: 0.68 }), 'sun'), 'step-2': F('exterior', S(0.42, 0.85, { base: 0.62 }), 'wedgeLeft'), ...CAM_STORY },
   doorbell: {
@@ -894,7 +913,7 @@ for (const [model, [path, kind]] of Object.entries(PRODUCTS)) {
     const under = extra === 'phone' ? await phoneOverlay(W, H) : extra === 'detect' ? detectOverlay(W, H) : []
     await render(`${dir}/${slot === 'hero' ? 'hero-wide' : slot}.webp`, W, H, scene, [[path, spec]], under)
   }
-  for (const [slot, [scene, spec, fx]] of Object.entries(STORY[kind])) {
+  for (const [slot, [scene, spec, fx]] of Object.entries(STORY[kind] ?? {})) {
     const [W, H] = slot.endsWith('-wide') ? [1920, 760] : [800, 560]
     await render(`${dir}/${slot}.webp`, W, H, scene, [[path, spec]], [], fx, model)
   }

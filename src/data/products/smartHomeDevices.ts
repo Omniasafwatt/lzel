@@ -7,7 +7,7 @@ import {
   hum_vas302, dif_vra807_blk, dif_vra807_wht, dif_vrm370,
 } from '../localImages'
 
-const cat = getCategoryById('cat-smart-home')!
+const cat = getCategoryById('cat-accessories')!
 
 // Details below are limited to what the product photos show (model, form,
 // mounting, colour, controls). Electrical specs need the factory spec sheets.
@@ -32,7 +32,7 @@ const device = (d: DeviceInput, i: number): Product => {
     shortDescription: d.shortDescription,
     sku: `ASL-${d.model}`,
     price: 0,
-    categoryId: 'cat-smart-home',
+    categoryId: 'cat-accessories',
     category: cat,
     attributes: d.colors ? [{ id: `${id}-color`, name: 'Color', values: d.colors.map((c) => c.name) }] : [],
     variants: (d.colors ?? []).map((c) => ({
@@ -48,7 +48,7 @@ const device = (d: DeviceInput, i: number): Product => {
     })),
     images: d.images.map((img, j) => ({ id: `${id}-img-${j}`, url: img.url, alt: img.alt, sortOrder: j })),
     specifications: [{ label: 'Type', value: d.shortDescription.split('·')[0].trim() }, { label: 'Model', value: d.model }, ...d.specs],
-    tags: ['smart home', 'aslitec', 'new', ...d.tags],
+    tags: ['accessories', 'aslitec', 'new', ...d.tags],
     status: 'active',
     isFeatured: false,
     isDigital: false,

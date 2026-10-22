@@ -107,6 +107,24 @@ import cam_r02_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02
 import cam_r02_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-3.webp'
 import cam_r02_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-R02/r02-4.webp'
 import cam_r03_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-R03/3.webp'
+import cam_g12_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-1.webp'
+import cam_g12_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-2.webp'
+import cam_g12_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-3.webp'
+import cam_g12_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-4.webp'
+import cam_g12_5 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-5.webp'
+import cam_g12_6 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-6.webp'
+import cam_g12_7 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-7.webp'
+import cam_g12_8 from '../assets/smart home/Eva Security Cam- aslitec/JS-G12/g12-8.webp'
+import cam_p160_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-P160/p160-1.webp'
+import cam_p200_1 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-1.webp'
+import cam_p200_2 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-2.webp'
+import cam_p200_3 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-3.webp'
+import cam_p200_4 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-4.webp'
+import cam_p200_5 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-5.webp'
+import cam_p200_6 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-6.webp'
+import cam_p200_7 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-7.webp'
+import cam_p200_8 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-8.webp'
+import cam_p200_9 from '../assets/smart home/Eva Security Cam- aslitec/JS-P200/p200-9.webp'
 
 // ── Smart Home – fans, car mounts, humidifiers & diffusers ───────────────────
 import fan_brz_a09 from '../assets/smart home/1x/BRZ-A09.webp'
@@ -170,6 +188,9 @@ export {
   cam_g20_1, cam_g20_2, cam_g20_3, cam_g20_4, cam_g20_5, cam_g20_6, cam_g20_7, cam_g20_8,
   cam_r02_1, cam_r02_2, cam_r02_3, cam_r02_4,
   cam_r03_1,
+  cam_g12_1, cam_g12_2, cam_g12_3, cam_g12_4, cam_g12_5, cam_g12_6, cam_g12_7, cam_g12_8,
+  cam_p160_1,
+  cam_p200_1, cam_p200_2, cam_p200_3, cam_p200_4, cam_p200_5, cam_p200_6, cam_p200_7, cam_p200_8, cam_p200_9,
   // Smart Home – fans, car mounts, humidifiers & diffusers
   fan_brz_a09, fan_cma660,
   mount_dxm12t, mount_mcdy1h, mount_mcet2m, mount_mgd10x2, mount_mge10x,

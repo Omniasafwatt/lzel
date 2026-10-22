@@ -29,9 +29,9 @@ export const mockProducts: Product[] = [
 
 export const productsByCategory: Record<string, Product[]> = {
   gaming:       controllers,
-  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases, ...earphones, ...newAccessories],
+  accessories:  [...stylus, ...chargers, ...powerbanks, ...waterproofCases, ...phoneCases, ...earphones, ...newAccessories, ...smartHomeDevices],
   appliances:   kettles,
-  'smart-home': [...smartHome, ...smartHomeDevices],
+  'smart-home': smartHome,
 }
 
 export const featuredProducts: Product[] = mockProducts.filter((p) => p.isFeatured)

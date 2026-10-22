@@ -125,6 +125,25 @@ const mount = (p: Product, uses: string[], places: string[]): DetailContent => (
 // ── Per-product content ─────────────────────────────────────────────────────
 export function detailOf(p: Product): DetailContent {
   const t = p.tags
+  if (t.includes('indoor')) return {
+    introTitle: 'Keep an eye on home',
+    features: [
+      { icon: Move3d, label: 'Pan & tilt head' },
+      { icon: Sparkles, label: spec(p, 'Design') ?? '' },
+      { icon: HardDrive, label: spec(p, 'Storage') ?? '' },
+      { icon: Palette, label: spec(p, 'Color') ?? '' },
+    ].filter((f) => f.label),
+    ringTitle: 'Made for every room',
+    ringText: `Put the ${modelOf(p)} on a shelf, desk or sideboard and turn its head toward whatever you want to watch.`,
+    ring: ROOMS,
+    usesTitle: 'Look in on what matters',
+    usesText: p.description,
+    uses: ['The living room', 'The home office', 'The bedroom'],
+    stats: [],
+    placeTitle: 'Fits in anywhere',
+    placeText: 'A compact indoor body that sits neatly on a shelf or a desk.',
+    places: ['On a shelf', 'On a desk'],
+  }
   if (t.includes('ptz')) return camera(p,
     [{ icon: Move3d, label: '355° pan / 90° tilt' }, { icon: Crosshair, label: 'AI auto-tracking' }],
     { value: '355°', label: 'Pan coverage', title: 'One camera, the whole space', text: 'Pan 355° and tilt 90° to follow movement and cover every corner from a single device.' },

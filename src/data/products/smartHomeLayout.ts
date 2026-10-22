@@ -1,7 +1,5 @@
 import type { Product } from '@/types'
 import securityBanner from '@/assets/banners/smart-home/security-wide.webp'
-import comfortBanner from '@/assets/banners/smart-home/comfort-wide.webp'
-import driveBanner from '@/assets/banners/smart-home/drive-wide.webp'
 
 // Section layout for the Smart Home page and its product pages
 export interface SmartHomeSection {
@@ -14,6 +12,10 @@ export const SMART_HOME_SECTIONS: SmartHomeSection[] = [
   { name: 'Pan & Tilt Cameras', subtitle: 'Smart Pan & Tilt Wi-Fi Camera', match: (p) => p.tags.includes('ptz') },
   { name: 'Wire-Free Cameras',  subtitle: 'Solar-Powered Wire-Free Camera', match: (p) => p.tags.includes('solar') },
   { name: 'Video Doorbells',    subtitle: 'Smart Wi-Fi Video Doorbell',      match: (p) => p.tags.includes('doorbell') },
+]
+
+// Home devices now listed under Accessories that keep the Smart Home-style product page
+const DEVICE_SECTIONS: SmartHomeSection[] = [
   { name: 'Bladeless Fans',     subtitle: 'Bladeless Fan',                   match: (p) => p.tags.includes('fan') },
   { name: 'Humidifiers & Diffusers', subtitle: 'Humidifier & Aroma Diffuser', match: (p) => p.tags.includes('humidifier') || p.tags.includes('diffuser') },
   { name: 'Magnetic Car Mounts', subtitle: 'Magnetic Phone Mount',           match: (p) => p.tags.includes('car mount') },
@@ -35,19 +37,6 @@ export const SMART_HOME_GROUPS: SmartHomeGroup[] = [
     banner: securityBanner,
     sections: ['Pan & Tilt Cameras', 'Wire-Free Cameras', 'Video Doorbells'],
   },
-  {
-    name: 'Home Comfort',
-    tagline: 'Cleaner air, gentle mist and calm scents, room by room',
-    banner: comfortBanner,
-    sections: ['Bladeless Fans', 'Humidifiers & Diffusers'],
-  },
-  {
-    name: 'Smart Drive',
-    tagline: 'Magnetic mounts that keep your phone steady on every road',
-    banner: driveBanner,
-    darkBanner: true,
-    sections: ['Magnetic Car Mounts'],
-  },
 ]
 
 // Anchor ids on the Smart Home page (groups and sections)
@@ -55,8 +44,10 @@ export const smartHomeAnchor = (name: string) => 'sh-' + name.toLowerCase().repl
 
 export const modelOf = (p: Product) => p.specifications.find((s) => s.label === 'Model')?.value
 
-export const getSmartHomeSection =(p: Product) =>
-  p.categoryId === 'cat-smart-home' ? SMART_HOME_SECTIONS.find((s) => s.match(p)) : undefined
+export const getSmartHomeSection = (p: Product) =>
+  p.categoryId === 'cat-smart-home' ? SMART_HOME_SECTIONS.find((s) => s.match(p))
+  : p.id.startsWith('prod-sh-') ? DEVICE_SECTIONS.find((s) => s.match(p))
+  : undefined
 
 const SPEC_GROUPS: Record<string, string> = {
   Model: 'General',
@@ -111,12 +102,14 @@ export function highlightsOf(p: Product) {
   return [...picked, ...extras, ...rest].slice(0, 6)
 }
 
+// Eva cameras share their section's subtitle; other models describe themselves
+const usesSectionSubtitle = (p: Product) => p.tags.includes('eva')
+
 // Feature chips, minus the one already used as the subtitle
 export const chipsOf = (p: Product) => {
   const chips = p.shortDescription?.split('·').map((c) => c.trim()).filter(Boolean) ?? []
-  return p.tags.includes('camera') ? chips : chips.slice(1)
+  return usesSectionSubtitle(p) ? chips : chips.slice(1)
 }
 
-// Cameras share their section's subtitle; other devices describe themselves
 export const subtitleOf = (p: Product, section: SmartHomeSection) =>
-  p.tags.includes('camera') ? section.subtitle : p.shortDescription?.split('·')[0].trim() || section.subtitle
+  usesSectionSubtitle(p) ? section.subtitle : p.shortDescription?.split('·')[0].trim() || section.subtitle

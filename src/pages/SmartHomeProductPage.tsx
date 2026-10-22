@@ -41,7 +41,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
   const content = detailOf(product)
   const scenes = scenesOf(product)
   const story = storyOf(product)
-  const others = productsByCategory['smart-home'].filter((p) => p.id !== product.id)
+  const others = productsByCategory[product.category.slug].filter((p) => p.id !== product.id && (p.categoryId === 'cat-smart-home' || p.id.startsWith('prod-sh-')))
   const related = [...others.filter(section.match), ...others.filter((p) => !section.match(p))].slice(0, 4)
 
   const switchTab = (t: Tab) => {
@@ -71,12 +71,6 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                 {tab === t && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#D4693A]" />}
               </button>
             ))}
-            <Link
-              to="/contact"
-              className="hidden sm:inline-flex rounded-full bg-[#D4693A] px-5 py-2 text-xs md:text-sm font-semibold text-white hover:bg-[#2d3444] transition-colors"
-            >
-              Enquire
-            </Link>
           </div>
         </div>
       </div>
@@ -88,7 +82,14 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
             {scenes.hero ? (
               <img src={scenes.hero} alt={product.name} className="block w-full h-[440px] md:h-auto md:aspect-[1920/800] object-cover object-[72%_center]" />
             ) : (
-              <div className="h-[440px] md:aspect-[1920/800]" />
+              // No lifestyle scene yet: show the product photo on a card instead
+              <div className="relative h-[440px] md:h-auto md:aspect-[1920/800]">
+                {product.images[0] && (
+                  <div className="absolute right-4 top-6 md:right-[10%] md:top-1/2 md:-translate-y-1/2 z-10 aspect-square h-[52%] md:h-[80%] rounded-3xl bg-white">
+                    <img src={product.images[0].url} alt={product.name} className="size-full object-contain p-[8%]" />
+                  </div>
+                )}
+              </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-r from-[#12171f]/75 via-[#12171f]/30 to-transparent" />
             <div className="absolute inset-0 flex items-end md:items-center">
@@ -103,9 +104,6 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                   <h1 className="mt-3 text-5xl md:text-7xl font-bold text-white tracking-tight">{model}</h1>
                   <p className="mt-3 text-lg md:text-2xl text-white/90">{subtitle}</p>
                   <div className="mt-7 flex flex-wrap gap-3">
-                    <Link to="/contact" className="rounded-full bg-[#D4693A] px-7 py-3 text-sm font-semibold text-white hover:bg-white hover:text-[#D4693A] transition-colors">
-                      Enquire Now
-                    </Link>
                     <button onClick={() => switchTab('specs')} className="rounded-full border border-white/70 px-7 py-3 text-sm font-semibold text-white hover:bg-white hover:text-[#2d3444] transition-colors">
                       Specifications
                     </button>
@@ -288,11 +286,6 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                 </div>
               ))}
             </div>
-            <div className="mt-10 text-center">
-              <Link to="/contact" className="inline-flex rounded-full bg-[#D4693A] px-8 py-3 text-sm font-semibold text-white hover:bg-[#2d3444] transition-colors">
-                Ask About This Product
-              </Link>
-            </div>
           </div>
         </section>
       )}
@@ -303,8 +296,8 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
           <div className="mx-auto max-w-[1200px] px-4">
             <div className="mb-8 flex items-end justify-between gap-4">
               <h2 className="text-2xl md:text-3xl font-bold text-[#2d3444]">You might also like</h2>
-              <Link to="/categories/smart-home" className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[#D4693A]">
-                All Smart Home <ArrowRight className="size-4" />
+              <Link to={`/categories/${product.category.slug}`} className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[#D4693A]">
+                All {product.category.name} <ArrowRight className="size-4" />
               </Link>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

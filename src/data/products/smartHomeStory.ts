@@ -34,6 +34,29 @@ function base(p: Product): Omit<Story, 'steps' | 'spotlights'> & { steps: Block[
     'AI human detection tells people apart from other movement and alerts you straight away.',
   ]
 
+  if (t.includes('indoor')) return {
+    tagline: 'Home, in view.',
+    pillars: [
+      { title: 'Turns', items: [{ icon: Move3d, label: 'Pan & tilt head' }, { icon: RotateCw, label: 'Rotating lens housing' }] },
+      { title: 'Built in', items: [
+        { icon: Sparkles, label: spec(p, 'Design') ?? '' },
+        { icon: HardDrive, label: spec(p, 'Storage') ?? '' },
+        { icon: CircleDot, label: spec(p, 'Controls') ?? '' },
+      ].filter((i) => i.label) },
+      { title: 'Finish', items: [{ icon: Palette, label: spec(p, 'Color') ?? '' }, { icon: Gem, label: 'Compact indoor body' }].filter((i) => i.label) },
+    ],
+    steps: [
+      { title: 'Turns toward the action', text: 'The head rotates on its base, so one camera can face the doorway, the sofa or the cot.' },
+      { title: 'Sits anywhere indoors', text: 'A compact body that fits on a shelf, a desk or a sideboard.' },
+      { title: 'Designed for the room', text: p.description },
+    ],
+    spotlights: [
+      { title: 'Every room, in view', text: 'Turn the camera toward whatever matters, from the living room to the nursery.' },
+      { title: 'Small enough for any shelf', text: 'A neat indoor design that blends into the room instead of standing out.' },
+    ],
+    useTexts: ['Check on the living room.', 'Keep an eye on the home office.', 'Look in on the bedroom.'],
+  }
+
   if (t.includes('ptz')) return {
     tagline: 'One camera. Every corner.',
     pillars: [

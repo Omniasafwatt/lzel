@@ -62,7 +62,7 @@ const DEFAULT_CONFIG = {
   headline: 'EXPLORE\nMORE.',
   caption: 'Discover our full range of premium tech accessories.',
   marqueeItems: ['ASLITEC', 'PREMIUM', 'TECH', 'QUALITY', 'STYLE', 'EXPLORE', 'DISCOVER'],
-  features: ['Premium Quality', 'Fast Shipping', '1-Year Warranty', 'Easy Returns'],
+  features: ['Premium Quality', 'Premium Design'],
   midHeadline: 'MADE FOR\nTHE BOLD.',
   midCaption: 'Engineered for people who demand the best from every device they carry.',
 }
@@ -129,15 +129,9 @@ function CatCard({ product, index = 0 }: { product: Product; index?: number }) {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
             )}
-            {product.compareAtPrice && (
-              <div className="absolute top-3 left-3 rounded-full bg-[#D4693A] px-2.5 py-0.5 text-[10px] font-bold text-white">SALE</div>
-            )}
           </div>
           <div className="p-4 flex flex-col flex-1">
             <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{product.name}</h3>
-            <div className="mt-auto pt-3">
-              <span className="text-xs text-amber-500">★ {product.averageRating.toFixed(1)}</span>
-            </div>
           </div>
         </Link>
       </motion.div>
@@ -412,11 +406,10 @@ export default function CategoryPage() {
       {/* ── 3B. FEATURE TRIO ────────────────────────────────────────── */}
       <section className="bg-white border-b border-[#E8E4DF]">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#E8E4DF]">
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#E8E4DF]">
             {[
               { num: '01', title: 'Premium\nMaterials',   desc: 'Built with quality components chosen to outlast and outperform.' },
               { num: '02', title: 'Precision\nEngineered', desc: 'Every detail tested to meet the highest performance standards.' },
-              { num: '03', title: '1-Year\nWarranty',      desc: 'Every aslitec product backed by our quality promise.' },
             ].map(({ num, title, desc }, i) => (
               <motion.div key={num}
                 className="flex flex-col p-10 lg:p-12 relative overflow-hidden group cursor-default"
@@ -489,9 +482,6 @@ export default function CategoryPage() {
                     <h3 className="text-[13px] font-bold text-white line-clamp-1 leading-snug">{p.name}</h3>
                   </div>
                   {/* Top SALE badge */}
-                  {p.compareAtPrice && (
-                    <div className="absolute top-3 right-3 rounded-full bg-[#D4693A] px-2 py-0.5 text-[9px] font-bold text-white">SALE</div>
-                  )}
                 </Link>
               </motion.div>
             ))}
@@ -562,8 +552,6 @@ export default function CategoryPage() {
                 <FadeUp delay={0.1} className="mt-12 flex gap-10 flex-wrap">
                   {[
                     { val: `${meta?.total ?? products.length}+`, label: 'Products' },
-                    { val: '4.8★',  label: 'Avg Rating' },
-                    { val: '5000+', label: 'Customers' },
                   ].map(({ val, label }) => (
                     <div key={label}>
                       <div className="text-3xl font-black text-white tabular-nums">{val}</div>

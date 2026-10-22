@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react'
 import { useGetProductQuery, useGetRelatedProductsQuery } from '@/data/useMockData'
 import { Skeleton } from '@/components/common/Skeleton'
 import { getSmartHomeSection } from '@/data/products/smartHomeLayout'
@@ -149,25 +149,6 @@ export default function ProductDetailPage() {
                 <p className="mt-2 text-sm font-semibold text-[#777]">{product.shortDescription}</p>
               )}
 
-              {/* Rating */}
-              {product.reviewCount > 0 && (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`size-4 ${
-                        i < Math.floor(product.averageRating)
-                          ? 'fill-amber-400 text-amber-400'
-                          : 'fill-[#E8E4DF] text-[#E8E4DF]'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm font-semibold text-[#2d3444]">{product.averageRating.toFixed(1)}</span>
-                <span className="text-sm text-[#999]">· {product.reviewCount} reviews</span>
-              </div>
-              )}
             </div>
 
             {/* Variants */}
@@ -276,7 +257,6 @@ export default function ProductDetailPage() {
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4693A] mb-1">{p.category.name}</p>
                     <h3 className="text-sm font-semibold text-[#2d3444] line-clamp-2 leading-snug">{p.name}</h3>
-                    {p.reviewCount > 0 && <span className="mt-1.5 inline-block text-xs text-amber-500">★ {p.averageRating.toFixed(1)}</span>}
                   </div>
                 </Link>
               ))}

@@ -116,7 +116,7 @@ export default function SmartHomePage() {
             >
               <h1 className="text-3xl md:text-5xl font-semibold text-[#2d3444]">Smart Home</h1>
               <p className="mt-3 text-sm md:text-base leading-relaxed text-[#666]">
-                Extend security and comfort throughout your home with aslitec smart home devices.
+                aslitec security cameras and video doorbell.
               </p>
             </motion.div>
           </div>
