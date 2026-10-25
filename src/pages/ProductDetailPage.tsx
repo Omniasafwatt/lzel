@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react'
 import { useGetProductQuery, useGetRelatedProductsQuery } from '@/data/useMockData'
 import { Skeleton } from '@/components/common/Skeleton'
+import BuyNowButton from '@/components/common/BuyNowButton'
 import { getSmartHomeSection } from '@/data/products/smartHomeLayout'
 import type { ProductVariant } from '@/types'
 import SmartHomeProductPage from './SmartHomeProductPage'
@@ -180,6 +181,8 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             ))}
+
+            <BuyNowButton />
 
             {/* Tags */}
             {product.tags.length > 0 && (

@@ -7,6 +7,7 @@ import { groupSpecs, subtitleOf, modelOf, type SmartHomeSection } from '@/data/p
 import { detailOf, scenesOf } from '@/data/products/smartHomeDetail'
 import { storyOf } from '@/data/products/smartHomeStory'
 import SmartHomeCard from '@/components/smart-home/SmartHomeCard'
+import BuyNowButton from '@/components/common/BuyNowButton'
 import type { Product } from '@/types'
 
 // EZVIZ-style product page (lifestyle hero, feature grid, ring diagram,
@@ -71,6 +72,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                 {tab === t && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#D4693A]" />}
               </button>
             ))}
+            <BuyNowButton size="sm" className="hidden sm:inline-block" />
           </div>
         </div>
       </div>
@@ -104,6 +106,7 @@ export default function SmartHomeProductPage({ product, section }: { product: Pr
                   <h1 className="mt-3 text-5xl md:text-7xl font-bold text-white tracking-tight">{model}</h1>
                   <p className="mt-3 text-lg md:text-2xl text-white/90">{subtitle}</p>
                   <div className="mt-7 flex flex-wrap gap-3">
+                    <BuyNowButton up />
                     <button onClick={() => switchTab('specs')} className="rounded-full border border-white/70 px-7 py-3 text-sm font-semibold text-white hover:bg-white hover:text-[#2d3444] transition-colors">
                       Specifications
                     </button>
